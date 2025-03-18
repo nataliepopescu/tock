@@ -31,6 +31,8 @@ use crate::process::Process;
 use crate::process::StoppedExecutingReason;
 use crate::scheduler::{Scheduler, SchedulingDecision};
 
+//use flux_rs::*;
+
 #[derive(Default)]
 struct MfProcState {
     /// Total CPU time used by this process while in current queue
@@ -85,6 +87,7 @@ impl<'a, A: 'static + time::Alarm<'static>> MLFQSched<'a, A> {
         }
     }
 
+    //#[sig(fn(i: usize) -> u32)]
     fn get_timeslice_us(&self, queue_idx: usize) -> u32 {
         match queue_idx {
             0 => 10000,
