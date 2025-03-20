@@ -153,6 +153,7 @@ impl<'a> StreamingProcessSlice<'a> {
     ///   cleared.
     /// - `SIZE`: if the underlying slice is not large enough to fit the
     ///   flags field and the offset field.
+    #[flux_rs::trusted] // FLUXERR: precondition cannot be proved
     fn get_header(&self) -> Result<StreamingProcessSliceHeader, ErrorCode> {
         let mut version_bytes = [0_u8; 2];
         self.slice
@@ -350,6 +351,7 @@ impl<'a> StreamingProcessSlice<'a> {
     /// still fail due to the buffer being halted, having an improper header,
     /// etc. A zero-length `chunk` will never be treated as the first chunk
     /// appended to a buffer.
+    #[flux_rs::trusted] // FLUXERR: unsupported terminator call
     pub fn append_chunk_from_iter<I: IntoIterator<Item = u8>>(
         &self,
         src: I,

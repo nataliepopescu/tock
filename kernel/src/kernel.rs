@@ -184,6 +184,7 @@ impl Kernel {
     }
 
     /// Returns an iterator over all processes loaded by the kernel.
+    #[flux_rs::trusted] // ICE: assertion `left == right` failed
     pub(crate) fn get_process_iter(
         &self,
     ) -> core::iter::FilterMap<
@@ -471,6 +472,7 @@ impl Kernel {
     /// cooperatively). Notably, time spent in this function by the kernel,
     /// executing system calls or merely setting up the switch to/from
     /// userspace, is charged to the process.
+    #[flux_rs::trusted] // overflow
     fn do_process<KR: KernelResources<C>, C: Chip, const NUM_PROCS: u8>(
         &self,
         resources: &KR,

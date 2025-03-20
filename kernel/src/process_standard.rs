@@ -552,6 +552,7 @@ impl<C: Chip, D: 'static + ProcessStandardDebug> Process for ProcessStandard<'_,
             || self.state.get() == State::Running
     }
 
+    #[flux_rs::trusted] // overflow
     fn remove_pending_upcalls(&self, upcall_id: UpcallId) -> usize {
         self.tasks.map_or(0, |tasks| {
             let count_before = tasks.len();
@@ -601,6 +602,7 @@ impl<C: Chip, D: 'static + ProcessStandardDebug> Process for ProcessStandard<'_,
         }
     }
 
+    #[flux_rs::trusted] // overflow
     fn stop(&self) {
         match self.state.get() {
             State::Running => self.state.set(State::Stopped(StoppedState::Running)),
@@ -836,6 +838,7 @@ impl<C: Chip, D: 'static + ProcessStandardDebug> Process for ProcessStandard<'_,
         self.brk(new_break)
     }
 
+    #[flux_rs::trusted] // overflow
     fn brk(&self, new_break: *const u8) -> Result<CapabilityPtr, Error> {
         // Do not modify an inactive process.
         if !self.is_running() {
@@ -1537,6 +1540,7 @@ impl<C: 'static + Chip, D: 'static + ProcessStandardDebug> ProcessStandard<'_, C
     const PROCESS_STRUCT_OFFSET: usize = mem::size_of::<ProcessStandard<C, D>>();
 
     /// Create a `ProcessStandard` object based on the found `ProcessBinary`.
+    #[flux_rs::trusted] // overflow + assertion might fail: possible remainder with a divisor of zero
     pub(crate) unsafe fn create<'a>(
         kernel: &'static Kernel,
         chip: &'static C,
@@ -2006,6 +2010,7 @@ impl<C: 'static + Chip, D: 'static + ProcessStandardDebug> ProcessStandard<'_, C
     /// Reset the process, resetting all of its state and re-initializing it so
     /// it can start running. Assumes the process is not running but is still in
     /// flash and still has its memory region allocated to it.
+    #[flux_rs::trusted] // overflow
     fn reset(&self) -> Result<(), ErrorCode> {
         // We need a new process identifier for this process since the restarted
         // version is in effect a new process. This is also necessary to
@@ -2171,6 +2176,7 @@ impl<C: 'static + Chip, D: 'static + ProcessStandardDebug> ProcessStandard<'_, C
     /// at `app_break`). If this method returns `true`, the buffer is guaranteed
     /// to be accessible to the process and to not overlap with the grant
     /// region.
+    #[flux_rs::trusted] // ICE: no primop rule for ...
     fn in_app_owned_memory(&self, buf_start_addr: *const u8, size: usize) -> bool {
         // TODO: On some platforms, CapabilityPtr has sufficient authority that we
         // could skip this check.
@@ -2188,6 +2194,7 @@ impl<C: 'static + Chip, D: 'static + ProcessStandardDebug> ProcessStandard<'_, C
     /// are within the readable region of an application's flash memory.  If
     /// this method returns true, the buffer is guaranteed to be readable to the
     /// process.
+    #[flux_rs::trusted] // ICE: no primop rule for ...
     fn in_app_flash_memory(&self, buf_start_addr: *const u8, size: usize) -> bool {
         // TODO: On some platforms, CapabilityPtr has sufficient authority that we
         // could skip this check.
@@ -2219,6 +2226,7 @@ impl<C: 'static + Chip, D: 'static + ProcessStandardDebug> ProcessStandard<'_, C
     /// If there is not enough memory, or the MPU cannot isolate the process
     /// accessible region from the new kernel memory break after doing the
     /// allocation, then this will return `None`.
+    #[flux_rs::trusted] // overflow
     fn allocate_in_grant_region_internal(&self, size: usize, align: usize) -> Option<NonNull<u8>> {
         self.mpu_config.and_then(|config| {
             // First, compute the candidate new pointer. Note that at this point
@@ -2278,6 +2286,7 @@ impl<C: 'static + Chip, D: 'static + ProcessStandardDebug> ProcessStandard<'_, C
     ///
     /// We create this identifier by calculating the number of bytes between
     /// where the custom grant starts and the end of the process memory.
+    #[flux_rs::trusted] // overflow
     fn create_custom_grant_identifier(&self, ptr: NonNull<u8>) -> ProcessCustomGrantIdentifier {
         let custom_grant_address = ptr.as_ptr() as usize;
         let process_memory_end = self.mem_end() as usize;
@@ -2291,6 +2300,7 @@ impl<C: 'static + Chip, D: 'static + ProcessStandardDebug> ProcessStandard<'_, C
     /// custom grant.
     ///
     /// This reverses `create_custom_grant_identifier()`.
+    #[flux_rs::trusted] // overflow
     fn get_custom_grant_address(&self, identifier: ProcessCustomGrantIdentifier) -> usize {
         let process_memory_end = self.mem_end() as usize;
 

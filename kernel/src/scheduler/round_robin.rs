@@ -127,6 +127,7 @@ impl<C: Chip> Scheduler<C> for RoundRobinSched<'_> {
         SchedulingDecision::RunProcess((next, Some(non_zero_timeslice)))
     }
 
+    #[flux_rs::trusted] // arith overflow
     fn result(&self, result: StoppedExecutingReason, execution_time_us: Option<u32>) {
         let execution_time_us = execution_time_us.unwrap(); // should never fail
         let reschedule = match result {

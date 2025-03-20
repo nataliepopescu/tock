@@ -261,6 +261,7 @@ pub static mut DEBUG_GPIOS: (
 ) = (None, None, None);
 
 /// Map up to three GPIO pins to use for debugging.
+#[flux_rs::trusted] // ICE: invalid deref of `*mut
 pub unsafe fn assign_gpios(
     gpio0: Option<&'static dyn hil::gpio::Pin>,
     gpio1: Option<&'static dyn hil::gpio::Pin>,

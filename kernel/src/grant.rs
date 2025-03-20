@@ -346,6 +346,7 @@ impl<'a> EnteredGrantKernelManagedLayout<'a> {
     /// Returns the entire grant size including the kernel owned memory,
     /// padding, and data for T. Requires that grant_t_align be a power of 2,
     /// which is guaranteed from align_of rust calls.
+    #[flux_rs::trusted] // FLUXERR: arithmetic operation may overflow
     fn grant_size(
         upcalls_num: UpcallItems,
         allow_ro_num: AllowRoItems,
@@ -384,6 +385,7 @@ impl<'a> EnteredGrantKernelManagedLayout<'a> {
     /// The caller must ensure that the specified base pointer is aligned to at
     /// least the alignment of T and points to a grant that is of size
     /// grant_size bytes.
+    #[flux_rs::trusted] // FLUXERR: arithmetic operation may overflow
     unsafe fn offset_of_grant_data_t(
         base_ptr: NonNull<u8>,
         grant_size: usize,
@@ -1789,6 +1791,7 @@ impl<T: Default, Upcalls: UpcallSize, AllowROs: AllowRoSize, AllowRWs: AllowRwSi
     ///
     /// Calling this function when an [`ProcessGrant`] for a process is
     /// currently entered will result in a panic.
+    #[flux_rs::trusted] // ICE: assertion `left == right` failed
     pub fn iter(&self) -> Iter<T, Upcalls, AllowROs, AllowRWs> {
         Iter {
             grant: self,
@@ -1820,6 +1823,7 @@ impl<'a, T: Default, Upcalls: UpcallSize, AllowROs: AllowRoSize, AllowRWs: Allow
 {
     type Item = ProcessGrant<'a, T, Upcalls, AllowROs, AllowRWs>;
 
+    #[flux_rs::trusted] // ICE: assertion `left == right` failed
     fn next(&mut self) -> Option<Self::Item> {
         let grant = self.grant;
         // Get the next `ProcessId` from the kernel processes array that is

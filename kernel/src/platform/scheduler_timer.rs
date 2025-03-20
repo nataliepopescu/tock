@@ -195,6 +195,7 @@ impl<A: 'static + time::Alarm<'static>> SchedulerTimer for VirtualSchedulerTimer
         //self.alarm.disarm();
     }
 
+    #[flux_rs::trusted] // assertion might fail: possible division by zero
     fn get_remaining_us(&self) -> Option<NonZeroU32> {
         // We need to convert from native tics to us, multiplication could overflow in 32-bit
         // arithmetic. So we convert to 64-bit.

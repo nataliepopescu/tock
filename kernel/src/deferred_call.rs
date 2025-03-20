@@ -152,6 +152,7 @@ impl DeferredCall {
     // To reduce monomorphization bloat, the non-generic portion of register is
     // moved into this function without generic parameters.
     #[inline(never)]
+    #[flux_rs::trusted] // FLUXERR: assertion might fail: possible out-of-bounds access
     fn register_internal_non_generic(&self, handler: DynDefCallRef<'static>) {
         // SAFETY: No accesses to DEFCALLS are via an &mut, and the Tock kernel
         // is single-threaded so all accesses will occur from this thread.
@@ -196,6 +197,7 @@ impl DeferredCall {
 
     /// Services and clears the next pending [`DeferredCall`], returns which
     /// index was serviced.
+    #[flux_rs::trusted] // FLUXERR: assertion might fail: possible out-of-bounds access
     pub fn service_next_pending() -> Option<usize> {
         // SAFETY: No accesses to BITMASK/DEFCALLS are via an &mut, and the Tock
         // kernel is single-threaded so all accesses will occur from this

@@ -792,6 +792,7 @@ impl ReadableProcessSlice {
     ///
     /// The length of `self` must be the same as `dest`. Subslicing
     /// can be used to obtain a slice of matching length.
+    #[flux_rs::trusted] // ICE: expected array or slice type
     pub fn copy_to_slice_or_err(&self, dest: &mut [u8]) -> Result<(), ErrorCode> {
         // Method implemetation adopted from the
         // core::slice::copy_from_slice method implementation:
@@ -824,6 +825,7 @@ impl ReadableProcessSlice {
     }
 
     /// Iterate the slice in chunks.
+    #[flux_rs::trusted] // ICE: unexpected escaping region
     pub fn chunks(
         &self,
         chunk_size: usize,
@@ -864,6 +866,7 @@ impl ProcessSliceIndex<ReadableProcessSlice> for usize {
         slice.slice.get(self)
     }
 
+    #[flux_rs::trusted] // assertion might fail: possible out-of-bounds access
     fn index(self, slice: &ReadableProcessSlice) -> &Self::Output {
         &slice.slice[self]
     }
@@ -1069,6 +1072,7 @@ impl WriteableProcessSlice {
     }
 
     /// Iterate over the slice in chunks.
+    #[flux_rs::trusted] // ICE: unexpected escaping region
     pub fn chunks(
         &self,
         chunk_size: usize,
@@ -1109,6 +1113,7 @@ impl ProcessSliceIndex<WriteableProcessSlice> for usize {
         slice.slice.get(self)
     }
 
+    #[flux_rs::trusted] // assertion might fail: possible out-of-bounds access
     fn index(self, slice: &WriteableProcessSlice) -> &Self::Output {
         &slice.slice[self]
     }

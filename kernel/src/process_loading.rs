@@ -186,6 +186,7 @@ pub fn load_processes<C: Chip>(
 /// `ProcessLoadError` if something goes wrong during TBF parsing or process
 /// creation.
 #[inline(always)]
+#[flux_rs::trusted] // ICE: expected array or slice type
 fn load_processes_from_flash<C: Chip, D: ProcessStandardDebug + 'static>(
     kernel: &'static Kernel,
     chip: &'static C,
@@ -288,6 +289,7 @@ fn load_processes_from_flash<C: Chip, D: ProcessStandardDebug + 'static>(
 
 /// Find a process binary stored at the beginning of `flash` and create a
 /// `ProcessBinary` object if the process is viable to run on this kernel.
+#[flux_rs::trusted] // FLUXERR: arithmetic operation may overflow
 fn discover_process_binary(
     flash: &'static [u8],
 ) -> Result<(&'static [u8], ProcessBinary), (&'static [u8], ProcessBinaryError)> {
@@ -354,6 +356,7 @@ fn discover_process_binary(
 /// pool that its RAM should be allocated from. Returns `Ok` if the process
 /// object was created, `Err` with a relevant error if the process object could
 /// not be created.
+#[flux_rs::trusted] // FLUXERR: arithmetic operation may overflow
 fn load_process<C: Chip, D: ProcessStandardDebug>(
     kernel: &'static Kernel,
     chip: &'static C,
@@ -597,6 +600,7 @@ impl<C: Chip, D: ProcessStandardDebug> SequentialProcessLoaderMachine<'_, C, D> 
     ///
     /// Returns the process binary object or an error if a valid process
     /// binary could not be extracted.
+    #[flux_rs::trusted] // overflow
     fn discover_process_binary(&self) -> Result<ProcessBinary, ProcessBinaryError> {
         let flash = self.flash.get();
 
@@ -660,6 +664,7 @@ impl<C: Chip, D: ProcessStandardDebug> SequentialProcessLoaderMachine<'_, C, D> 
     /// Create process objects from the discovered process binaries.
     ///
     /// This verifies that the discovered processes are valid to run.
+    #[flux_rs::trusted] // ICE: expected array or slice type
     fn load_process_objects(&self) -> Result<(), ()> {
         let proc_binaries = self.proc_binaries.take().ok_or(())?;
         let proc_binaries_len = proc_binaries.len();
@@ -924,6 +929,7 @@ impl<C: Chip, D: ProcessStandardDebug> DeferredCallClient
 impl<C: Chip, D: ProcessStandardDebug> crate::process_checker::ProcessCheckerMachineClient
     for SequentialProcessLoaderMachine<'_, C, D>
 {
+    #[flux_rs::trusted] // ICE expected array or slice type
     fn done(
         &self,
         process_binary: ProcessBinary,

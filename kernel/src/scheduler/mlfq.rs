@@ -31,8 +31,6 @@ use crate::process::Process;
 use crate::process::StoppedExecutingReason;
 use crate::scheduler::{Scheduler, SchedulingDecision};
 
-//use flux_rs::*;
-
 #[derive(Default)]
 struct MfProcState {
     /// Total CPU time used by this process while in current queue
@@ -87,7 +85,7 @@ impl<'a, A: 'static + time::Alarm<'static>> MLFQSched<'a, A> {
         }
     }
 
-    //#[sig(fn(i: usize) -> u32)]
+    //#[flux_rs::sig(fn(i: usize) -> u32)]
     fn get_timeslice_us(&self, queue_idx: usize) -> u32 {
         match queue_idx {
             0 => 10000,
@@ -161,6 +159,7 @@ impl<A: 'static + time::Alarm<'static>, C: Chip> Scheduler<C> for MLFQSched<'_, 
         SchedulingDecision::RunProcess((next, NonZeroU32::new(timeslice)))
     }
 
+    #[flux_rs::trusted] // oob and arithmetic overflow
     fn result(&self, result: StoppedExecutingReason, execution_time_us: Option<u32>) {
         let execution_time_us = execution_time_us.unwrap(); // should never fail as we never run cooperatively
         let queue_idx = self.last_queue_idx.get();

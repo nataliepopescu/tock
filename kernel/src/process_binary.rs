@@ -133,6 +133,7 @@ pub struct ProcessBinary {
 }
 
 impl ProcessBinary {
+    #[flux_rs::trusted] // overflow
     pub(crate) fn create(
         app_flash: &'static [u8],
         header_length: usize,

@@ -61,10 +61,12 @@ impl<T: Copy> queue::Queue<T> for RingBuffer<'_, T> {
         self.head != self.tail
     }
 
+    #[flux_rs::trusted] // FLUXERR: assertion might fail: possible remainder with a divisor of zero
     fn is_full(&self) -> bool {
         self.head == ((self.tail + 1) % self.ring.len())
     }
 
+    #[flux_rs::trusted] // FLUXERR: arithmetic operation may overflow
     fn len(&self) -> usize {
         if self.tail > self.head {
             self.tail - self.head
@@ -76,6 +78,7 @@ impl<T: Copy> queue::Queue<T> for RingBuffer<'_, T> {
         }
     }
 
+    #[flux_rs::trusted] // ICE: expected array or slice type
     fn enqueue(&mut self, val: T) -> bool {
         if self.is_full() {
             // Incrementing tail will overwrite head
@@ -87,6 +90,7 @@ impl<T: Copy> queue::Queue<T> for RingBuffer<'_, T> {
         }
     }
 
+    #[flux_rs::trusted] // ICE: expected array or slice type
     fn push(&mut self, val: T) -> Option<T> {
         let result = if self.is_full() {
             let val = self.ring[self.head];
@@ -101,6 +105,7 @@ impl<T: Copy> queue::Queue<T> for RingBuffer<'_, T> {
         result
     }
 
+    #[flux_rs::trusted] // ICE: expected array or slice type
     fn dequeue(&mut self) -> Option<T> {
         if self.has_elements() {
             let val = self.ring[self.head];
@@ -118,6 +123,7 @@ impl<T: Copy> queue::Queue<T> for RingBuffer<'_, T> {
     /// created by removing the element).
     ///
     /// If an element was removed, this function returns it as `Some(elem)`.
+    #[flux_rs::trusted] // ICE: expected array or slice type
     fn remove_first_matching<F>(&mut self, f: F) -> Option<T>
     where
         F: Fn(&T) -> bool,
@@ -149,6 +155,7 @@ impl<T: Copy> queue::Queue<T> for RingBuffer<'_, T> {
         self.tail = 0;
     }
 
+    #[flux_rs::trusted] // ICE: expected array or slice type
     fn retain<F>(&mut self, mut f: F)
     where
         F: FnMut(&T) -> bool,

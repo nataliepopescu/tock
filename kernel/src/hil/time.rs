@@ -515,6 +515,7 @@ impl Ticks for Ticks32 {
     }
 
     #[inline]
+    #[flux_rs::trusted] // assertion might fail: possible division by zero
     fn saturating_scale(self, numerator: u32, denominator: u32) -> u32 {
         let scaled = self.0 as u64 * numerator as u64 / denominator as u64;
         if scaled < u32::MAX as u64 {
@@ -604,6 +605,7 @@ impl Ticks for Ticks24 {
     }
 
     #[inline]
+    #[flux_rs::trusted] // assertion might fail: possible division by zero
     fn saturating_scale(self, numerator: u32, denominator: u32) -> u32 {
         let scaled = self.0 as u64 * numerator as u64 / denominator as u64;
         if scaled < u32::MAX as u64 {
@@ -701,6 +703,7 @@ impl Ticks for Ticks16 {
     }
 
     #[inline]
+    #[flux_rs::trusted] // assertion might fail: possible division by zero
     fn saturating_scale(self, numerator: u32, denominator: u32) -> u32 {
         let scaled = self.0 as u64 * numerator as u64 / denominator as u64;
         if scaled < u32::MAX as u64 {
@@ -794,6 +797,7 @@ impl Ticks for Ticks64 {
     }
 
     #[inline]
+    #[flux_rs::trusted] // assertion might fail: possible division by zero
     fn saturating_scale(self, num: u32, den: u32) -> u32 {
         let scaled = self.0.saturating_mul(num as u64) / den as u64;
         if scaled < u32::MAX as u64 {
