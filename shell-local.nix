@@ -1,0 +1,116 @@
+# Licensed under the Apache License, Version 2.0 or the MIT License.
+# SPDX-License-Identifier: Apache-2.0 OR MIT
+# Copyright Tock Contributors 2022.
+
+# Shell expression for the Nix package manager
+#
+# This nix expression creates an environment with necessary packages installed:
+#
+#  * `tockloader`
+#  * rust
+#
+# To use:
+#
+#  $ nix-shell
+#
+
+{ pkgs ? import <nixpkgs> {}, withUnfreePkgs ? false }:
+
+with builtins;
+let
+  inherit (pkgs) stdenv lib;
+
+  #tockloader = import (pkgs.fetchFromGitHub {
+  #  owner = "tock";
+  #  repo = "tockloader";
+  #  # v1.16.0-25-ga865b6f (including nrfutil backend)
+  #  rev = "a865b6f93f63b2af377546e8ad5c85b0a1fd53d1";
+  #  sha256 = "sha256-bgA86FBa/va0kAXe4hn3wgBSidHY2GPmjYoatNmJd7I=";
+  #}) { inherit pkgs withUnfreePkgs; };
+  tockloader = (import (pkgs.fetchFromGitHub {
+    owner = "tock";
+    repo = "tockloader";
+    rev = "a865b6f93f63b2af377546e8ad5c85b0a1fd53d1";
+    sha256 = "sha256-bgA86FBa/va0kAXe4hn3wgBSidHY2GPmjYoatNmJd7I=";
+  }) { inherit pkgs withUnfreePkgs; }).overrideAttrs (old: {
+    postPatch = (old.postPatch or "") + ''
+      substituteInPlace pyproject.toml \
+      --replace-fail 'requires = ["flit_core >=3.11,<4"]' 'requires = ["flit_core"]' \
+      --replace-fail 'license = "MIT"' 'license = {text = "MIT"}' \
+      --replace-fail 'license-files = ["LICENSE"]' "" \
+      --replace-fail '"questionary >= 2.1.1",' '"questionary",'
+    '';
+  });
+
+  rust_overlay = import "${pkgs.fetchFromGitHub {
+    owner = "nix-community";
+    repo = "fenix";
+    rev = "3743208cafd7bc3c150f0c77c25ef7430e9c0de2";
+    sha256 = "sha256-a5EMHpDAxLShxBKUdDVmqZMlfiuOtOUzet2xT/E/RiM=";
+  }}/overlay.nix";
+
+  nixpkgs = import <nixpkgs> { overlays = [ rust_overlay ]; };
+
+  # Get a custom cross-compile capable Rust install of a specific channel and
+  # build. Tock expects a specific version of Rust with a selection of targets
+  # and components to be present.
+  rustBuild = (
+    nixpkgs.fenix.fromToolchainFile { file = ./rust-toolchain.toml; }
+  );
+
+in
+  pkgs.mkShell {
+    name = "tock-dev";
+
+    buildInputs = with pkgs; [
+      # --- Toolchains ---
+      llvm
+      rustBuild
+      openocd
+      rustup
+
+      # --- Convenience and support packages ---
+      python3
+      tockloader
+
+      # Required for tools/print_tock_memory_usage.py
+      python3Packages.cxxfilt
+
+
+      # --- CI support packages ---
+      qemu
+
+      # --- Flashing tools ---
+      # If your board requires J-Link to flash and you are on NixOS,
+      # add these lines to your system wide configuration.
+
+      # Enable udev rules from segger-jlink package
+      # services.udev.packages = [
+      #     pkgs.segger-jlink
+      # ];
+
+      # Add "segger-jlink" to your system packages and accept the EULA:
+      # nixpkgs.config.segger-jlink.acceptLicense = true;
+    ];
+
+    LD_LIBRARY_PATH="${stdenv.cc.cc.lib}/lib64:$LD_LIBRARY_PATH";
+
+    # Instruct the Tock gnumake-based build system to not check for rustup and
+    # assume all requirend tools are installed and available in the $PATH
+    NO_RUSTUP = "1";
+
+    # The defaults "objcopy" and "objdump" are wrong (stem from the standard
+    # environment for x86), use "llvm-obj{copy,dump}" as defined in the makefile
+    shellHook = ''
+      unset OBJCOPY
+      unset OBJDUMP
+
+      # for VerifOpt
+      rustup toolchain install nightly-2026-01-13-x86_64-unknown-linux-gnu --profile minimal 2>/dev/null || true
+      export LD_LIBRARY_PATH="$(rustup run nightly-2026-01-13-x86_64-unknown-linux-gnu rustc --print sysroot)/lib:$LD_LIBRARY_PATH"
+
+      # make sure these match what Tock currently uses; updates can make these
+      # out-of sync
+      export RUSTFLAGS="--cfg cfg_tock_buildflagssentinel -C linker=rust-lld -C linker-flavor=ld.lld -C relocation-model=static -C link-arg=-nmagic -C link-arg=-icf=all -C lto -Z emit-stack-sizes"
+    '';
+  }
