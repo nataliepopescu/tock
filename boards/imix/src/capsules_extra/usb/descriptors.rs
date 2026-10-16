@@ -10,9 +10,9 @@ use core::cell::Cell;
 use core::cmp::min;
 use core::fmt;
 
-use crate::kernel::hil::usb::TransferType;
-use crate::kernel::utilities::registers::InMemoryRegister;
-use crate::kernel::utilities::registers::interfaces::Readable;
+use kernel::hil::usb::TransferType;
+use kernel::utilities::registers::InMemoryRegister;
+use kernel::utilities::registers::interfaces::Readable;
 
 // On Nordic, USB buffers must be 32-bit aligned, with a power-of-2 size. For
 // now we apply these constraints on all platforms.

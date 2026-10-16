@@ -8,7 +8,7 @@
 //! -----
 //!
 //! ```rust,ignore
-//! # use crate::kernel::static_init;
+//! # use kernel::static_init;
 //!
 //! let dac = static_init!(
 //!     capsules::dac::Dac<'static>,
@@ -19,9 +19,9 @@
 use capsules_core::driver;
 pub const DRIVER_NUM: usize = driver::NUM::Dac as usize;
 
-use crate::kernel::hil;
-use crate::kernel::syscall::{CommandReturn, SyscallDriver};
-use crate::kernel::{ErrorCode, ProcessId};
+use kernel::hil;
+use kernel::syscall::{CommandReturn, SyscallDriver};
+use kernel::{ErrorCode, ProcessId};
 
 pub struct Dac<'a> {
     dac: &'a dyn hil::dac::DacChannel,
@@ -55,7 +55,7 @@ impl SyscallDriver for Dac<'_> {
         }
     }
 
-    fn allocate_grant(&self, _processid: ProcessId) -> Result<(), crate::kernel::process::Error> {
+    fn allocate_grant(&self, _processid: ProcessId) -> Result<(), kernel::process::Error> {
         Ok(())
     }
 }

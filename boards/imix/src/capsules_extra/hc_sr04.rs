@@ -14,12 +14,12 @@
 
 use core::cell::Cell;
 
-use crate::kernel::ErrorCode;
-use crate::kernel::hil::gpio;
-use crate::kernel::hil::sensors::{self, Distance, DistanceClient};
-use crate::kernel::hil::time::Alarm;
-use crate::kernel::hil::time::{AlarmClient, ConvertTicks};
-use crate::kernel::utilities::cells::OptionalCell;
+use kernel::ErrorCode;
+use kernel::hil::gpio;
+use kernel::hil::sensors::{self, Distance, DistanceClient};
+use kernel::hil::time::Alarm;
+use kernel::hil::time::{AlarmClient, ConvertTicks};
+use kernel::utilities::cells::OptionalCell;
 
 /// Maximum duration for the echo pulse to be measured in milliseconds.
 // As specified in the datasheet:
@@ -67,8 +67,8 @@ pub struct HcSr04<'a, A: Alarm<'a>> {
 impl<'a, A: Alarm<'a>> HcSr04<'a, A> {
     /// Create a new HC-SR04 driver.
     pub fn new(
-        trig: &'a dyn crate::kernel::hil::gpio::Pin,
-        echo: &'a dyn crate::kernel::hil::gpio::InterruptPin<'a>,
+        trig: &'a dyn kernel::hil::gpio::Pin,
+        echo: &'a dyn kernel::hil::gpio::InterruptPin<'a>,
         alarm: &'a A,
     ) -> HcSr04<'a, A> {
         // Setup and return struct.

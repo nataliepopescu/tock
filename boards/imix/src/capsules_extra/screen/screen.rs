@@ -16,14 +16,14 @@
 
 use core::cell::Cell;
 
-use crate::kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
-use crate::kernel::hil;
-use crate::kernel::hil::screen::{ScreenPixelFormat, ScreenRotation};
-use crate::kernel::processbuffer::ReadableProcessBuffer;
-use crate::kernel::syscall::{CommandReturn, SyscallDriver};
-use crate::kernel::utilities::cells::{OptionalCell, TakeCell};
-use crate::kernel::utilities::leasable_buffer::SubSliceMut;
-use crate::kernel::{ErrorCode, ProcessId};
+use kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
+use kernel::hil;
+use kernel::hil::screen::{ScreenPixelFormat, ScreenRotation};
+use kernel::processbuffer::ReadableProcessBuffer;
+use kernel::syscall::{CommandReturn, SyscallDriver};
+use kernel::utilities::cells::{OptionalCell, TakeCell};
+use kernel::utilities::leasable_buffer::SubSliceMut;
+use kernel::{ErrorCode, ProcessId};
 
 /// Syscall driver number.
 use capsules_core::driver;
@@ -235,7 +235,7 @@ impl<'a> Screen<'a> {
                             self.screen.write(data, false)
                         } else {
                             self.buffer.replace(buffer);
-                            self.run_next_command(crate::kernel::errorcode::into_statuscode(Ok(())), 0, 0);
+                            self.run_next_command(kernel::errorcode::into_statuscode(Ok(())), 0, 0);
                             Ok(())
                         }
                     }),
@@ -271,7 +271,7 @@ impl<'a> Screen<'a> {
                             self.screen.write(data, false)
                         } else {
                             self.buffer.replace(buffer);
-                            self.run_next_command(crate::kernel::errorcode::into_statuscode(Ok(())), 0, 0);
+                            self.run_next_command(kernel::errorcode::into_statuscode(Ok(())), 0, 0);
                             Ok(())
                         }
                     }),
@@ -328,7 +328,7 @@ impl<'a> Screen<'a> {
                 match self.call_screen(command, process_id) {
                     Err(err) => {
                         self.current_process.clear();
-                        self.schedule_callback(crate::kernel::errorcode::into_statuscode(Err(err)), 0, 0);
+                        self.schedule_callback(kernel::errorcode::into_statuscode(Err(err)), 0, 0);
                     }
                     Ok(()) => {
                         break;
@@ -427,7 +427,7 @@ impl<'a> Screen<'a> {
 
 impl hil::screen::ScreenClient for Screen<'_> {
     fn command_complete(&self, r: Result<(), ErrorCode>) {
-        self.run_next_command(crate::kernel::errorcode::into_statuscode(r), 0, 0);
+        self.run_next_command(kernel::errorcode::into_statuscode(r), 0, 0);
     }
 
     fn write_complete(&self, data: SubSliceMut<'static, u8>, r: Result<(), ErrorCode>) {
@@ -440,18 +440,18 @@ impl hil::screen::ScreenClient for Screen<'_> {
             let _ = self.screen.write(data, true);
         } else {
             self.buffer.replace(buffer);
-            self.run_next_command(crate::kernel::errorcode::into_statuscode(r), 0, 0);
+            self.run_next_command(kernel::errorcode::into_statuscode(r), 0, 0);
         }
     }
 
     fn screen_is_ready(&self) {
-        self.run_next_command(crate::kernel::errorcode::into_statuscode(Ok(())), 0, 0);
+        self.run_next_command(kernel::errorcode::into_statuscode(Ok(())), 0, 0);
     }
 }
 
 impl hil::screen::ScreenSetupClient for Screen<'_> {
     fn command_complete(&self, r: Result<(), ErrorCode>) {
-        self.run_next_command(crate::kernel::errorcode::into_statuscode(r), 0, 0);
+        self.run_next_command(kernel::errorcode::into_statuscode(r), 0, 0);
     }
 }
 
@@ -575,7 +575,7 @@ impl SyscallDriver for Screen<'_> {
         }
     }
 
-    fn allocate_grant(&self, processid: ProcessId) -> Result<(), crate::kernel::process::Error> {
+    fn allocate_grant(&self, processid: ProcessId) -> Result<(), kernel::process::Error> {
         self.apps.enter(processid, |_, _| {})
     }
 }

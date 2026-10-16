@@ -8,34 +8,34 @@ use capsules_core::adc::AdcDedicated;
 use capsules_core::adc::AdcVirtualized;
 use capsules_core::virtualizers::virtual_adc::{AdcDevice, MuxAdc};
 use core::mem::MaybeUninit;
-use crate::kernel::capabilities::MemoryAllocationCapability;
-use crate::kernel::component::Component;
-use crate::kernel::hil::adc;
+use kernel::capabilities::MemoryAllocationCapability;
+use kernel::component::Component;
+use kernel::hil::adc;
 
 #[macro_export]
 macro_rules! adc_mux_component_static {
-    ($A:ty $(,)?) => {{ crate::kernel::static_buf!(capsules_core::virtualizers::virtual_adc::MuxAdc<'static, $A>) }};
+    ($A:ty $(,)?) => {{ kernel::static_buf!(capsules_core::virtualizers::virtual_adc::MuxAdc<'static, $A>) }};
 }
 
 #[macro_export]
 macro_rules! adc_component_static {
-    ($A:ty $(,)?) => {{ crate::kernel::static_buf!(capsules_core::virtualizers::virtual_adc::AdcDevice<'static, $A>) }};
+    ($A:ty $(,)?) => {{ kernel::static_buf!(capsules_core::virtualizers::virtual_adc::AdcDevice<'static, $A>) }};
 }
 
 #[macro_export]
 macro_rules! adc_syscall_component_helper {
     ($($P:expr),+ $(,)?) => {{
-        use crate::kernel::count_expressions;
-        use crate::kernel::static_init;
+        use kernel::count_expressions;
+        use kernel::static_init;
         const NUM_DRIVERS: usize = count_expressions!($($P),+);
 
         let drivers = static_init!(
-            [&'static dyn crate::kernel::hil::adc::AdcChannel; NUM_DRIVERS],
+            [&'static dyn kernel::hil::adc::AdcChannel; NUM_DRIVERS],
             [
                 $($P,)*
             ]
         );
-        let adc_virtualized = crate::kernel::static_buf!(capsules_core::adc::AdcVirtualized<'static>);
+        let adc_virtualized = kernel::static_buf!(capsules_core::adc::AdcVirtualized<'static>);
         (adc_virtualized, drivers)
     }};
 }
@@ -43,10 +43,10 @@ macro_rules! adc_syscall_component_helper {
 #[macro_export]
 macro_rules! adc_dedicated_component_static {
     ($A:ty $(,)?) => {{
-        let adc = crate::kernel::static_buf!(capsules_core::adc::AdcDedicated<'static, $A>);
-        let buffer1 = crate::kernel::static_buf!([u16; capsules_core::adc::BUF_LEN]);
-        let buffer2 = crate::kernel::static_buf!([u16; capsules_core::adc::BUF_LEN]);
-        let buffer3 = crate::kernel::static_buf!([u16; capsules_core::adc::BUF_LEN]);
+        let adc = kernel::static_buf!(capsules_core::adc::AdcDedicated<'static, $A>);
+        let buffer1 = kernel::static_buf!([u16; capsules_core::adc::BUF_LEN]);
+        let buffer2 = kernel::static_buf!([u16; capsules_core::adc::BUF_LEN]);
+        let buffer3 = kernel::static_buf!([u16; capsules_core::adc::BUF_LEN]);
 
         (adc, buffer1, buffer2, buffer3)
     }};
@@ -105,13 +105,13 @@ impl<A: 'static + adc::Adc<'static>> Component for AdcComponent<A> {
 pub type AdcVirtualComponentType = capsules_core::adc::AdcVirtualized<'static>;
 
 pub struct AdcVirtualComponent<CAP: MemoryAllocationCapability + 'static> {
-    board_kernel: &'static crate::kernel::Kernel,
+    board_kernel: &'static kernel::Kernel,
     driver_num: usize,
     mem_cap: CAP,
 }
 
 impl<CAP: MemoryAllocationCapability + 'static> AdcVirtualComponent<CAP> {
-    pub fn new(board_kernel: &'static crate::kernel::Kernel, driver_num: usize, mem_cap: CAP) -> Self {
+    pub fn new(board_kernel: &'static kernel::Kernel, driver_num: usize, mem_cap: CAP) -> Self {
         AdcVirtualComponent {
             board_kernel,
             driver_num,
@@ -123,7 +123,7 @@ impl<CAP: MemoryAllocationCapability + 'static> AdcVirtualComponent<CAP> {
 impl<CAP: MemoryAllocationCapability + 'static> Component for AdcVirtualComponent<CAP> {
     type StaticInput = (
         &'static mut MaybeUninit<AdcVirtualized<'static>>,
-        &'static [&'static dyn crate::kernel::hil::adc::AdcChannel<'static>],
+        &'static [&'static dyn kernel::hil::adc::AdcChannel<'static>],
     );
     type Output = &'static capsules_core::adc::AdcVirtualized<'static>;
 
@@ -140,7 +140,7 @@ impl<CAP: MemoryAllocationCapability + 'static> Component for AdcVirtualComponen
             ));
 
         for driver in static_buffer.1 {
-            crate::kernel::hil::adc::AdcChannel::set_client(*driver, adc);
+            kernel::hil::adc::AdcChannel::set_client(*driver, adc);
         }
 
         adc
@@ -150,25 +150,25 @@ impl<CAP: MemoryAllocationCapability + 'static> Component for AdcVirtualComponen
 pub type AdcDedicatedComponentType<A> = capsules_core::adc::AdcDedicated<'static, A>;
 
 pub struct AdcDedicatedComponent<
-    A: crate::kernel::hil::adc::Adc<'static> + crate::kernel::hil::adc::AdcHighSpeed<'static> + 'static,
+    A: kernel::hil::adc::Adc<'static> + kernel::hil::adc::AdcHighSpeed<'static> + 'static,
     CAP: MemoryAllocationCapability + 'static,
 > {
     adc: &'static A,
     channels: &'static [A::Channel],
-    board_kernel: &'static crate::kernel::Kernel,
+    board_kernel: &'static kernel::Kernel,
     driver_num: usize,
     mem_cap: CAP,
 }
 
 impl<
-    A: crate::kernel::hil::adc::Adc<'static> + crate::kernel::hil::adc::AdcHighSpeed<'static> + 'static,
+    A: kernel::hil::adc::Adc<'static> + kernel::hil::adc::AdcHighSpeed<'static> + 'static,
     CAP: MemoryAllocationCapability + 'static,
 > AdcDedicatedComponent<A, CAP>
 {
     pub fn new(
         adc: &'static A,
         channels: &'static [A::Channel],
-        board_kernel: &'static crate::kernel::Kernel,
+        board_kernel: &'static kernel::Kernel,
         driver_num: usize,
         mem_cap: CAP,
     ) -> AdcDedicatedComponent<A, CAP> {
@@ -183,7 +183,7 @@ impl<
 }
 
 impl<
-    A: crate::kernel::hil::adc::Adc<'static> + crate::kernel::hil::adc::AdcHighSpeed<'static> + 'static,
+    A: kernel::hil::adc::Adc<'static> + kernel::hil::adc::AdcHighSpeed<'static> + 'static,
     CAP: MemoryAllocationCapability + 'static,
 > Component for AdcDedicatedComponent<A, CAP>
 {

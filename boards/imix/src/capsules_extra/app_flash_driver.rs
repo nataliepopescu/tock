@@ -17,7 +17,7 @@
 //! -----
 //!
 //! ```rust,ignore
-//! # use crate::kernel::static_init;
+//! # use kernel::static_init;
 //!
 //! let app_flash_buffer = static_init!([u8; 512], [0; 512]);
 //! let app_flash = static_init!(
@@ -28,12 +28,12 @@
 
 use core::cmp;
 
-use crate::kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
-use crate::kernel::hil;
-use crate::kernel::processbuffer::ReadableProcessBuffer;
-use crate::kernel::syscall::{CommandReturn, SyscallDriver};
-use crate::kernel::utilities::cells::{OptionalCell, TakeCell};
-use crate::kernel::{ErrorCode, ProcessId};
+use kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
+use kernel::hil;
+use kernel::processbuffer::ReadableProcessBuffer;
+use kernel::syscall::{CommandReturn, SyscallDriver};
+use kernel::utilities::cells::{OptionalCell, TakeCell};
+use kernel::{ErrorCode, ProcessId};
 
 /// Syscall driver number.
 use capsules_core::driver;
@@ -246,7 +246,7 @@ impl SyscallDriver for AppFlash<'_> {
         }
     }
 
-    fn allocate_grant(&self, processid: ProcessId) -> Result<(), crate::kernel::process::Error> {
+    fn allocate_grant(&self, processid: ProcessId) -> Result<(), kernel::process::Error> {
         self.apps.enter(processid, |_, _| {})
     }
 }

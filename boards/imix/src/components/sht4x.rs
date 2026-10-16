@@ -20,21 +20,21 @@ use capsules_core::virtualizers::virtual_alarm::{MuxAlarm, VirtualMuxAlarm};
 use capsules_core::virtualizers::virtual_i2c::{I2CDevice, MuxI2C};
 use capsules_extra::sht4x::SHT4x;
 use core::mem::MaybeUninit;
-use crate::kernel::component::Component;
-use crate::kernel::hil::i2c;
-use crate::kernel::hil::time::Alarm;
+use kernel::component::Component;
+use kernel::hil::i2c;
+use kernel::hil::time::Alarm;
 
 // Setup static space for the objects.
 #[macro_export]
 macro_rules! sht4x_component_static {
     ($A:ty, $I:ty $(,)?) => {{
-        let buffer = crate::kernel::static_buf!([u8; 6]);
+        let buffer = kernel::static_buf!([u8; 6]);
         let i2c_device =
-            crate::kernel::static_buf!(capsules_core::virtualizers::virtual_i2c::I2CDevice<'static, $I>);
-        let sht4x_alarm = crate::kernel::static_buf!(
+            kernel::static_buf!(capsules_core::virtualizers::virtual_i2c::I2CDevice<'static, $I>);
+        let sht4x_alarm = kernel::static_buf!(
             capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, $A>
         );
-        let sht4x = crate::kernel::static_buf!(
+        let sht4x = kernel::static_buf!(
             capsules_extra::sht4x::SHT4x<
                 'static,
                 capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, $A>,

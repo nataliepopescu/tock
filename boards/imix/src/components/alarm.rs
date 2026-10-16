@@ -26,24 +26,24 @@ use core::mem::MaybeUninit;
 
 use capsules_core::alarm::AlarmDriver;
 use capsules_core::virtualizers::virtual_alarm::{MuxAlarm, VirtualMuxAlarm};
-use crate::kernel::capabilities::MemoryAllocationCapability;
-use crate::kernel::component::Component;
-use crate::kernel::hil::time::{self, Alarm};
+use kernel::capabilities::MemoryAllocationCapability;
+use kernel::component::Component;
+use kernel::hil::time::{self, Alarm};
 
 // Setup static space for the objects.
 #[macro_export]
 macro_rules! alarm_mux_component_static {
-    ($A:ty $(,)?) => {{ crate::kernel::static_buf!(capsules_core::virtualizers::virtual_alarm::MuxAlarm<'static, $A>) }};
+    ($A:ty $(,)?) => {{ kernel::static_buf!(capsules_core::virtualizers::virtual_alarm::MuxAlarm<'static, $A>) }};
 }
 
 // Setup static space for the objects.
 #[macro_export]
 macro_rules! alarm_component_static {
     ($A:ty $(,)?) => {{
-        let mux_alarm = crate::kernel::static_buf!(
+        let mux_alarm = kernel::static_buf!(
             capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, $A>
         );
-        let alarm_driver = crate::kernel::static_buf!(
+        let alarm_driver = kernel::static_buf!(
             capsules_core::alarm::AlarmDriver<
                 'static,
                 capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, $A>,
@@ -85,7 +85,7 @@ pub struct AlarmDriverComponent<
     A: 'static + time::Alarm<'static>,
     CAP: MemoryAllocationCapability + 'static,
 > {
-    board_kernel: &'static crate::kernel::Kernel,
+    board_kernel: &'static kernel::Kernel,
     driver_num: usize,
     alarm_mux: &'static MuxAlarm<'static, A>,
     mem_cap: CAP,
@@ -95,7 +95,7 @@ impl<A: 'static + time::Alarm<'static>, CAP: MemoryAllocationCapability + 'stati
     AlarmDriverComponent<A, CAP>
 {
     pub fn new(
-        board_kernel: &'static crate::kernel::Kernel,
+        board_kernel: &'static kernel::Kernel,
         driver_num: usize,
         mux: &'static MuxAlarm<'static, A>,
         mem_cap: CAP,

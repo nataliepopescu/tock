@@ -25,14 +25,14 @@
 
 use capsules_extra::text_screen::TextScreen;
 use core::mem::MaybeUninit;
-use crate::kernel::capabilities::MemoryAllocationCapability;
-use crate::kernel::component::Component;
+use kernel::capabilities::MemoryAllocationCapability;
+use kernel::component::Component;
 
 #[macro_export]
 macro_rules! text_screen_component_static {
     ($s:literal $(,)?) => {{
-        let buffer = crate::kernel::static_buf!([u8; $s]);
-        let screen = crate::kernel::static_buf!(capsules_extra::text_screen::TextScreen);
+        let buffer = kernel::static_buf!([u8; $s]);
+        let screen = kernel::static_buf!(capsules_extra::text_screen::TextScreen);
 
         (buffer, screen)
     }};
@@ -42,9 +42,9 @@ pub struct TextScreenComponent<
     const SCREEN_BUF_LEN: usize,
     CAP: MemoryAllocationCapability + 'static,
 > {
-    board_kernel: &'static crate::kernel::Kernel,
+    board_kernel: &'static kernel::Kernel,
     driver_num: usize,
-    text_screen: &'static dyn crate::kernel::hil::text_screen::TextScreen<'static>,
+    text_screen: &'static dyn kernel::hil::text_screen::TextScreen<'static>,
     mem_cap: CAP,
 }
 
@@ -52,9 +52,9 @@ impl<const SCREEN_BUF_LEN: usize, CAP: MemoryAllocationCapability + 'static>
     TextScreenComponent<SCREEN_BUF_LEN, CAP>
 {
     pub fn new(
-        board_kernel: &'static crate::kernel::Kernel,
+        board_kernel: &'static kernel::Kernel,
         driver_num: usize,
-        text_screen: &'static dyn crate::kernel::hil::text_screen::TextScreen<'static>,
+        text_screen: &'static dyn kernel::hil::text_screen::TextScreen<'static>,
         mem_cap: CAP,
     ) -> TextScreenComponent<SCREEN_BUF_LEN, CAP> {
         TextScreenComponent {
@@ -87,7 +87,7 @@ impl<const SCREEN_BUF_LEN: usize, CAP: MemoryAllocationCapability + 'static> Com
                 .1
                 .write(TextScreen::new(self.text_screen, buffer, grant_text_screen));
 
-        crate::kernel::hil::text_screen::TextScreen::set_client(self.text_screen, Some(text_screen));
+        kernel::hil::text_screen::TextScreen::set_client(self.text_screen, Some(text_screen));
 
         text_screen
     }

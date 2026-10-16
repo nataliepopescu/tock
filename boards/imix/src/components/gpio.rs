@@ -50,10 +50,10 @@
 
 use capsules_core::gpio::GPIO;
 use core::mem::MaybeUninit;
-use crate::kernel::capabilities::MemoryAllocationCapability;
-use crate::kernel::component::Component;
-use crate::kernel::hil::gpio;
-use crate::kernel::hil::gpio::InterruptWithValue;
+use kernel::capabilities::MemoryAllocationCapability;
+use kernel::component::Component;
+use kernel::hil::gpio;
+use kernel::hil::gpio::InterruptWithValue;
 
 #[macro_export]
 macro_rules! gpio_component_helper_max_pin {
@@ -88,9 +88,9 @@ macro_rules! gpio_component_helper {
         $Pin:ty,
         $($nr:literal => $pin:expr),* $(,)?
     ) => {{
-        use crate::kernel::count_expressions;
-        use crate::kernel::hil::gpio::InterruptValueWrapper;
-        use crate::kernel::static_init;
+        use kernel::count_expressions;
+        use kernel::hil::gpio::InterruptValueWrapper;
+        use kernel::static_init;
 
         const fn max (a: usize, b: usize) -> usize {
             [a, b][(a < b) as usize]
@@ -113,7 +113,7 @@ macro_rules! gpio_component_helper {
 
 #[macro_export]
 macro_rules! gpio_component_static {
-    ($Pin:ty $(,)?) => {{ crate::kernel::static_buf!(capsules_core::gpio::GPIO<'static, $Pin>) }};
+    ($Pin:ty $(,)?) => {{ kernel::static_buf!(capsules_core::gpio::GPIO<'static, $Pin>) }};
 }
 
 pub type GpioComponentType<IP> = GPIO<'static, IP>;
@@ -122,7 +122,7 @@ pub struct GpioComponent<
     IP: 'static + gpio::InterruptPin<'static>,
     CAP: MemoryAllocationCapability + 'static,
 > {
-    board_kernel: &'static crate::kernel::Kernel,
+    board_kernel: &'static kernel::Kernel,
     driver_num: usize,
     gpio_pins: &'static [Option<&'static gpio::InterruptValueWrapper<'static, IP>>],
     mem_cap: CAP,
@@ -132,7 +132,7 @@ impl<IP: 'static + gpio::InterruptPin<'static>, CAP: MemoryAllocationCapability 
     GpioComponent<IP, CAP>
 {
     pub fn new(
-        board_kernel: &'static crate::kernel::Kernel,
+        board_kernel: &'static kernel::Kernel,
         driver_num: usize,
         gpio_pins: &'static [Option<&'static gpio::InterruptValueWrapper<'static, IP>>],
         mem_cap: CAP,

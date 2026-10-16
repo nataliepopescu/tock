@@ -5,12 +5,12 @@
 //! Provides userspace with access to USB HID devices with a simple syscall
 //! interface.
 
-use crate::kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
-use crate::kernel::hil::usb_hid;
-use crate::kernel::processbuffer::{ReadableProcessBuffer, WriteableProcessBuffer};
-use crate::kernel::syscall::{CommandReturn, SyscallDriver};
-use crate::kernel::utilities::cells::{OptionalCell, TakeCell};
-use crate::kernel::{ErrorCode, ProcessId};
+use kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
+use kernel::hil::usb_hid;
+use kernel::processbuffer::{ReadableProcessBuffer, WriteableProcessBuffer};
+use kernel::syscall::{CommandReturn, SyscallDriver};
+use kernel::utilities::cells::{OptionalCell, TakeCell};
+use kernel::{ErrorCode, ProcessId};
 
 /// Ids for read-write allow buffers
 mod rw_allow {
@@ -280,7 +280,7 @@ impl<'a, U: usb_hid::UsbHid<'a, [u8; 64]>> SyscallDriver for UsbHidDriver<'a, U>
         }
     }
 
-    fn allocate_grant(&self, processid: ProcessId) -> Result<(), crate::kernel::process::Error> {
+    fn allocate_grant(&self, processid: ProcessId) -> Result<(), kernel::process::Error> {
         self.app.enter(processid, |_, _| {})
     }
 }

@@ -32,11 +32,11 @@
 //!  - 9:  SuccessU32U32U32(0x90000001, 0x90000002, 0x90000003)
 //!  - 10: SuccessU32U64(0xA0000001, 0xA000000000000002)
 
-use crate::kernel::grant::{AllowRoCount, AllowRwCount, Grant, GrantKernelData, UpcallCount};
-use crate::kernel::process;
-use crate::kernel::processbuffer::UserspaceReadableProcessBuffer;
-use crate::kernel::syscall::{CommandReturn, SyscallDriver};
-use crate::kernel::{ErrorCode, ProcessId};
+use kernel::grant::{AllowRoCount, AllowRwCount, Grant, GrantKernelData, UpcallCount};
+use kernel::process;
+use kernel::processbuffer::UserspaceReadableProcessBuffer;
+use kernel::syscall::{CommandReturn, SyscallDriver};
+use kernel::{ErrorCode, ProcessId};
 
 pub const DRIVER_NUM: usize = capsules_core::driver::NUM::SyscallReturnTest as usize;
 

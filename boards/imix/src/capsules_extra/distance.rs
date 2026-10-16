@@ -68,10 +68,10 @@
 
 use core::cell::Cell;
 
-use crate::kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
-use crate::kernel::hil;
-use crate::kernel::syscall::{CommandReturn, SyscallDriver};
-use crate::kernel::{ErrorCode, ProcessId};
+use kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
+use kernel::hil;
+use kernel::syscall::{CommandReturn, SyscallDriver};
+use kernel::{ErrorCode, ProcessId};
 
 /// Syscall driver number.
 use capsules_core::driver;
@@ -185,7 +185,7 @@ impl<'a, T: hil::sensors::Distance<'a>> SyscallDriver for DistanceSensor<'a, T> 
         }
     }
 
-    fn allocate_grant(&self, process_id: ProcessId) -> Result<(), crate::kernel::process::Error> {
+    fn allocate_grant(&self, process_id: ProcessId) -> Result<(), kernel::process::Error> {
         self.apps.enter(process_id, |_, _| {})
     }
 }

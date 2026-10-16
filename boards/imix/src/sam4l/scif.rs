@@ -12,9 +12,9 @@
 //! - Date: Aug 2, 2015
 
 use crate::bscif;
-use crate::kernel::utilities::StaticRef;
-use crate::kernel::utilities::registers::interfaces::{Readable, Writeable};
-use crate::kernel::utilities::registers::{
+use kernel::utilities::StaticRef;
+use kernel::utilities::registers::interfaces::{Readable, Writeable};
+use kernel::utilities::registers::{
     FieldValue, ReadOnly, ReadWrite, WriteOnly, register_bitfields,
 };
 

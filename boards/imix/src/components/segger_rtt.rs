@@ -23,22 +23,22 @@
 
 use capsules_core::virtualizers::virtual_alarm::{MuxAlarm, VirtualMuxAlarm};
 use core::mem::MaybeUninit;
-use crate::kernel::component::Component;
-use crate::kernel::hil::time::{self, Alarm};
-use crate::kernel::utilities::registers::InMemoryRegister;
+use kernel::component::Component;
+use kernel::hil::time::{self, Alarm};
+use kernel::utilities::registers::InMemoryRegister;
 use segger::rtt::{SeggerRtt, SeggerRttMemory};
 
 // Setup static space for the objects.
 #[macro_export]
 macro_rules! segger_rtt_memory_component_static {
     () => {{
-        let rtt_memory = crate::kernel::static_named_buf!(segger::rtt::SeggerRttMemory, "_SEGGER_RTT");
-        let up_buffer = crate::kernel::static_buf!(
-            [crate::kernel::utilities::registers::InMemoryRegister<u8>;
+        let rtt_memory = kernel::static_named_buf!(segger::rtt::SeggerRttMemory, "_SEGGER_RTT");
+        let up_buffer = kernel::static_buf!(
+            [kernel::utilities::registers::InMemoryRegister<u8>;
                 segger::rtt::DEFAULT_UP_BUFFER_LENGTH]
         );
-        let down_buffer = crate::kernel::static_buf!(
-            [crate::kernel::utilities::registers::InMemoryRegister<u8>;
+        let down_buffer = kernel::static_buf!(
+            [kernel::utilities::registers::InMemoryRegister<u8>;
                 segger::rtt::DEFAULT_DOWN_BUFFER_LENGTH]
         );
 
@@ -49,10 +49,10 @@ macro_rules! segger_rtt_memory_component_static {
 #[macro_export]
 macro_rules! segger_rtt_component_static {
     ($A:ty $(,)?) => {{
-        let alarm = crate::kernel::static_buf!(
+        let alarm = kernel::static_buf!(
             capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, $A>
         );
-        let rtt = crate::kernel::static_buf!(
+        let rtt = kernel::static_buf!(
             segger::rtt::SeggerRtt<
                 'static,
                 capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, $A>,

@@ -27,18 +27,18 @@
 use core::mem::MaybeUninit;
 
 use capsules_core::virtualizers::virtual_alarm::{MuxAlarm, VirtualMuxAlarm};
-use crate::kernel::component::Component;
-use crate::kernel::hil;
-use crate::kernel::hil::time::Alarm;
+use kernel::component::Component;
+use kernel::hil;
+use kernel::hil::time::Alarm;
 
 // Setup static space for the objects.
 #[macro_export]
 macro_rules! cdc_acm_component_static {
     ($U:ty, $A:ty $(,)?) => {{
-        let alarm = crate::kernel::static_buf!(
+        let alarm = kernel::static_buf!(
             capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, $A>
         );
-        let cdc = crate::kernel::static_buf!(
+        let cdc = kernel::static_buf!(
             capsules_extra::usb::cdc::CdcAcm<
                 'static,
                 $U,
@@ -112,7 +112,7 @@ impl<U: 'static + hil::usb::UsbController<'static>, A: 'static + Alarm<'static>>
             cdc_alarm,
             self.host_initiated_function,
         ));
-        crate::kernel::deferred_call::DeferredCallClient::register(cdc);
+        kernel::deferred_call::DeferredCallClient::register(cdc);
         self.usb.set_client(cdc);
         cdc_alarm.set_alarm_client(cdc);
 

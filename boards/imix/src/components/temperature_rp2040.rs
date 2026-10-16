@@ -7,15 +7,15 @@
 use capsules_core::virtualizers::virtual_adc::AdcDevice;
 use capsules_extra::temperature_rp2040::TemperatureRp2040;
 use core::mem::MaybeUninit;
-use crate::kernel::component::Component;
-use crate::kernel::hil::adc;
-use crate::kernel::hil::adc::AdcChannel;
+use kernel::component::Component;
+use kernel::hil::adc;
+use kernel::hil::adc::AdcChannel;
 
 #[macro_export]
 macro_rules! temperature_rp2040_adc_component_static {
     ($A:ty $(,)?) => {{
         let adc_device = components::adc_component_static!($A);
-        let temperature_rp2040 = crate::kernel::static_buf!(
+        let temperature_rp2040 = kernel::static_buf!(
             capsules_extra::temperature_rp2040::TemperatureRp2040<
                 'static,
                 capsules_core::virtualizers::virtual_adc::AdcDevice<'static, $A>,

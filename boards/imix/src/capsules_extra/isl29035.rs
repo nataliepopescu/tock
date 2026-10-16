@@ -17,7 +17,7 @@
 //! -----
 //!
 //! ```rust,ignore
-//! # use crate::kernel::static_init;
+//! # use kernel::static_init;
 //! # use capsules::virtual_alarm::VirtualMuxAlarm;
 //!
 //! let isl29035_i2c = static_init!(I2CDevice, I2CDevice::new(i2c_bus, 0x44));
@@ -35,11 +35,11 @@
 //! ```
 
 use core::cell::Cell;
-use crate::kernel::ErrorCode;
-use crate::kernel::hil::i2c::{Error, I2CClient, I2CDevice};
-use crate::kernel::hil::sensors::{AmbientLight, AmbientLightClient};
-use crate::kernel::hil::time::{self, ConvertTicks};
-use crate::kernel::utilities::cells::{OptionalCell, TakeCell};
+use kernel::ErrorCode;
+use kernel::hil::i2c::{Error, I2CClient, I2CDevice};
+use kernel::hil::sensors::{AmbientLight, AmbientLightClient};
+use kernel::hil::time::{self, ConvertTicks};
+use kernel::utilities::cells::{OptionalCell, TakeCell};
 
 /// Recommended buffer length.
 pub const BUF_LEN: usize = 3;

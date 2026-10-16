@@ -36,12 +36,12 @@
 //! "dropped" packets, this may be the cause. The process can mitigate this
 //! issue by increasing the size of the ring buffer provided to the capsule.
 
-use crate::kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
-use crate::kernel::hil;
-use crate::kernel::processbuffer::{ReadableProcessBuffer, WriteableProcessBuffer};
-use crate::kernel::syscall::{CommandReturn, SyscallDriver};
-use crate::kernel::utilities::cells::{OptionalCell, TakeCell};
-use crate::kernel::{ErrorCode, ProcessId};
+use kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
+use kernel::hil;
+use kernel::processbuffer::{ReadableProcessBuffer, WriteableProcessBuffer};
+use kernel::syscall::{CommandReturn, SyscallDriver};
+use kernel::utilities::cells::{OptionalCell, TakeCell};
+use kernel::{ErrorCode, ProcessId};
 
 /// IDs for subscribed upcalls.
 mod upcall {
@@ -176,7 +176,7 @@ impl<'a, R: hil::radio::Radio<'a>> RadioDriver<'a, R> {
                     let _ = self.apps.enter(processid, |_app, upcalls| {
                         let _ = upcalls.schedule_upcall(
                             upcall::FRAME_TRANSMITTED,
-                            (crate::kernel::errorcode::into_statuscode(Err(e)), 0, 0),
+                            (kernel::errorcode::into_statuscode(Err(e)), 0, 0),
                         );
                     });
                 }
@@ -297,7 +297,7 @@ impl<'a, R: hil::radio::Radio<'a>> SyscallDriver for RadioDriver<'a, R> {
         }
     }
 
-    fn allocate_grant(&self, processid: ProcessId) -> Result<(), crate::kernel::process::Error> {
+    fn allocate_grant(&self, processid: ProcessId) -> Result<(), kernel::process::Error> {
         self.apps.enter(processid, |_, _| {})
     }
 }
@@ -309,7 +309,7 @@ impl<'a, R: hil::radio::Radio<'a>> hil::radio::TxClient for RadioDriver<'a, R> {
             let _ = self.apps.enter(processid, |_app, upcalls| {
                 let _ = upcalls.schedule_upcall(
                     upcall::FRAME_TRANSMITTED,
-                    (crate::kernel::errorcode::into_statuscode(result), acked.into(), 0),
+                    (kernel::errorcode::into_statuscode(result), acked.into(), 0),
                 );
             });
         });

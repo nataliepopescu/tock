@@ -6,12 +6,12 @@
 
 use enum_primitive::enum_from_primitive;
 
-use crate::kernel::grant::{AllowRoCount, AllowRwCount, Grant, GrantKernelData, UpcallCount};
-use crate::kernel::hil::i2c;
-use crate::kernel::processbuffer::{ReadableProcessBuffer, WriteableProcessBuffer};
-use crate::kernel::syscall::{CommandReturn, SyscallDriver};
-use crate::kernel::utilities::cells::{MapCell, OptionalCell, TakeCell};
-use crate::kernel::{ErrorCode, ProcessId};
+use kernel::grant::{AllowRoCount, AllowRwCount, Grant, GrantKernelData, UpcallCount};
+use kernel::hil::i2c;
+use kernel::processbuffer::{ReadableProcessBuffer, WriteableProcessBuffer};
+use kernel::syscall::{CommandReturn, SyscallDriver};
+use kernel::utilities::cells::{MapCell, OptionalCell, TakeCell};
+use kernel::{ErrorCode, ProcessId};
 
 /// Syscall driver number.
 use crate::driver;
@@ -185,7 +185,7 @@ impl<'a, I: i2c::I2CMaster<'a>> SyscallDriver for I2CMasterDriver<'a, I> {
         }
     }
 
-    fn allocate_grant(&self, processid: ProcessId) -> Result<(), crate::kernel::process::Error> {
+    fn allocate_grant(&self, processid: ProcessId) -> Result<(), kernel::process::Error> {
         self.apps.enter(processid, |_, _| {})
     }
 }
@@ -208,7 +208,7 @@ impl<'a, I: i2c::I2CMaster<'a>> i2c::I2CHwMasterClient for I2CMasterDriver<'a, I
                 let _ = kernel_data.schedule_upcall(
                     0,
                     (
-                        crate::kernel::errorcode::into_statuscode(status.map_err(|e| e.into())),
+                        kernel::errorcode::into_statuscode(status.map_err(|e| e.into())),
                         0,
                         0,
                     ),

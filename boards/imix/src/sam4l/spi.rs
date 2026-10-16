@@ -16,19 +16,19 @@ use crate::dma::DMAPeripheral;
 use crate::pm;
 use core::cell::Cell;
 use core::cmp;
-use crate::kernel::ErrorCode;
-use crate::kernel::hil::spi;
-use crate::kernel::hil::spi::ClockPhase;
-use crate::kernel::hil::spi::ClockPolarity;
-use crate::kernel::hil::spi::SpiMasterClient;
-use crate::kernel::hil::spi::SpiSlaveClient;
-use crate::kernel::platform::chip::ClockInterface;
-use crate::kernel::utilities::StaticRef;
-use crate::kernel::utilities::cells::OptionalCell;
-use crate::kernel::utilities::leasable_buffer::SubSliceMut;
-use crate::kernel::utilities::peripheral_management::{PeripheralManagement, PeripheralManager};
-use crate::kernel::utilities::registers::interfaces::{ReadWriteable, Readable, Writeable};
-use crate::kernel::utilities::registers::{self, ReadOnly, ReadWrite, WriteOnly, register_bitfields};
+use kernel::ErrorCode;
+use kernel::hil::spi;
+use kernel::hil::spi::ClockPhase;
+use kernel::hil::spi::ClockPolarity;
+use kernel::hil::spi::SpiMasterClient;
+use kernel::hil::spi::SpiSlaveClient;
+use kernel::platform::chip::ClockInterface;
+use kernel::utilities::StaticRef;
+use kernel::utilities::cells::OptionalCell;
+use kernel::utilities::leasable_buffer::SubSliceMut;
+use kernel::utilities::peripheral_management::{PeripheralManagement, PeripheralManager};
+use kernel::utilities::registers::interfaces::{ReadWriteable, Readable, Writeable};
+use kernel::utilities::registers::{self, ReadOnly, ReadWrite, WriteOnly, register_bitfields};
 
 #[repr(C)]
 pub struct SpiRegisters {

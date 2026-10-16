@@ -12,13 +12,13 @@
 //! formatted 802.15.4 MAC frames for transmission.
 //!
 //! AwakeMac provides a default implementation of such a layer, maintaining
-//! the underlying crate::kernel::hil::radio::Radio powered at all times and passing
+//! the underlying kernel::hil::radio::Radio powered at all times and passing
 //! through each frame for transmission.
 
 use crate::net::ieee802154::{Header, MacAddress};
-use crate::kernel::ErrorCode;
-use crate::kernel::hil::radio::{self, MAX_FRAME_SIZE, PSDU_OFFSET};
-use crate::kernel::utilities::cells::OptionalCell;
+use kernel::ErrorCode;
+use kernel::hil::radio::{self, MAX_FRAME_SIZE, PSDU_OFFSET};
+use kernel::utilities::cells::OptionalCell;
 
 pub trait Mac<'a> {
     /// Initializes the layer.

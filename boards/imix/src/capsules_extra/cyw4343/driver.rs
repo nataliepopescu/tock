@@ -18,10 +18,10 @@ use core::cell::Cell;
 use core::iter::{Enumerate, Peekable};
 use core::slice::Chunks;
 use enum_primitive::cast::FromPrimitive;
-use crate::kernel::hil::time::ConvertTicks;
-use crate::kernel::utilities::cells::{MapCell, OptionalCell};
-use crate::kernel::utilities::leasable_buffer::SubSliceMut;
-use crate::kernel::{ErrorCode, hil};
+use kernel::hil::time::ConvertTicks;
+use kernel::utilities::cells::{MapCell, OptionalCell};
+use kernel::utilities::leasable_buffer::SubSliceMut;
+use kernel::{ErrorCode, hil};
 
 /// Current state of the CYW43x device driver
 #[derive(Clone, Copy, Debug, Default)]
@@ -601,7 +601,7 @@ impl<'a, P: hil::gpio::Pin, A: hil::time::Alarm<'a>, B: bus::CYW4343xBus<'a>> wi
         self.client.set(client);
     }
 
-    fn init(&self) -> Result<(), crate::kernel::ErrorCode> {
+    fn init(&self) -> Result<(), kernel::ErrorCode> {
         let State::NotInit = self.state.get() else {
             return Err(ErrorCode::ALREADY);
         };
@@ -623,7 +623,7 @@ impl<'a, P: hil::gpio::Pin, A: hil::time::Alarm<'a>, B: bus::CYW4343xBus<'a>> wi
         &self,
         ssid: wifi::Ssid,
         security: Option<(wifi::Security, wifi::Passphrase)>,
-    ) -> Result<(), crate::kernel::ErrorCode> {
+    ) -> Result<(), kernel::ErrorCode> {
         if let State::NotInit = self.state.get() {
             return Err(ErrorCode::FAIL);
         }
@@ -647,7 +647,7 @@ impl<'a, P: hil::gpio::Pin, A: hil::time::Alarm<'a>, B: bus::CYW4343xBus<'a>> wi
         Ok(())
     }
 
-    fn leave(&self) -> Result<(), crate::kernel::ErrorCode> {
+    fn leave(&self) -> Result<(), kernel::ErrorCode> {
         if let State::NotInit = self.state.get() {
             return Err(ErrorCode::FAIL);
         }
@@ -657,7 +657,7 @@ impl<'a, P: hil::gpio::Pin, A: hil::time::Alarm<'a>, B: bus::CYW4343xBus<'a>> wi
         Ok(())
     }
 
-    fn scan(&self) -> Result<(), crate::kernel::ErrorCode> {
+    fn scan(&self) -> Result<(), kernel::ErrorCode> {
         if let State::NotInit = self.state.get() {
             return Err(ErrorCode::FAIL);
         }
@@ -667,7 +667,7 @@ impl<'a, P: hil::gpio::Pin, A: hil::time::Alarm<'a>, B: bus::CYW4343xBus<'a>> wi
         Ok(())
     }
 
-    fn stop_scan(&self) -> Result<(), crate::kernel::ErrorCode> {
+    fn stop_scan(&self) -> Result<(), kernel::ErrorCode> {
         if let State::NotInit = self.state.get() {
             return Err(ErrorCode::FAIL);
         }
@@ -682,7 +682,7 @@ impl<'a, P: hil::gpio::Pin, A: hil::time::Alarm<'a>, B: bus::CYW4343xBus<'a>> wi
         ssid: wifi::Ssid,
         security: Option<(wifi::Security, wifi::Passphrase)>,
         channel: u8,
-    ) -> Result<(), crate::kernel::ErrorCode> {
+    ) -> Result<(), kernel::ErrorCode> {
         let (None | Some((wifi::Security::Wpa2Psk, _))) = security else {
             return Err(ErrorCode::NOSUPPORT);
         };
@@ -704,7 +704,7 @@ impl<'a, P: hil::gpio::Pin, A: hil::time::Alarm<'a>, B: bus::CYW4343xBus<'a>> wi
         Ok(())
     }
 
-    fn station(&self) -> Result<(), crate::kernel::ErrorCode> {
+    fn station(&self) -> Result<(), kernel::ErrorCode> {
         if let State::NotInit = self.state.get() {
             return Err(ErrorCode::FAIL);
         }
@@ -765,7 +765,7 @@ impl<'a, P: hil::gpio::Pin, A: hil::time::Alarm<'a>, B: bus::CYW4343xBus<'a>> bu
     fn write_bytes_done(
         &self,
         mut buffer: SubSliceMut<'static, u8>,
-        rval: Result<(), crate::kernel::ErrorCode>,
+        rval: Result<(), kernel::ErrorCode>,
     ) {
         reset_and_restore_bufs!(self, buffer);
 
@@ -789,7 +789,7 @@ impl<'a, P: hil::gpio::Pin, A: hil::time::Alarm<'a>, B: bus::CYW4343xBus<'a>> bu
     fn read_bytes_done(
         &self,
         mut buffer: SubSliceMut<'static, u8>,
-        rval: Result<(), crate::kernel::ErrorCode>,
+        rval: Result<(), kernel::ErrorCode>,
     ) {
         if rval.is_ok() {
             self.parse(buffer.as_mut_slice());
@@ -811,7 +811,7 @@ impl<'a, P: hil::gpio::Pin, A: hil::time::Alarm<'a>, B: bus::CYW4343xBus<'a>> bu
 mod ioctl {
     use crate::cyw4343::sdpcm::{self, IoctlCommand};
     use core::cell::Cell;
-    use crate::kernel::utilities::cells::OptionalCell;
+    use kernel::utilities::cells::OptionalCell;
 
     #[derive(Default)]
     pub struct Tasks {

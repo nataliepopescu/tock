@@ -11,9 +11,9 @@
 //! Usage
 //! -----
 //! ```rust
-//! crate::kernel::create_typed_capability!(process_console_cap, ProcessConsoleCap:
-//!     crate::kernel::capabilities::ProcessManagementCapability,
-//!     crate::kernel::capabilities::ProcessStartCapability
+//! kernel::create_typed_capability!(process_console_cap, ProcessConsoleCap:
+//!     kernel::capabilities::ProcessManagementCapability,
+//!     kernel::capabilities::ProcessStartCapability
 //! );
 //! let pconsole = ProcessConsoleComponent::new(
 //!     board_kernel,
@@ -33,18 +33,18 @@ use capsules_core::process_console::{self, ProcessConsole};
 use capsules_core::virtualizers::virtual_alarm::{MuxAlarm, VirtualMuxAlarm};
 use capsules_core::virtualizers::virtual_uart::{MuxUart, UartDevice};
 use core::mem::MaybeUninit;
-use crate::kernel::capabilities::{ProcessManagementCapability, ProcessStartCapability};
-use crate::kernel::component::Component;
-use crate::kernel::hil;
-use crate::kernel::hil::time::Alarm;
-use crate::kernel::process::ProcessPrinter;
+use kernel::capabilities::{ProcessManagementCapability, ProcessStartCapability};
+use kernel::component::Component;
+use kernel::hil;
+use kernel::hil::time::Alarm;
+use kernel::process::ProcessPrinter;
 
 #[macro_export]
 macro_rules! process_console_component_static {
     ($A: ty, $C: ty, $COMMAND_HISTORY_LEN: expr $(,)?) => {{
-        let alarm = crate::kernel::static_buf!(capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, $A>);
-        let uart = crate::kernel::static_buf!(capsules_core::virtualizers::virtual_uart::UartDevice);
-        let pconsole = crate::kernel::static_buf!(
+        let alarm = kernel::static_buf!(capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, $A>);
+        let uart = kernel::static_buf!(capsules_core::virtualizers::virtual_uart::UartDevice);
+        let pconsole = kernel::static_buf!(
             capsules_core::process_console::ProcessConsole<
                 $COMMAND_HISTORY_LEN,
                 capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, $A>,
@@ -52,11 +52,11 @@ macro_rules! process_console_component_static {
             >
         );
 
-        let write_buffer = crate::kernel::static_buf!([u8; capsules_core::process_console::WRITE_BUF_LEN]);
-        let read_buffer = crate::kernel::static_buf!([u8; capsules_core::process_console::READ_BUF_LEN]);
-        let queue_buffer = crate::kernel::static_buf!([u8; capsules_core::process_console::QUEUE_BUF_LEN]);
-        let command_buffer = crate::kernel::static_buf!([u8; capsules_core::process_console::COMMAND_BUF_LEN]);
-        let command_history_buffer = crate::kernel::static_buf!(
+        let write_buffer = kernel::static_buf!([u8; capsules_core::process_console::WRITE_BUF_LEN]);
+        let read_buffer = kernel::static_buf!([u8; capsules_core::process_console::READ_BUF_LEN]);
+        let queue_buffer = kernel::static_buf!([u8; capsules_core::process_console::QUEUE_BUF_LEN]);
+        let command_buffer = kernel::static_buf!([u8; capsules_core::process_console::COMMAND_BUF_LEN]);
+        let command_history_buffer = kernel::static_buf!(
             [capsules_core::process_console::Command; $COMMAND_HISTORY_LEN]
         );
 
@@ -88,7 +88,7 @@ pub struct ProcessConsoleComponent<
     A: 'static + Alarm<'static>,
     C: ProcessManagementCapability + ProcessStartCapability + 'static,
 > {
-    board_kernel: &'static crate::kernel::Kernel,
+    board_kernel: &'static kernel::Kernel,
     uart_mux: &'static MuxUart<'static>,
     alarm_mux: &'static MuxAlarm<'static, A>,
     process_printer: &'static dyn ProcessPrinter,
@@ -103,7 +103,7 @@ impl<
 > ProcessConsoleComponent<COMMAND_HISTORY_LEN, A, C>
 {
     pub fn new(
-        board_kernel: &'static crate::kernel::Kernel,
+        board_kernel: &'static kernel::Kernel,
         uart_mux: &'static MuxUart,
         alarm_mux: &'static MuxAlarm<'static, A>,
         process_printer: &'static dyn ProcessPrinter,

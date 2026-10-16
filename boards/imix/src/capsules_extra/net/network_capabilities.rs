@@ -27,7 +27,7 @@ use crate::net::ipv6::ip_utils::IPAddr;
 const MAX_ADDR_SET_SIZE: usize = 8;
 const MAX_PORT_SET_SIZE: usize = 8;
 
-use crate::kernel::capabilities::NetworkCapabilityCreationCapability;
+use kernel::capabilities::NetworkCapabilityCreationCapability;
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum AddrRange {

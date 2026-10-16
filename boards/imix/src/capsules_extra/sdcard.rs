@@ -10,9 +10,9 @@
 //! -----
 //!
 //! ```rust,ignore
-//! # use crate::kernel::static_init;
+//! # use kernel::static_init;
 //! # use capsules::virtual_alarm::VirtualMuxAlarm;
-//! # use crate::kernel::hil::spi::SpiMasterDevice;
+//! # use kernel::hil::spi::SpiMasterDevice;
 //!
 //! let spi_mux = components::spi::SpiMuxComponent::new(
 //!         &base_peripherals.spim0,
@@ -77,14 +77,14 @@
 use core::cell::Cell;
 use core::cmp;
 
-use crate::kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
-use crate::kernel::hil;
-use crate::kernel::hil::time::ConvertTicks;
-use crate::kernel::processbuffer::{ReadableProcessBuffer, WriteableProcessBuffer};
-use crate::kernel::syscall::{CommandReturn, SyscallDriver};
-use crate::kernel::utilities::cells::{OptionalCell, TakeCell};
-use crate::kernel::utilities::leasable_buffer::SubSliceMut;
-use crate::kernel::{ErrorCode, ProcessId};
+use kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
+use kernel::hil;
+use kernel::hil::time::ConvertTicks;
+use kernel::processbuffer::{ReadableProcessBuffer, WriteableProcessBuffer};
+use kernel::syscall::{CommandReturn, SyscallDriver};
+use kernel::utilities::cells::{OptionalCell, TakeCell};
+use kernel::utilities::leasable_buffer::SubSliceMut;
+use kernel::{ErrorCode, ProcessId};
 
 /// Syscall driver number.
 use capsules_core::driver;
@@ -1674,7 +1674,7 @@ impl<'a, A: hil::time::Alarm<'a>> SyscallDriver for SDCardDriver<'a, A> {
         }
     }
 
-    fn allocate_grant(&self, processid: ProcessId) -> Result<(), crate::kernel::process::Error> {
+    fn allocate_grant(&self, processid: ProcessId) -> Result<(), kernel::process::Error> {
         self.grants.enter(processid, |_, _| {})
     }
 }

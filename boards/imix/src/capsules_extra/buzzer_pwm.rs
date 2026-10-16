@@ -10,7 +10,7 @@
 //! and a virtual alarm. For example:
 //!
 //! ```rust,ignore
-//! # use crate::kernel::static_init;
+//! # use kernel::static_init;
 //!
 //! let mux_pwm = static_init!(
 //!     capsules::virtual_pwm::MuxPwm<'static, nrf52833::pwm::Pwm>,
@@ -52,11 +52,11 @@
 
 use core::cmp;
 
-use crate::kernel::ErrorCode;
-use crate::kernel::hil;
-use crate::kernel::hil::buzzer::BuzzerClient;
-use crate::kernel::hil::time::Frequency;
-use crate::kernel::utilities::cells::OptionalCell;
+use kernel::ErrorCode;
+use kernel::hil;
+use kernel::hil::buzzer::BuzzerClient;
+use kernel::hil::time::Frequency;
+use kernel::utilities::cells::OptionalCell;
 
 /// Standard max buzz time.
 pub const DEFAULT_MAX_BUZZ_TIME_MS: usize = 5000;

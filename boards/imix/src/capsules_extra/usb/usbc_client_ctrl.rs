@@ -37,9 +37,9 @@ use super::descriptors::TransferDirection;
 use core::cell::Cell;
 use core::cmp::min;
 
-use crate::kernel::hil;
-use crate::kernel::hil::usb::TransferType;
-use crate::kernel::utilities::registers::interfaces::Writeable;
+use kernel::hil;
+use kernel::hil::usb::TransferType;
+use kernel::utilities::registers::interfaces::Writeable;
 
 const DESCRIPTOR_BUFLEN: usize = 128;
 

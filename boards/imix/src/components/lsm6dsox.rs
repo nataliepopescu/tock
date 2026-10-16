@@ -31,18 +31,18 @@
 use capsules_core::virtualizers::virtual_i2c::{I2CDevice, MuxI2C};
 use capsules_extra::lsm6dsoxtr::Lsm6dsoxtrI2C;
 use core::mem::MaybeUninit;
-use crate::kernel::capabilities::MemoryAllocationCapability;
-use crate::kernel::component::Component;
-use crate::kernel::hil::i2c;
+use kernel::capabilities::MemoryAllocationCapability;
+use kernel::component::Component;
+use kernel::hil::i2c;
 
 // Setup static space for the objects.
 #[macro_export]
 macro_rules! lsm6ds_i2c_component_static {
     ($I:ty $(,)?) => {{
-        let buffer = crate::kernel::static_buf!([u8; 8]);
+        let buffer = kernel::static_buf!([u8; 8]);
         let i2c_device =
-            crate::kernel::static_buf!(capsules_core::virtualizers::virtual_i2c::I2CDevice<'static, $I>);
-        let lsm6dsoxtr = crate::kernel::static_buf!(
+            kernel::static_buf!(capsules_core::virtualizers::virtual_i2c::I2CDevice<'static, $I>);
+        let lsm6dsoxtr = kernel::static_buf!(
             capsules_extra::lsm6dsoxtr::Lsm6dsoxtrI2C<
                 'static,
                 capsules_core::virtualizers::virtual_i2c::I2CDevice<'static, $I>,
@@ -59,7 +59,7 @@ pub struct Lsm6dsoxtrI2CComponent<
 > {
     i2c_mux: &'static MuxI2C<'static, I>,
     i2c_address: u8,
-    board_kernel: &'static crate::kernel::Kernel,
+    board_kernel: &'static kernel::Kernel,
     driver_num: usize,
     mem_cap: CAP,
 }
@@ -70,7 +70,7 @@ impl<I: 'static + i2c::I2CMaster<'static>, CAP: MemoryAllocationCapability + 'st
     pub fn new(
         i2c_mux: &'static MuxI2C<'static, I>,
         i2c_address: u8,
-        board_kernel: &'static crate::kernel::Kernel,
+        board_kernel: &'static kernel::Kernel,
         driver_num: usize,
         mem_cap: CAP,
     ) -> Lsm6dsoxtrI2CComponent<I, CAP> {

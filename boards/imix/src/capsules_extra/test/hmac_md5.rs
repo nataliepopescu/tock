@@ -6,13 +6,13 @@
 //! checking it against the expected hash value.
 
 use capsules_core::test::capsule_test::{CapsuleTest, CapsuleTestClient, CapsuleTestError};
-use crate::kernel::ErrorCode;
-use crate::kernel::hil::digest;
-use crate::kernel::hil::digest::HmacMd5;
-use crate::kernel::utilities::cells::OptionalCell;
-use crate::kernel::utilities::cells::TakeCell;
-use crate::kernel::utilities::leasable_buffer::SubSlice;
-use crate::kernel::utilities::leasable_buffer::SubSliceMut;
+use kernel::ErrorCode;
+use kernel::hil::digest;
+use kernel::hil::digest::HmacMd5;
+use kernel::utilities::cells::OptionalCell;
+use kernel::utilities::cells::TakeCell;
+use kernel::utilities::leasable_buffer::SubSlice;
+use kernel::utilities::leasable_buffer::SubSliceMut;
 
 const HMAC_MD5_DIGEST_LEN: usize = 16;
 
@@ -44,7 +44,7 @@ impl<'a, H: digest::Digest<'a, HMAC_MD5_DIGEST_LEN> + HmacMd5> TestHmacMd5<'a, H
     }
 
     pub fn run(&'static self) {
-        crate::kernel::hil::digest::Digest::set_client(self.hmac, self);
+        kernel::hil::digest::Digest::set_client(self.hmac, self);
 
         let key = self.key.take().unwrap();
         let r = self.hmac.set_mode_hmacmd5(key);
@@ -72,7 +72,7 @@ impl<'a, H: digest::Digest<'a, HMAC_MD5_DIGEST_LEN>> digest::ClientData<HMAC_MD5
         match result {
             Ok(()) => {}
             Err(e) => {
-                crate::kernel::debug!("HmacMd5Test: failed to add data: {:?}", e);
+                kernel::debug!("HmacMd5Test: failed to add data: {:?}", e);
                 self.client.map(|client| {
                     client.done(Err(CapsuleTestError::ErrorCode(e)));
                 });
@@ -84,7 +84,7 @@ impl<'a, H: digest::Digest<'a, HMAC_MD5_DIGEST_LEN>> digest::ClientData<HMAC_MD5
         match r {
             Ok(()) => {}
             Err((e, d)) => {
-                crate::kernel::debug!("HmacMd5Test: failed to run HMAC: {:?}", e);
+                kernel::debug!("HmacMd5Test: failed to run HMAC: {:?}", e);
 
                 self.digest.replace(d);
                 self.client.map(|client| {
@@ -111,12 +111,12 @@ impl<'a, H: digest::Digest<'a, HMAC_MD5_DIGEST_LEN>> digest::ClientHash<HMAC_MD5
             }
         }
         if !error {
-            crate::kernel::debug!("HMAC-MD5 matches!");
+            kernel::debug!("HMAC-MD5 matches!");
             self.client.map(|client| {
                 client.done(Ok(()));
             });
         } else {
-            crate::kernel::debug!("HmacMd5Test: incorrect HMAC output!");
+            kernel::debug!("HmacMd5Test: incorrect HMAC output!");
             self.client.map(|client| {
                 client.done(Err(CapsuleTestError::IncorrectResult));
             });

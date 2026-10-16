@@ -23,20 +23,20 @@
 use capsules_core::virtualizers::virtual_i2c::{I2CDevice, MuxI2C};
 use capsules_extra::fxos8700cq::Fxos8700cq;
 
-use crate::kernel::component::Component;
+use kernel::component::Component;
 
 use core::mem::MaybeUninit;
-use crate::kernel::hil;
-use crate::kernel::hil::gpio;
-use crate::kernel::hil::i2c;
+use kernel::hil;
+use kernel::hil::gpio;
+use kernel::hil::i2c;
 
 #[macro_export]
 macro_rules! fxos8700_component_static {
     ($I:ty $(,)?) => {{
         let i2c_device =
-            crate::kernel::static_buf!(capsules_core::virtualizers::virtual_i2c::I2CDevice<$I>);
-        let buffer = crate::kernel::static_buf!([u8; capsules_extra::fxos8700cq::BUF_LEN]);
-        let fxo = crate::kernel::static_buf!(capsules_extra::fxos8700cq::Fxos8700cq<'static>);
+            kernel::static_buf!(capsules_core::virtualizers::virtual_i2c::I2CDevice<$I>);
+        let buffer = kernel::static_buf!([u8; capsules_extra::fxos8700cq::BUF_LEN]);
+        let fxo = kernel::static_buf!(capsules_extra::fxos8700cq::Fxos8700cq<'static>);
 
         (i2c_device, buffer, fxo)
     }};

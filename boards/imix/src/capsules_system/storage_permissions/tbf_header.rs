@@ -3,11 +3,11 @@
 // Copyright Tock Contributors 2024.
 
 use core::cmp;
-use crate::kernel::capabilities::ApplicationStorageCapability;
-use crate::kernel::platform::chip::Chip;
-use crate::kernel::process::Process;
-use crate::kernel::process::ShortId;
-use crate::kernel::storage_permissions::StoragePermissions;
+use kernel::capabilities::ApplicationStorageCapability;
+use kernel::platform::chip::Chip;
+use kernel::process::Process;
+use kernel::process::ShortId;
+use kernel::storage_permissions::StoragePermissions;
 
 /// Assign storage permissions based on the fields in the application's TBF
 /// header.
@@ -19,7 +19,7 @@ use crate::kernel::storage_permissions::StoragePermissions;
 /// permissions.
 pub struct TbfHeaderStoragePermissions<
     C: Chip,
-    D: crate::kernel::process::ProcessStandardDebug,
+    D: kernel::process::ProcessStandardDebug,
     CAP: ApplicationStorageCapability,
 > {
     cap: CAP,
@@ -27,7 +27,7 @@ pub struct TbfHeaderStoragePermissions<
     _debug: core::marker::PhantomData<D>,
 }
 
-impl<C: Chip, D: crate::kernel::process::ProcessStandardDebug, CAP: ApplicationStorageCapability>
+impl<C: Chip, D: kernel::process::ProcessStandardDebug, CAP: ApplicationStorageCapability>
     TbfHeaderStoragePermissions<C, D, CAP>
 {
     pub fn new(cap: CAP) -> Self {
@@ -39,13 +39,13 @@ impl<C: Chip, D: crate::kernel::process::ProcessStandardDebug, CAP: ApplicationS
     }
 }
 
-impl<C: Chip, D: crate::kernel::process::ProcessStandardDebug, CAP: ApplicationStorageCapability>
-    crate::kernel::process::ProcessStandardStoragePermissionsPolicy<C, D>
+impl<C: Chip, D: kernel::process::ProcessStandardDebug, CAP: ApplicationStorageCapability>
+    kernel::process::ProcessStandardStoragePermissionsPolicy<C, D>
     for TbfHeaderStoragePermissions<C, D, CAP>
 {
     fn get_permissions(
         &self,
-        process: &crate::kernel::process::ProcessStandard<C, D>,
+        process: &kernel::process::ProcessStandard<C, D>,
     ) -> StoragePermissions {
         // If we have a fixed ShortId then this process can have storage
         // permissions. Otherwise we get null permissions.

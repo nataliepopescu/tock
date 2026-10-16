@@ -11,7 +11,7 @@
 //! -----
 //!
 //! ```rust,ignore
-//! # use crate::kernel::static_init;
+//! # use kernel::static_init;
 //!
 //! let mux_pwm = static_init!(
 //!     capsules_core::virtual_pwm::MuxPwm<'static, nrf52::pwm::Pwm>,
@@ -24,10 +24,10 @@
 //! virtual_pwm_buzzer.add_to_mux();
 //! ```
 
-use crate::kernel::ErrorCode;
-use crate::kernel::collections::list::{List, ListLink, ListNode};
-use crate::kernel::hil;
-use crate::kernel::utilities::cells::OptionalCell;
+use kernel::ErrorCode;
+use kernel::collections::list::{List, ListLink, ListNode};
+use kernel::hil;
+use kernel::utilities::cells::OptionalCell;
 
 pub struct MuxPwm<'a, P: hil::pwm::Pwm> {
     pwm: &'a P,

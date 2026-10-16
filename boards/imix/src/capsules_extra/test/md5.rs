@@ -11,12 +11,12 @@ use core::cell::Cell;
 use core::cmp;
 
 use capsules_core::test::capsule_test::{CapsuleTest, CapsuleTestClient};
-use crate::kernel::ErrorCode;
-use crate::kernel::debug;
-use crate::kernel::hil::digest;
-use crate::kernel::utilities::cells::{OptionalCell, TakeCell};
-use crate::kernel::utilities::leasable_buffer::SubSlice;
-use crate::kernel::utilities::leasable_buffer::SubSliceMut;
+use kernel::ErrorCode;
+use kernel::debug;
+use kernel::hil::digest;
+use kernel::utilities::cells::{OptionalCell, TakeCell};
+use kernel::utilities::leasable_buffer::SubSlice;
+use kernel::utilities::leasable_buffer::SubSliceMut;
 
 pub struct TestMd5<'a, H: digest::Digest<'a, 16>> {
     sha: &'a H,

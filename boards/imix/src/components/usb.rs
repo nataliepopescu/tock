@@ -19,15 +19,15 @@
 //! ```
 
 use core::mem::MaybeUninit;
-use crate::kernel::capabilities::MemoryAllocationCapability;
-use crate::kernel::component::Component;
-use crate::kernel::hil::usb::UsbController;
+use kernel::capabilities::MemoryAllocationCapability;
+use kernel::component::Component;
+use kernel::hil::usb::UsbController;
 
 #[macro_export]
 macro_rules! usb_component_static {
     ($U:ty $(,)?) => {{
-        let usb_client = crate::kernel::static_buf!(capsules_extra::usb::usbc_client::Client<'static, $U>);
-        let usb_driver = crate::kernel::static_buf!(
+        let usb_client = kernel::static_buf!(capsules_extra::usb::usbc_client::Client<'static, $U>);
+        let usb_driver = kernel::static_buf!(
             capsules_extra::usb::usb_user::UsbSyscallDriver<
                 'static,
                 capsules_extra::usb::usbc_client::Client<'static, $U>,
@@ -41,7 +41,7 @@ pub struct UsbComponent<
     U: UsbController<'static> + 'static,
     CAP: MemoryAllocationCapability + 'static,
 > {
-    board_kernel: &'static crate::kernel::Kernel,
+    board_kernel: &'static kernel::Kernel,
     driver_num: usize,
     usbc: &'static U,
     mem_cap: CAP,
@@ -51,7 +51,7 @@ impl<U: UsbController<'static> + 'static, CAP: MemoryAllocationCapability + 'sta
     UsbComponent<U, CAP>
 {
     pub fn new(
-        board_kernel: &'static crate::kernel::Kernel,
+        board_kernel: &'static kernel::Kernel,
         driver_num: usize,
         usbc: &'static U,
         mem_cap: CAP,

@@ -6,12 +6,12 @@
 //! the Entropy32 trait.
 
 use crate::pm;
-use crate::kernel::ErrorCode;
-use crate::kernel::hil::entropy::{self, Continue};
-use crate::kernel::utilities::StaticRef;
-use crate::kernel::utilities::cells::OptionalCell;
-use crate::kernel::utilities::registers::interfaces::{Readable, Writeable};
-use crate::kernel::utilities::registers::{ReadOnly, WriteOnly, register_bitfields};
+use kernel::ErrorCode;
+use kernel::hil::entropy::{self, Continue};
+use kernel::utilities::StaticRef;
+use kernel::utilities::cells::OptionalCell;
+use kernel::utilities::registers::interfaces::{Readable, Writeable};
+use kernel::utilities::registers::{ReadOnly, WriteOnly, register_bitfields};
 
 #[repr(C)]
 struct TrngRegisters {

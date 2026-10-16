@@ -9,13 +9,13 @@
 //!
 
 use core::cell::Cell;
-use crate::kernel::ErrorCode;
-use crate::kernel::hil::i2c::{self, I2CClient, I2CDevice};
-use crate::kernel::hil::sensors::{
+use kernel::ErrorCode;
+use kernel::hil::i2c::{self, I2CClient, I2CDevice};
+use kernel::hil::sensors::{
     HumidityClient, HumidityDriver, PressureClient, PressureDriver, TemperatureClient,
     TemperatureDriver,
 };
-use crate::kernel::utilities::cells::{OptionalCell, TakeCell};
+use kernel::utilities::cells::{OptionalCell, TakeCell};
 
 #[allow(dead_code)]
 const HUM_MSB: u8 = 0xFD;

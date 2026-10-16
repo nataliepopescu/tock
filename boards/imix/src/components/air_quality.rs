@@ -13,20 +13,20 @@
 
 use capsules_extra::air_quality::AirQualitySensor;
 use core::mem::MaybeUninit;
-use crate::kernel::capabilities::MemoryAllocationCapability;
-use crate::kernel::component::Component;
-use crate::kernel::hil;
+use kernel::capabilities::MemoryAllocationCapability;
+use kernel::component::Component;
+use kernel::hil;
 
 #[macro_export]
 macro_rules! air_quality_component_static {
-    () => {{ crate::kernel::static_buf!(capsules_extra::air_quality::AirQualitySensor<'static>) }};
+    () => {{ kernel::static_buf!(capsules_extra::air_quality::AirQualitySensor<'static>) }};
 }
 
 pub struct AirQualityComponent<
     T: 'static + hil::sensors::AirQualityDriver<'static>,
     CAP: MemoryAllocationCapability + 'static,
 > {
-    board_kernel: &'static crate::kernel::Kernel,
+    board_kernel: &'static kernel::Kernel,
     driver_num: usize,
     temp_sensor: &'static T,
     mem_cap: CAP,
@@ -38,7 +38,7 @@ impl<
 > AirQualityComponent<T, CAP>
 {
     pub fn new(
-        board_kernel: &'static crate::kernel::Kernel,
+        board_kernel: &'static kernel::Kernel,
         driver_num: usize,
         temp_sensor: &'static T,
         mem_cap: CAP,

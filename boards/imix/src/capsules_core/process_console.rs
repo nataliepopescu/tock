@@ -11,21 +11,21 @@ use core::cmp;
 use core::fmt;
 use core::fmt::write;
 use core::str;
-use crate::kernel::ProcessId;
-use crate::kernel::capabilities::ProcessManagementCapability;
-use crate::kernel::capabilities::ProcessStartCapability;
-use crate::kernel::hil::time::ConvertTicks;
-use crate::kernel::utilities::cells::MapCell;
-use crate::kernel::utilities::cells::TakeCell;
+use kernel::ProcessId;
+use kernel::capabilities::ProcessManagementCapability;
+use kernel::capabilities::ProcessStartCapability;
+use kernel::hil::time::ConvertTicks;
+use kernel::utilities::cells::MapCell;
+use kernel::utilities::cells::TakeCell;
 
-use crate::kernel::ErrorCode;
-use crate::kernel::Kernel;
-use crate::kernel::debug;
-use crate::kernel::hil::time::{Alarm, AlarmClient};
-use crate::kernel::hil::uart;
-use crate::kernel::introspection::KernelInfo;
-use crate::kernel::process::{ProcessPrinter, ProcessPrinterContext, State};
-use crate::kernel::utilities::binary_write::BinaryWrite;
+use kernel::ErrorCode;
+use kernel::Kernel;
+use kernel::debug;
+use kernel::hil::time::{Alarm, AlarmClient};
+use kernel::hil::uart;
+use kernel::introspection::KernelInfo;
+use kernel::process::{ProcessPrinter, ProcessPrinterContext, State};
+use kernel::utilities::binary_write::BinaryWrite;
 
 /// Buffer to hold outgoing data that is passed to the UART hardware.
 pub const WRITE_BUF_LEN: usize = 500;
@@ -521,8 +521,8 @@ impl<
             &mut console_writer,
             format_args!(
                 "Kernel version: {}.{} (build {})\r\n",
-                crate::kernel::KERNEL_MAJOR_VERSION,
-                crate::kernel::KERNEL_MINOR_VERSION,
+                kernel::KERNEL_MAJOR_VERSION,
+                kernel::KERNEL_MINOR_VERSION,
                 option_env!("TOCK_KERNEL_VERSION").unwrap_or("unknown"),
             ),
         );
@@ -717,13 +717,13 @@ impl<
                             let _ = write(&mut console_writer, format_args!(" {:<7?}", process_id));
                             // Display short id.
                             match short_id {
-                                crate::kernel::process::ShortId::LocallyUnique => {
+                                kernel::process::ShortId::LocallyUnique => {
                                     let _ = write(
                                         &mut console_writer,
                                         format_args!("{}", "Unique     "),
                                     );
                                 }
-                                crate::kernel::process::ShortId::Fixed(id) => {
+                                kernel::process::ShortId::Fixed(id) => {
                                     let _ =
                                         write(&mut console_writer, format_args!("0x{:<8x} ", id));
                                 }
@@ -983,8 +983,8 @@ impl<
                                 &mut console_writer,
                                 format_args!(
                                     "Kernel version: {}.{} (build {})\r\n",
-                                    crate::kernel::KERNEL_MAJOR_VERSION,
-                                    crate::kernel::KERNEL_MINOR_VERSION,
+                                    kernel::KERNEL_MAJOR_VERSION,
+                                    kernel::KERNEL_MINOR_VERSION,
                                     option_env!("TOCK_KERNEL_VERSION").unwrap_or("unknown")
                                 ),
                             );

@@ -5,15 +5,15 @@
 //! Components for signature credential checkers.
 
 use core::mem::MaybeUninit;
-use crate::kernel::component::Component;
-use crate::kernel::hil::{digest, public_key_crypto};
+use kernel::component::Component;
+use kernel::hil::{digest, public_key_crypto};
 
 #[macro_export]
 macro_rules! app_checker_signature_component_static {
     ($S:ty, $H:ty, $HASH_LEN:expr, $SIGNATURE_LEN:expr $(,)?) => {{
-        let hash_buffer = crate::kernel::static_buf!([u8; $HASH_LEN]);
-        let signature_buffer = crate::kernel::static_buf!([u8; $SIGNATURE_LEN]);
-        let checker = crate::kernel::static_buf!(
+        let hash_buffer = kernel::static_buf!([u8; $HASH_LEN]);
+        let signature_buffer = kernel::static_buf!([u8; $SIGNATURE_LEN]);
+        let checker = kernel::static_buf!(
             capsules_system::process_checker::signature::AppCheckerSignature<
                 'static,
                 $S,
@@ -37,10 +37,10 @@ pub type AppCheckerSignatureComponentType<S, H, const HASH_LEN: usize, const SIG
     >;
 
 pub struct AppCheckerSignatureComponent<
-    S: crate::kernel::hil::public_key_crypto::signature::SignatureVerify<'static, HASH_LEN, SIGNATURE_LEN>
-        + crate::kernel::hil::public_key_crypto::keys::SelectKey<'static>
+    S: kernel::hil::public_key_crypto::signature::SignatureVerify<'static, HASH_LEN, SIGNATURE_LEN>
+        + kernel::hil::public_key_crypto::keys::SelectKey<'static>
         + 'static,
-    H: crate::kernel::hil::digest::DigestDataHash<'static, HASH_LEN> + 'static,
+    H: kernel::hil::digest::DigestDataHash<'static, HASH_LEN> + 'static,
     const HASH_LEN: usize,
     const SIGNATURE_LEN: usize,
 > {
@@ -50,9 +50,9 @@ pub struct AppCheckerSignatureComponent<
 }
 
 impl<
-    S: crate::kernel::hil::public_key_crypto::signature::SignatureVerify<'static, HASH_LEN, SIGNATURE_LEN>
-        + crate::kernel::hil::public_key_crypto::keys::SelectKey<'static>,
-    H: crate::kernel::hil::digest::DigestDataHash<'static, HASH_LEN>,
+    S: kernel::hil::public_key_crypto::signature::SignatureVerify<'static, HASH_LEN, SIGNATURE_LEN>
+        + kernel::hil::public_key_crypto::keys::SelectKey<'static>,
+    H: kernel::hil::digest::DigestDataHash<'static, HASH_LEN>,
     const HASH_LEN: usize,
     const SIGNATURE_LEN: usize,
 > AppCheckerSignatureComponent<S, H, HASH_LEN, SIGNATURE_LEN>
@@ -71,10 +71,10 @@ impl<
 }
 
 impl<
-    S: crate::kernel::hil::public_key_crypto::signature::SignatureVerify<'static, HASH_LEN, SIGNATURE_LEN>
-        + crate::kernel::hil::public_key_crypto::keys::SelectKey<'static>,
-    H: crate::kernel::hil::digest::DigestDataHash<'static, HASH_LEN>
-        + crate::kernel::hil::digest::Digest<'static, HASH_LEN>,
+    S: kernel::hil::public_key_crypto::signature::SignatureVerify<'static, HASH_LEN, SIGNATURE_LEN>
+        + kernel::hil::public_key_crypto::keys::SelectKey<'static>,
+    H: kernel::hil::digest::DigestDataHash<'static, HASH_LEN>
+        + kernel::hil::digest::Digest<'static, HASH_LEN>,
     const HASH_LEN: usize,
     const SIGNATURE_LEN: usize,
 > Component for AppCheckerSignatureComponent<S, H, HASH_LEN, SIGNATURE_LEN>
@@ -116,7 +116,7 @@ impl<
         );
 
         digest::Digest::set_client(self.hasher, checker);
-        crate::kernel::hil::public_key_crypto::keys::SelectKey::set_client(self.verifier, checker);
+        kernel::hil::public_key_crypto::keys::SelectKey::set_client(self.verifier, checker);
         public_key_crypto::signature::SignatureVerify::set_verify_client(self.verifier, checker);
 
         checker

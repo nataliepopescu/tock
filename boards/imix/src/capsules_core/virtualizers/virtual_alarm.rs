@@ -7,10 +7,10 @@
 
 use core::cell::Cell;
 
-use crate::kernel::ErrorCode;
-use crate::kernel::collections::list::{List, ListLink, ListNode};
-use crate::kernel::hil::time::{self, Alarm, Ticks, Time};
-use crate::kernel::utilities::cells::OptionalCell;
+use kernel::ErrorCode;
+use kernel::collections::list::{List, ListLink, ListNode};
+use kernel::hil::time::{self, Alarm, Ticks, Time};
+use kernel::utilities::cells::OptionalCell;
 
 #[derive(Copy, Clone)]
 struct TickDtReference<T: Ticks> {

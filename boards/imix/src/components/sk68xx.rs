@@ -5,8 +5,8 @@
 //! Component for the sk68xx LED.
 
 use core::mem::MaybeUninit;
-use crate::kernel::component::Component;
-use crate::kernel::hil;
+use kernel::component::Component;
+use kernel::hil;
 
 /// T0H clock divider for an ESP32-C3 with a 160MHz clock speed.
 pub const ESP32C3_160MHZ_T0H: usize = 3;
@@ -14,7 +14,7 @@ pub const ESP32C3_160MHZ_T0H: usize = 3;
 #[macro_export]
 macro_rules! sk68xx_component_static {
     ($P:ty, $T0H:expr $(,)?) => {
-        crate::kernel::static_buf!(capsules_extra::sk68xx::Sk68xx<'static, $P, $T0H>)
+        kernel::static_buf!(capsules_extra::sk68xx::Sk68xx<'static, $P, $T0H>)
     };
 }
 
@@ -52,7 +52,7 @@ impl<P: 'static + hil::gpio::Pin, const T0H: usize> Component for Sk68xxComponen
 #[macro_export]
 macro_rules! sk68xx_led_component_static {
     ($P:ty,  $T0H:expr $(,)?) => {
-        crate::kernel::static_buf!(capsules_extra::sk68xx::Sk68xxLed<'static, $P, $T0H>)
+        kernel::static_buf!(capsules_extra::sk68xx::Sk68xxLed<'static, $P, $T0H>)
     };
 }
 

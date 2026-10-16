@@ -13,8 +13,8 @@
 
 use core::cell::Cell;
 
-use crate::kernel::debug;
-use crate::kernel::hil::time::{ConvertTicks, Ticks, Timer, TimerClient};
+use kernel::debug;
+use kernel::hil::time::{ConvertTicks, Ticks, Timer, TimerClient};
 
 pub struct TestRandomTimer<'a, T: 'a> {
     timer: &'a T,

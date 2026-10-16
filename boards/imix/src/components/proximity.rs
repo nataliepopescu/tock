@@ -13,13 +13,13 @@
 
 use capsules_extra::proximity::ProximitySensor;
 use core::mem::MaybeUninit;
-use crate::kernel::capabilities::MemoryAllocationCapability;
-use crate::kernel::component::Component;
-use crate::kernel::hil;
+use kernel::capabilities::MemoryAllocationCapability;
+use kernel::component::Component;
+use kernel::hil;
 
 #[macro_export]
 macro_rules! proximity_component_static {
-    () => {{ crate::kernel::static_buf!(capsules_extra::proximity::ProximitySensor<'static>) }};
+    () => {{ kernel::static_buf!(capsules_extra::proximity::ProximitySensor<'static>) }};
 }
 
 pub type ProximityComponentType = capsules_extra::proximity::ProximitySensor<'static>;
@@ -29,7 +29,7 @@ pub struct ProximityComponent<
     CAP: MemoryAllocationCapability + 'static,
 > {
     sensor: &'static P,
-    board_kernel: &'static crate::kernel::Kernel,
+    board_kernel: &'static kernel::Kernel,
     driver_num: usize,
     mem_cap: CAP,
 }
@@ -39,7 +39,7 @@ impl<P: hil::sensors::ProximityDriver<'static>, CAP: MemoryAllocationCapability 
 {
     pub fn new(
         sensor: &'static P,
-        board_kernel: &'static crate::kernel::Kernel,
+        board_kernel: &'static kernel::Kernel,
         driver_num: usize,
         mem_cap: CAP,
     ) -> ProximityComponent<P, CAP> {

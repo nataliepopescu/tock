@@ -32,16 +32,16 @@
 
 use capsules_core::rng;
 use core::mem::MaybeUninit;
-use crate::kernel::capabilities::MemoryAllocationCapability;
-use crate::kernel::component::Component;
-use crate::kernel::hil::entropy::Entropy32;
-use crate::kernel::hil::rng::Rng;
+use kernel::capabilities::MemoryAllocationCapability;
+use kernel::component::Component;
+use kernel::hil::entropy::Entropy32;
+use kernel::hil::rng::Rng;
 
 #[macro_export]
 macro_rules! rng_component_static {
     ($E: ty $(,)?) => {{
-        let etr = crate::kernel::static_buf!(capsules_core::rng::Entropy32ToRandom<'static, $E>);
-        let rng = crate::kernel::static_buf!(
+        let etr = kernel::static_buf!(capsules_core::rng::Entropy32ToRandom<'static, $E>);
+        let rng = kernel::static_buf!(
             capsules_core::rng::RngDriver<
                 'static,
                 capsules_core::rng::Entropy32ToRandom<'static, $E>,
@@ -57,7 +57,7 @@ pub type RngComponentType<E> =
 
 pub struct RngComponent<E: Entropy32<'static> + 'static, CAP: MemoryAllocationCapability + 'static>
 {
-    board_kernel: &'static crate::kernel::Kernel,
+    board_kernel: &'static kernel::Kernel,
     driver_num: usize,
     trng: &'static E,
     mem_cap: CAP,
@@ -65,7 +65,7 @@ pub struct RngComponent<E: Entropy32<'static> + 'static, CAP: MemoryAllocationCa
 
 impl<E: Entropy32<'static>, CAP: MemoryAllocationCapability + 'static> RngComponent<E, CAP> {
     pub fn new(
-        board_kernel: &'static crate::kernel::Kernel,
+        board_kernel: &'static kernel::Kernel,
         driver_num: usize,
         trng: &'static E,
         mem_cap: CAP,
@@ -113,7 +113,7 @@ impl<E: Entropy32<'static>, CAP: MemoryAllocationCapability + 'static> Component
 #[macro_export]
 macro_rules! rng_random_component_static {
     ($R: ty $(,)?) => {{
-        let rng = crate::kernel::static_buf!(capsules_core::rng::RngDriver<'static, $R>);
+        let rng = kernel::static_buf!(capsules_core::rng::RngDriver<'static, $R>);
 
         rng
     }};
@@ -123,7 +123,7 @@ pub type RngRandomComponentType<R> = rng::RngDriver<'static, R>;
 
 pub struct RngRandomComponent<R: Rng<'static> + 'static, CAP: MemoryAllocationCapability + 'static>
 {
-    board_kernel: &'static crate::kernel::Kernel,
+    board_kernel: &'static kernel::Kernel,
     driver_num: usize,
     rng: &'static R,
     mem_cap: CAP,
@@ -131,7 +131,7 @@ pub struct RngRandomComponent<R: Rng<'static> + 'static, CAP: MemoryAllocationCa
 
 impl<R: Rng<'static>, CAP: MemoryAllocationCapability + 'static> RngRandomComponent<R, CAP> {
     pub fn new(
-        board_kernel: &'static crate::kernel::Kernel,
+        board_kernel: &'static kernel::Kernel,
         driver_num: usize,
         rng: &'static R,
         mem_cap: CAP,

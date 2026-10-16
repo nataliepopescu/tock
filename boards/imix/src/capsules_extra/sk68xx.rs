@@ -10,8 +10,8 @@
 
 use core::cell::Cell;
 
-use crate::kernel::hil::gpio::Pin;
-use crate::kernel::hil::led::Led;
+use kernel::hil::gpio::Pin;
+use kernel::hil::led::Led;
 
 /// The single-wire, tri-color (RGB) LED.
 ///

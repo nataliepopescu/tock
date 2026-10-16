@@ -8,15 +8,15 @@
 use core::cell::Cell;
 use core::cmp;
 
-use crate::kernel::grant::{AllowRoCount, AllowRwCount, Grant, GrantKernelData, UpcallCount};
-use crate::kernel::hil::spi::ClockPhase;
-use crate::kernel::hil::spi::ClockPolarity;
-use crate::kernel::hil::spi::{SpiMasterClient, SpiMasterDevice};
-use crate::kernel::processbuffer::{ReadableProcessBuffer, WriteableProcessBuffer};
-use crate::kernel::syscall::{CommandReturn, SyscallDriver};
-use crate::kernel::utilities::cells::{MapCell, OptionalCell};
-use crate::kernel::utilities::leasable_buffer::SubSliceMut;
-use crate::kernel::{ErrorCode, ProcessId};
+use kernel::grant::{AllowRoCount, AllowRwCount, Grant, GrantKernelData, UpcallCount};
+use kernel::hil::spi::ClockPhase;
+use kernel::hil::spi::ClockPolarity;
+use kernel::hil::spi::{SpiMasterClient, SpiMasterDevice};
+use kernel::processbuffer::{ReadableProcessBuffer, WriteableProcessBuffer};
+use kernel::syscall::{CommandReturn, SyscallDriver};
+use kernel::utilities::cells::{MapCell, OptionalCell};
+use kernel::utilities::leasable_buffer::SubSliceMut;
+use kernel::{ErrorCode, ProcessId};
 
 /// Syscall driver number.
 use crate::driver;
@@ -412,7 +412,7 @@ impl<'a, S: SpiMasterDevice<'a>> SyscallDriver for Spi<'a, S> {
         }
     }
 
-    fn allocate_grant(&self, processid: ProcessId) -> Result<(), crate::kernel::process::Error> {
+    fn allocate_grant(&self, processid: ProcessId) -> Result<(), kernel::process::Error> {
         self.grants.enter(processid, |_, _| {})
     }
 }

@@ -5,10 +5,10 @@
 //! Tock syscall driver capsule for Alarms, which issue callbacks when
 //! a point in time has been reached.
 
-use crate::kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
-use crate::kernel::hil::time::{self, Alarm, Ticks};
-use crate::kernel::syscall::{CommandReturn, SyscallDriver};
-use crate::kernel::{ErrorCode, ProcessId};
+use kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
+use kernel::hil::time::{self, Alarm, Ticks};
+use kernel::syscall::{CommandReturn, SyscallDriver};
+use kernel::{ErrorCode, ProcessId};
 
 /// Syscall driver number.
 use crate::driver;
@@ -550,7 +550,7 @@ impl<'a, A: Alarm<'a>> SyscallDriver for AlarmDriver<'a, A> {
             )
     }
 
-    fn allocate_grant(&self, processid: ProcessId) -> Result<(), crate::kernel::process::Error> {
+    fn allocate_grant(&self, processid: ProcessId) -> Result<(), kernel::process::Error> {
         self.app_alarms.enter(processid, |_, _| {})
     }
 }
@@ -566,11 +566,11 @@ mod test {
     use core::cell::Cell;
     use core::marker::PhantomData;
 
-    use crate::kernel::ErrorCode;
-    use crate::kernel::hil::time::{
+    use kernel::ErrorCode;
+    use kernel::hil::time::{
         Alarm, AlarmClient, Freq10MHz, Frequency, Ticks, Ticks24, Ticks32, Ticks64, Time,
     };
-    use crate::kernel::utilities::cells::OptionalCell;
+    use kernel::utilities::cells::OptionalCell;
 
     use super::{AlarmDriver, Expiration};
 
@@ -623,7 +623,7 @@ mod test {
                 Ticks32::from(42_u32),
                 // Expirations:
                 <[(
-                    Expiration<crate::kernel::hil::time::Ticks32>,
+                    Expiration<kernel::hil::time::Ticks32>,
                     (),
                     fn(_, &()) -> Option<()>
                 ); 0] as IntoIterator>::into_iter([])

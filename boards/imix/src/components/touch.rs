@@ -36,30 +36,30 @@
 //! ```
 use capsules_extra::touch::Touch;
 use core::mem::MaybeUninit;
-use crate::kernel::capabilities::MemoryAllocationCapability;
-use crate::kernel::component::Component;
+use kernel::capabilities::MemoryAllocationCapability;
+use kernel::component::Component;
 
 #[macro_export]
 macro_rules! touch_component_static {
-    () => {{ crate::kernel::static_buf!(capsules_extra::touch::Touch<'static>) }};
+    () => {{ kernel::static_buf!(capsules_extra::touch::Touch<'static>) }};
 }
 
 pub struct TouchComponent<CAP: MemoryAllocationCapability + 'static> {
-    board_kernel: &'static crate::kernel::Kernel,
+    board_kernel: &'static kernel::Kernel,
     driver_num: usize,
-    touch: &'static dyn crate::kernel::hil::touch::Touch<'static>,
-    gesture: Option<&'static dyn crate::kernel::hil::touch::Gesture<'static>>,
-    screen: Option<&'static dyn crate::kernel::hil::screen::Screen<'static>>,
+    touch: &'static dyn kernel::hil::touch::Touch<'static>,
+    gesture: Option<&'static dyn kernel::hil::touch::Gesture<'static>>,
+    screen: Option<&'static dyn kernel::hil::screen::Screen<'static>>,
     mem_cap: CAP,
 }
 
 impl<CAP: MemoryAllocationCapability + 'static> TouchComponent<CAP> {
     pub fn new(
-        board_kernel: &'static crate::kernel::Kernel,
+        board_kernel: &'static kernel::Kernel,
         driver_num: usize,
-        touch: &'static dyn crate::kernel::hil::touch::Touch<'static>,
-        gesture: Option<&'static dyn crate::kernel::hil::touch::Gesture<'static>>,
-        screen: Option<&'static dyn crate::kernel::hil::screen::Screen<'static>>,
+        touch: &'static dyn kernel::hil::touch::Touch<'static>,
+        gesture: Option<&'static dyn kernel::hil::touch::Gesture<'static>>,
+        screen: Option<&'static dyn kernel::hil::screen::Screen<'static>>,
         mem_cap: CAP,
     ) -> TouchComponent<CAP> {
         TouchComponent {
@@ -89,9 +89,9 @@ impl<CAP: MemoryAllocationCapability + 'static> Component for TouchComponent<CAP
             grant_touch,
         ));
 
-        crate::kernel::hil::touch::Touch::set_client(self.touch, touch);
+        kernel::hil::touch::Touch::set_client(self.touch, touch);
         if let Some(gesture) = self.gesture {
-            crate::kernel::hil::touch::Gesture::set_client(gesture, touch);
+            kernel::hil::touch::Gesture::set_client(gesture, touch);
         }
 
         touch
@@ -99,21 +99,21 @@ impl<CAP: MemoryAllocationCapability + 'static> Component for TouchComponent<CAP
 }
 
 pub struct MultiTouchComponent<CAP: MemoryAllocationCapability + 'static> {
-    board_kernel: &'static crate::kernel::Kernel,
+    board_kernel: &'static kernel::Kernel,
     driver_num: usize,
-    multi_touch: &'static dyn crate::kernel::hil::touch::MultiTouch<'static>,
-    gesture: Option<&'static dyn crate::kernel::hil::touch::Gesture<'static>>,
-    screen: Option<&'static dyn crate::kernel::hil::screen::Screen<'static>>,
+    multi_touch: &'static dyn kernel::hil::touch::MultiTouch<'static>,
+    gesture: Option<&'static dyn kernel::hil::touch::Gesture<'static>>,
+    screen: Option<&'static dyn kernel::hil::screen::Screen<'static>>,
     mem_cap: CAP,
 }
 
 impl<CAP: MemoryAllocationCapability + 'static> MultiTouchComponent<CAP> {
     pub fn new(
-        board_kernel: &'static crate::kernel::Kernel,
+        board_kernel: &'static kernel::Kernel,
         driver_num: usize,
-        multi_touch: &'static dyn crate::kernel::hil::touch::MultiTouch<'static>,
-        gesture: Option<&'static dyn crate::kernel::hil::touch::Gesture<'static>>,
-        screen: Option<&'static dyn crate::kernel::hil::screen::Screen>,
+        multi_touch: &'static dyn kernel::hil::touch::MultiTouch<'static>,
+        gesture: Option<&'static dyn kernel::hil::touch::Gesture<'static>>,
+        screen: Option<&'static dyn kernel::hil::screen::Screen>,
         mem_cap: CAP,
     ) -> MultiTouchComponent<CAP> {
         MultiTouchComponent {
@@ -143,9 +143,9 @@ impl<CAP: MemoryAllocationCapability + 'static> Component for MultiTouchComponen
             grant_touch,
         ));
 
-        crate::kernel::hil::touch::MultiTouch::set_client(self.multi_touch, touch);
+        kernel::hil::touch::MultiTouch::set_client(self.multi_touch, touch);
         if let Some(gesture) = self.gesture {
-            crate::kernel::hil::touch::Gesture::set_client(gesture, touch);
+            kernel::hil::touch::Gesture::set_client(gesture, touch);
         }
 
         touch

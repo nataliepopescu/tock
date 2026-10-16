@@ -42,22 +42,22 @@ use capsules_core::virtualizers::virtual_alarm::{MuxAlarm, VirtualMuxAlarm};
 use capsules_extra::bus::{self, BusAddr8};
 use capsules_extra::st77xx::{ST77XX, ST77XXScreen};
 use core::mem::MaybeUninit;
-use crate::kernel::component::Component;
-use crate::kernel::hil::gpio;
-use crate::kernel::hil::time::{self, Alarm};
+use kernel::component::Component;
+use kernel::hil::gpio;
+use kernel::hil::time::{self, Alarm};
 
 // Setup static space for the objects.
 #[macro_export]
 macro_rules! st77xx_component_static {
     ($B: ty, $A:ty, $P:ty $(,)?) => {{
-        let buffer = crate::kernel::static_buf!([u8; capsules_extra::st77xx::BUFFER_SIZE]);
-        let sequence_buffer = crate::kernel::static_buf!(
+        let buffer = kernel::static_buf!([u8; capsules_extra::st77xx::BUFFER_SIZE]);
+        let sequence_buffer = kernel::static_buf!(
             [capsules_extra::st77xx::SendCommand; capsules_extra::st77xx::SEQUENCE_BUFFER_SIZE]
         );
-        let st77xx_alarm = crate::kernel::static_buf!(
+        let st77xx_alarm = kernel::static_buf!(
             capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, $A>
         );
-        let st77xx = crate::kernel::static_buf!(
+        let st77xx = kernel::static_buf!(
             capsules_extra::st77xx::ST77XX<
                 'static,
                 capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, $A>,

@@ -32,7 +32,7 @@ use capsules_extra::net::ipv6::ipv6_send::IP6SendStruct;
 use capsules_extra::net::network_capabilities::{
     AddrRange, NetworkCapability, PortRange, UdpVisibilityCapability,
 };
-use crate::kernel::hil::symmetric_encryption::{self, AES, AES128, AESCBC, AESCCM, AESCtr, AESECB};
+use kernel::hil::symmetric_encryption::{self, AES, AES128, AESCBC, AESCCM, AESCtr, AESECB};
 
 use capsules_core::virtualizers::virtual_alarm::MuxAlarm;
 use capsules_extra::net::thread::thread_utils::THREAD_PORT_NUMBER;
@@ -41,12 +41,12 @@ use capsules_extra::net::udp::udp_recv::MuxUdpReceiver;
 use capsules_extra::net::udp::udp_recv::UDPReceiver;
 use capsules_extra::net::udp::udp_send::{MuxUdpSender, UDPSendStruct, UDPSender};
 use core::mem::MaybeUninit;
-use crate::kernel::capabilities::{
+use kernel::capabilities::{
     MemoryAllocationCapability, NetworkCapabilityCreationCapability, UdpDriverCapability,
 };
-use crate::kernel::component::Component;
-use crate::kernel::hil::radio;
-use crate::kernel::hil::time::Alarm;
+use kernel::component::Component;
+use kernel::hil::radio;
+use kernel::hil::time::Alarm;
 
 const MAX_PAYLOAD_LEN: usize = super::udp_mux::MAX_PAYLOAD_LEN;
 pub const CRYPT_SIZE: usize = 3 * symmetric_encryption::AES_BLOCK_SIZE + radio::MAX_BUF_SIZE;
@@ -57,7 +57,7 @@ macro_rules! thread_network_component_static {
     ($A:ty, $B:ty, $C:ty $(,)?) => {{
         use components::udp_mux::MAX_PAYLOAD_LEN;
 
-        let udp_send = crate::kernel::static_buf!(
+        let udp_send = kernel::static_buf!(
             capsules_extra::net::udp::udp_send::UDPSendStruct<
                 'static,
                 capsules_extra::net::ipv6::ipv6_send::IP6SendStruct<
@@ -67,25 +67,25 @@ macro_rules! thread_network_component_static {
             >
         );
         let udp_vis_cap =
-            crate::kernel::static_buf!(capsules_extra::net::network_capabilities::UdpVisibilityCapability);
+            kernel::static_buf!(capsules_extra::net::network_capabilities::UdpVisibilityCapability);
         let net_cap =
-            crate::kernel::static_buf!(capsules_extra::net::network_capabilities::NetworkCapability);
-        let thread_network_driver = crate::kernel::static_buf!(
+            kernel::static_buf!(capsules_extra::net::network_capabilities::NetworkCapability);
+        let thread_network_driver = kernel::static_buf!(
             capsules_extra::net::thread::driver::ThreadNetworkDriver<
                 'static,
                 VirtualMuxAlarm<'static, $A>,
             >
         );
-        let send_buffer = crate::kernel::static_buf!([u8; MAX_PAYLOAD_LEN]);
-        let recv_buffer = crate::kernel::static_buf!([u8; MAX_PAYLOAD_LEN]);
+        let send_buffer = kernel::static_buf!([u8; MAX_PAYLOAD_LEN]);
+        let recv_buffer = kernel::static_buf!([u8; MAX_PAYLOAD_LEN]);
         let udp_recv =
-            crate::kernel::static_buf!(capsules_extra::net::udp::udp_recv::UDPReceiver<'static>);
-        let crypt_buf = crate::kernel::static_buf!([u8; components::ieee802154::CRYPT_SIZE]);
-        let crypt = crate::kernel::static_buf!(
+            kernel::static_buf!(capsules_extra::net::udp::udp_recv::UDPReceiver<'static>);
+        let crypt_buf = kernel::static_buf!([u8; components::ieee802154::CRYPT_SIZE]);
+        let crypt = kernel::static_buf!(
             capsules_core::virtualizers::virtual_aes_ccm::VirtualAES128CCM<'static, $B>,
         );
-        let alarm = crate::kernel::static_buf!(VirtualMuxAlarm<'static, $A>);
-        let driver_cap = crate::kernel::static_buf!($C);
+        let alarm = kernel::static_buf!(VirtualMuxAlarm<'static, $A>);
+        let driver_cap = kernel::static_buf!($C);
 
         (
             udp_send,
@@ -109,7 +109,7 @@ pub struct ThreadNetworkComponent<
     MEM: MemoryAllocationCapability + 'static,
     NET: NetworkCapabilityCreationCapability + 'static,
 > {
-    board_kernel: &'static crate::kernel::Kernel,
+    board_kernel: &'static kernel::Kernel,
     driver_num: usize,
     udp_send_mux:
         &'static MuxUdpSender<'static, IP6SendStruct<'static, VirtualMuxAlarm<'static, A>>>,
@@ -132,7 +132,7 @@ impl<
 > ThreadNetworkComponent<A, B, C, MEM, NET>
 {
     pub fn new(
-        board_kernel: &'static crate::kernel::Kernel,
+        board_kernel: &'static kernel::Kernel,
         driver_num: usize,
         udp_send_mux: &'static MuxUdpSender<
             'static,
@@ -246,8 +246,8 @@ impl<
                 self.serial_num,
                 MAX_PAYLOAD_LEN,
                 self.port_table,
-                crate::kernel::utilities::leasable_buffer::SubSliceMut::new(send_buffer),
-                crate::kernel::utilities::leasable_buffer::SubSliceMut::new(recv_buffer),
+                kernel::utilities::leasable_buffer::SubSliceMut::new(send_buffer),
+                kernel::utilities::leasable_buffer::SubSliceMut::new(recv_buffer),
                 driver_cap,
                 net_cap,
             ),

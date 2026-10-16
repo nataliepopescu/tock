@@ -25,17 +25,17 @@
 
 use capsules_extra::can::CanCapsule;
 use core::mem::MaybeUninit;
-use crate::kernel::capabilities::MemoryAllocationCapability;
-use crate::kernel::component::Component;
-use crate::kernel::hil::can;
+use kernel::capabilities::MemoryAllocationCapability;
+use kernel::component::Component;
+use kernel::hil::can;
 
 #[macro_export]
 macro_rules! can_component_static {
     ($C:ty $(,)?) => {{
         use capsules_extra::can::CanCapsule;
         use core::mem::MaybeUninit;
-        use crate::kernel::hil::can;
-        use crate::kernel::static_buf;
+        use kernel::hil::can;
+        use kernel::static_buf;
 
         let CAN_TX_BUF = static_buf!([u8; can::STANDARD_CAN_PACKET_SIZE]);
         let CAN_RX_BUF = static_buf!([u8; can::STANDARD_CAN_PACKET_SIZE]);
@@ -45,7 +45,7 @@ macro_rules! can_component_static {
 }
 
 pub struct CanComponent<A: 'static + can::Can, CAP: MemoryAllocationCapability + 'static> {
-    board_kernel: &'static crate::kernel::Kernel,
+    board_kernel: &'static kernel::Kernel,
     driver_num: usize,
     can: &'static A,
     mem_cap: CAP,
@@ -53,7 +53,7 @@ pub struct CanComponent<A: 'static + can::Can, CAP: MemoryAllocationCapability +
 
 impl<A: 'static + can::Can, CAP: MemoryAllocationCapability + 'static> CanComponent<A, CAP> {
     pub fn new(
-        board_kernel: &'static crate::kernel::Kernel,
+        board_kernel: &'static kernel::Kernel,
         driver_num: usize,
         can: &'static A,
         mem_cap: CAP,

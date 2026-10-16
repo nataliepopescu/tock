@@ -7,24 +7,24 @@
 //! Capsule: capsules/extra/src/syscall_return_test.rs
 
 use core::mem::MaybeUninit;
-use crate::kernel::capabilities::MemoryAllocationCapability;
-use crate::kernel::component::Component;
+use kernel::capabilities::MemoryAllocationCapability;
+use kernel::component::Component;
 
 #[macro_export]
 macro_rules! syscall_return_test_component_static {
-    () => {{ crate::kernel::static_buf!(capsules_extra::syscall_return_test::SyscallReturnTest) }};
+    () => {{ kernel::static_buf!(capsules_extra::syscall_return_test::SyscallReturnTest) }};
 }
 
 pub type SyscallReturnTestComponentType = capsules_extra::syscall_return_test::SyscallReturnTest;
 
 pub struct SyscallReturnTestComponent<CAP: MemoryAllocationCapability + 'static> {
-    board_kernel: &'static crate::kernel::Kernel,
+    board_kernel: &'static kernel::Kernel,
     driver_num: usize,
     mem_cap: CAP,
 }
 
 impl<CAP: MemoryAllocationCapability + 'static> SyscallReturnTestComponent<CAP> {
-    pub fn new(board_kernel: &'static crate::kernel::Kernel, driver_num: usize, mem_cap: CAP) -> Self {
+    pub fn new(board_kernel: &'static kernel::Kernel, driver_num: usize, mem_cap: CAP) -> Self {
         Self {
             board_kernel,
             driver_num,

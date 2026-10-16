@@ -5,12 +5,12 @@
 //! Components for AppID assigners based on names.
 
 use core::mem::MaybeUninit;
-use crate::kernel::component::Component;
+use kernel::component::Component;
 
 #[macro_export]
 macro_rules! appid_assigner_names_component_static {
     () => {{
-        crate::kernel::static_buf!(
+        kernel::static_buf!(
             capsules_system::process_checker::basic::AppIdAssignerNames<fn(&'static str) -> u32>
         )
     }};
@@ -40,7 +40,7 @@ impl Component for AppIdAssignerNamesComponent {
     fn finalize(self, s: Self::StaticInput) -> Self::Output {
         s.write(
             capsules_system::process_checker::basic::AppIdAssignerNames::new(
-                &((|s| crate::kernel::utilities::helpers::crc32_posix(s.as_bytes()))
+                &((|s| kernel::utilities::helpers::crc32_posix(s.as_bytes()))
                     as fn(&'static str) -> u32),
             ),
         )

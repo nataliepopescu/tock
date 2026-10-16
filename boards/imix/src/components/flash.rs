@@ -21,18 +21,18 @@
 use capsules_core::virtualizers::virtual_flash::FlashUser;
 use capsules_core::virtualizers::virtual_flash::MuxFlash;
 use core::mem::MaybeUninit;
-use crate::kernel::component::Component;
-use crate::kernel::hil::flash::{Flash, HasClient};
+use kernel::component::Component;
+use kernel::hil::flash::{Flash, HasClient};
 
 // Setup static space for the objects.
 #[macro_export]
 macro_rules! flash_user_component_static {
-    ($F:ty) => {{ crate::kernel::static_buf!(capsules_core::virtualizers::virtual_flash::FlashUser<'static, $F>) }};
+    ($F:ty) => {{ kernel::static_buf!(capsules_core::virtualizers::virtual_flash::FlashUser<'static, $F>) }};
 }
 
 #[macro_export]
 macro_rules! flash_mux_component_static {
-    ($F:ty) => {{ crate::kernel::static_buf!(capsules_core::virtualizers::virtual_flash::MuxFlash<'static, $F>) }};
+    ($F:ty) => {{ kernel::static_buf!(capsules_core::virtualizers::virtual_flash::MuxFlash<'static, $F>) }};
 }
 
 pub struct FlashMuxComponent<F: 'static + Flash + HasClient<'static, MuxFlash<'static, F>>> {

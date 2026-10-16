@@ -5,11 +5,11 @@
 //! Components for AppID assigners based on TBF headers.
 
 use core::mem::MaybeUninit;
-use crate::kernel::component::Component;
+use kernel::component::Component;
 
 #[macro_export]
 macro_rules! appid_assigner_tbf_header_component_static {
-    () => {{ crate::kernel::static_buf!(capsules_system::process_checker::tbf::AppIdAssignerTbfHeader) }};
+    () => {{ kernel::static_buf!(capsules_system::process_checker::tbf::AppIdAssignerTbfHeader) }};
 }
 
 pub struct AppIdAssignerTbfHeaderComponent {}

@@ -10,9 +10,9 @@ use capsules_extra::tickv::{KVSystem, KeyType};
 use capsules_extra::tickv_kv_store::TicKVKVStore;
 use capsules_extra::virtualizers::virtual_kv::{MuxKVPermissions, VirtualKVPermissions};
 use core::mem::MaybeUninit;
-use crate::kernel::capabilities::MemoryAllocationCapability;
-use crate::kernel::component::Component;
-use crate::kernel::hil;
+use kernel::capabilities::MemoryAllocationCapability;
+use kernel::component::Component;
+use kernel::hil;
 
 ///////////////////////
 // KV Userspace Driver
@@ -21,9 +21,9 @@ use crate::kernel::hil;
 #[macro_export]
 macro_rules! kv_driver_component_static {
     ($V:ty $(,)?) => {{
-        let kv = crate::kernel::static_buf!(capsules_extra::kv_driver::KVStoreDriver<'static, $V>);
-        let key_buffer = crate::kernel::static_buf!([u8; 64]);
-        let value_buffer = crate::kernel::static_buf!([u8; 512]);
+        let kv = kernel::static_buf!(capsules_extra::kv_driver::KVStoreDriver<'static, $V>);
+        let key_buffer = kernel::static_buf!([u8; 64]);
+        let value_buffer = kernel::static_buf!([u8; 512]);
 
         (kv, key_buffer, value_buffer)
     }};
@@ -36,7 +36,7 @@ pub struct KVDriverComponent<
     CAP: MemoryAllocationCapability + 'static,
 > {
     kv: &'static V,
-    board_kernel: &'static crate::kernel::Kernel,
+    board_kernel: &'static kernel::Kernel,
     driver_num: usize,
     mem_cap: CAP,
 }
@@ -46,7 +46,7 @@ impl<V: hil::kv::KVPermissions<'static>, CAP: MemoryAllocationCapability + 'stat
 {
     pub fn new(
         kv: &'static V,
-        board_kernel: &'static crate::kernel::Kernel,
+        board_kernel: &'static kernel::Kernel,
         driver_num: usize,
         mem_cap: CAP,
     ) -> Self {
@@ -92,7 +92,7 @@ impl<V: hil::kv::KVPermissions<'static>, CAP: MemoryAllocationCapability + 'stat
 #[macro_export]
 macro_rules! kv_permissions_mux_component_static {
     ($V:ty $(,)?) => {{
-        let mux = crate::kernel::static_buf!(
+        let mux = kernel::static_buf!(
             capsules_extra::virtualizers::virtual_kv::MuxKVPermissions<'static, $V>
         );
 
@@ -131,7 +131,7 @@ impl<V: hil::kv::KVPermissions<'static> + 'static> Component for KVPermissionsMu
 #[macro_export]
 macro_rules! virtual_kv_permissions_component_static {
     ($V:ty $(,)?) => {{
-        let virtual_kv = crate::kernel::static_buf!(
+        let virtual_kv = kernel::static_buf!(
             capsules_extra::virtualizers::virtual_kv::VirtualKVPermissions<'static, $V>
         );
 
@@ -170,8 +170,8 @@ impl<V: hil::kv::KVPermissions<'static> + 'static> Component for VirtualKVPermis
 #[macro_export]
 macro_rules! kv_store_permissions_component_static {
     ($V:ty $(,)?) => {{
-        let buffer = crate::kernel::static_buf!([u8; capsules_extra::kv_store_permissions::HEADER_LENGTH]);
-        let kv_store = crate::kernel::static_buf!(
+        let buffer = kernel::static_buf!([u8; capsules_extra::kv_store_permissions::HEADER_LENGTH]);
+        let kv_store = kernel::static_buf!(
             capsules_extra::kv_store_permissions::KVStorePermissions<'static, $V>
         );
 
@@ -221,9 +221,9 @@ impl<V: hil::kv::KV<'static> + 'static> Component for KVStorePermissionsComponen
 #[macro_export]
 macro_rules! tickv_kv_store_component_static {
     ($K:ty, $T:ty $(,)?) => {{
-        let key = crate::kernel::static_buf!($T);
+        let key = kernel::static_buf!($T);
         let kv_store =
-            crate::kernel::static_buf!(capsules_extra::tickv_kv_store::TicKVKVStore<'static, $K, $T>);
+            kernel::static_buf!(capsules_extra::tickv_kv_store::TicKVKVStore<'static, $K, $T>);
 
         (kv_store, key)
     }};

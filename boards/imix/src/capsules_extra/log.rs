@@ -56,7 +56,7 @@
 //!         )
 //!     );
 //!     log.register();
-//!     crate::kernel::hil::flash::HasClient::set_client(&sam4l::flashcalw::FLASH_CONTROLLER, log);
+//!     kernel::hil::flash::HasClient::set_client(&sam4l::flashcalw::FLASH_CONTROLLER, log);
 //!
 //!     log.set_read_client(log_storage_read_client);
 //!     log.set_append_client(log_storage_append_client);
@@ -66,11 +66,11 @@ use core::cell::Cell;
 use core::mem::size_of;
 use core::unreachable;
 
-use crate::kernel::ErrorCode;
-use crate::kernel::deferred_call::{DeferredCall, DeferredCallClient};
-use crate::kernel::hil::flash::{self, Flash};
-use crate::kernel::hil::log::{LogRead, LogReadClient, LogWrite, LogWriteClient};
-use crate::kernel::utilities::cells::{OptionalCell, TakeCell};
+use kernel::ErrorCode;
+use kernel::deferred_call::{DeferredCall, DeferredCallClient};
+use kernel::hil::flash::{self, Flash};
+use kernel::hil::log::{LogRead, LogReadClient, LogWrite, LogWriteClient};
+use kernel::utilities::cells::{OptionalCell, TakeCell};
 
 /// Globally declare entry ID type.
 type EntryID = usize;

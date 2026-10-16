@@ -23,14 +23,14 @@ use core::cell::Cell;
 use core::mem::size_of;
 use core::{cmp, mem};
 
-use crate::kernel::capabilities::UdpDriverCapability;
-use crate::kernel::debug;
-use crate::kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
-use crate::kernel::processbuffer::{ReadableProcessBuffer, WriteableProcessBuffer};
-use crate::kernel::syscall::{CommandReturn, SyscallDriver};
-use crate::kernel::utilities::cells::MapCell;
-use crate::kernel::utilities::leasable_buffer::SubSliceMut;
-use crate::kernel::{ErrorCode, ProcessId};
+use kernel::capabilities::UdpDriverCapability;
+use kernel::debug;
+use kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
+use kernel::processbuffer::{ReadableProcessBuffer, WriteableProcessBuffer};
+use kernel::syscall::{CommandReturn, SyscallDriver};
+use kernel::utilities::cells::MapCell;
+use kernel::utilities::leasable_buffer::SubSliceMut;
+use kernel::{ErrorCode, ProcessId};
 
 use capsules_core::driver;
 pub const DRIVER_NUM: usize = driver::NUM::Udp as usize;
@@ -210,7 +210,7 @@ impl<'a> UDPDriver<'a> {
             let _ = self.apps.enter(processid, |_app, upcalls| {
                 let _ = upcalls.schedule_upcall(
                     upcall::PACKET_TRANSMITTED,
-                    (crate::kernel::errorcode::into_statuscode(result), 0, 0),
+                    (kernel::errorcode::into_statuscode(result), 0, 0),
                 );
             });
         }
@@ -547,7 +547,7 @@ impl SyscallDriver for UDPDriver<'_> {
         }
     }
 
-    fn allocate_grant(&self, processid: ProcessId) -> Result<(), crate::kernel::process::Error> {
+    fn allocate_grant(&self, processid: ProcessId) -> Result<(), kernel::process::Error> {
         self.apps.enter(processid, |_, _| {})
     }
 }
@@ -561,7 +561,7 @@ impl UDPSendClient for UDPDriver<'_> {
             let _ = self.apps.enter(processid, |_app, upcalls| {
                 let _ = upcalls.schedule_upcall(
                     upcall::PACKET_TRANSMITTED,
-                    (crate::kernel::errorcode::into_statuscode(result), 0, 0),
+                    (kernel::errorcode::into_statuscode(result), 0, 0),
                 );
             });
         });

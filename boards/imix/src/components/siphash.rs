@@ -5,13 +5,13 @@
 //! Components for SipHash hasher.
 
 use core::mem::MaybeUninit;
-use crate::kernel::component::Component;
-use crate::kernel::deferred_call::DeferredCallClient;
+use kernel::component::Component;
+use kernel::deferred_call::DeferredCallClient;
 
 // Setup static space for the objects.
 #[macro_export]
 macro_rules! siphasher24_component_static {
-    ($(,)?) => {{ crate::kernel::static_buf!(capsules_extra::sip_hash::SipHasher24) }};
+    ($(,)?) => {{ kernel::static_buf!(capsules_extra::sip_hash::SipHasher24) }};
 }
 
 pub type Siphasher24ComponentType = capsules_extra::sip_hash::SipHasher24<'static>;

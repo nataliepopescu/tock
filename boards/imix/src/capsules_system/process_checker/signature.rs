@@ -5,13 +5,13 @@
 //! Signature credential checker for checking process credentials.
 
 use core::cell::Cell;
-use crate::kernel::ErrorCode;
-use crate::kernel::hil;
-use crate::kernel::process_checker::CheckResult;
-use crate::kernel::process_checker::{AppCredentialsPolicy, AppCredentialsPolicyClient};
-use crate::kernel::utilities::cells::MapCell;
-use crate::kernel::utilities::cells::OptionalCell;
-use crate::kernel::utilities::leasable_buffer::{SubSlice, SubSliceMut};
+use kernel::ErrorCode;
+use kernel::hil;
+use kernel::process_checker::CheckResult;
+use kernel::process_checker::{AppCredentialsPolicy, AppCredentialsPolicyClient};
+use kernel::utilities::cells::MapCell;
+use kernel::utilities::cells::OptionalCell;
+use kernel::utilities::leasable_buffer::{SubSlice, SubSliceMut};
 use tock_tbf::types::TbfFooterV2Credentials;
 use tock_tbf::types::TbfFooterV2CredentialsType;
 
@@ -273,7 +273,7 @@ impl<
                 let cred = self.credentials.take().unwrap();
                 c.check_done(
                     Ok(CheckResult::Accept(Some(
-                        crate::kernel::process_checker::CheckResultAcceptMetadata {
+                        kernel::process_checker::CheckResultAcceptMetadata {
                             metadata: key_metadata,
                         },
                     ))),

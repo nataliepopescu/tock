@@ -53,11 +53,11 @@
 //! Author: Teona Severin <teona.severin9@gmail.com>
 
 use core::cell::Cell;
-use crate::kernel::ErrorCode;
-use crate::kernel::hil::gpio;
-use crate::kernel::hil::text_screen::{TextScreen, TextScreenClient};
-use crate::kernel::hil::time::{self, Alarm, Frequency};
-use crate::kernel::utilities::cells::{OptionalCell, TakeCell};
+use kernel::ErrorCode;
+use kernel::hil::gpio;
+use kernel::hil::text_screen::{TextScreen, TextScreenClient};
+use kernel::hil::time::{self, Alarm, Frequency};
+use kernel::utilities::cells::{OptionalCell, TakeCell};
 
 /// commands
 static LCD_CLEARDISPLAY: u8 = 0x01;

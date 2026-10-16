@@ -49,18 +49,18 @@ use capsules_core::virtualizers::virtual_flash::FlashUser;
 use capsules_core::virtualizers::virtual_flash::MuxFlash;
 use capsules_extra::tickv::TicKVSystem;
 use core::mem::MaybeUninit;
-use crate::kernel::component::Component;
-use crate::kernel::hil;
-use crate::kernel::hil::flash::HasClient;
-use crate::kernel::hil::hasher::Hasher;
+use kernel::component::Component;
+use kernel::hil;
+use kernel::hil::flash::HasClient;
+use kernel::hil::hasher::Hasher;
 
 // Setup static space for the objects.
 #[macro_export]
 macro_rules! tickv_component_static {
     ($F:ty, $H:ty, $PAGE_SIZE:expr $(,)?) => {{
         let flash =
-            crate::kernel::static_buf!(capsules_core::virtualizers::virtual_flash::FlashUser<'static, $F>);
-        let tickv = crate::kernel::static_buf!(
+            kernel::static_buf!(capsules_core::virtualizers::virtual_flash::FlashUser<'static, $F>);
+        let tickv = kernel::static_buf!(
             capsules_extra::tickv::TicKVSystem<
                 'static,
                 capsules_core::virtualizers::virtual_flash::FlashUser<'static, $F>,
@@ -76,9 +76,9 @@ macro_rules! tickv_component_static {
 #[macro_export]
 macro_rules! tickv_dedicated_flash_component_static {
     ($F:ty, $H:ty, $PAGE_SIZE:expr $(,)?) => {{
-        let tickfs_read_buffer = crate::kernel::static_buf!([u8; $PAGE_SIZE]);
+        let tickfs_read_buffer = kernel::static_buf!([u8; $PAGE_SIZE]);
         let tickv =
-            crate::kernel::static_buf!(capsules_extra::tickv::TicKVSystem<'static, $F, $H, $PAGE_SIZE>);
+            kernel::static_buf!(capsules_extra::tickv::TicKVSystem<'static, $F, $H, $PAGE_SIZE>);
 
         (tickv, tickfs_read_buffer)
     }};

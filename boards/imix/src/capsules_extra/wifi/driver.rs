@@ -4,11 +4,11 @@
 
 use crate::wifi::{Client, Device, Passphrase, Security, Ssid, len};
 use enum_primitive::cast::FromPrimitive;
-use crate::kernel::errorcode::into_statuscode;
-use crate::kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
-use crate::kernel::processbuffer::{ReadableProcessBuffer, WriteableProcessBuffer};
-use crate::kernel::syscall::{self, CommandReturn, SyscallDriver};
-use crate::kernel::{ErrorCode, ProcessId, process, utilities::cells::OptionalCell};
+use kernel::errorcode::into_statuscode;
+use kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
+use kernel::processbuffer::{ReadableProcessBuffer, WriteableProcessBuffer};
+use kernel::syscall::{self, CommandReturn, SyscallDriver};
+use kernel::{ErrorCode, ProcessId, process, utilities::cells::OptionalCell};
 
 /// Ids for read-only allow buffers
 mod ro_allow {

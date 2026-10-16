@@ -36,14 +36,14 @@
 
 use crate::bus::{self, Bus, BusAddr8, DataWidth};
 use core::cell::Cell;
-use crate::kernel::ErrorCode;
-use crate::kernel::hil::gpio::Pin;
-use crate::kernel::hil::screen::{
+use kernel::ErrorCode;
+use kernel::hil::gpio::Pin;
+use kernel::hil::screen::{
     self, ScreenClient, ScreenPixelFormat, ScreenRotation, ScreenSetupClient,
 };
-use crate::kernel::hil::time::{self, Alarm, ConvertTicks};
-use crate::kernel::utilities::cells::{OptionalCell, TakeCell};
-use crate::kernel::utilities::leasable_buffer::SubSliceMut;
+use kernel::hil::time::{self, Alarm, ConvertTicks};
+use kernel::utilities::cells::{OptionalCell, TakeCell};
+use kernel::utilities::leasable_buffer::SubSliceMut;
 
 pub const BUFFER_SIZE: usize = 24;
 

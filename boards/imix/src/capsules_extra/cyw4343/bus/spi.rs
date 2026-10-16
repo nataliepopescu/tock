@@ -8,12 +8,12 @@ use super::{CYW4343xBus, CYW4343xBusClient, Function, RegLen, Type};
 use crate::cyw4343::constants;
 use crate::cyw4343::macros::{backplane_window_bits, reset_and_restore_bufs};
 use core::cell::Cell;
-use crate::kernel::hil::spi::{SpiMasterClient, SpiMasterDevice};
-use crate::kernel::hil::time::ConvertTicks;
-use crate::kernel::hil::{gpio, time};
-use crate::kernel::utilities::leasable_buffer::SubSliceMut;
-use crate::kernel::utilities::registers::register_bitfields;
-use crate::kernel::{ErrorCode, utilities::cells::OptionalCell};
+use kernel::hil::spi::{SpiMasterClient, SpiMasterDevice};
+use kernel::hil::time::ConvertTicks;
+use kernel::hil::{gpio, time};
+use kernel::utilities::leasable_buffer::SubSliceMut;
+use kernel::utilities::registers::register_bitfields;
+use kernel::{ErrorCode, utilities::cells::OptionalCell};
 use task::GspiTask;
 
 /// Max packet size is max payload size + 1 command/status word
@@ -96,7 +96,7 @@ impl Backplane {
 /// gSPI interface implementation for the CYW43xx Bus
 ///
 /// The protocol is explained in chapter 4.2 of the datasheet
-pub struct CYW4343xSpiBus<'a, S: SpiMasterDevice<'a>, A: crate::kernel::hil::time::Alarm<'a>> {
+pub struct CYW4343xSpiBus<'a, S: SpiMasterDevice<'a>, A: kernel::hil::time::Alarm<'a>> {
     gspi: &'a S,
     alarm: &'a A,
     client: OptionalCell<&'a dyn CYW4343xBusClient>,
@@ -125,7 +125,7 @@ pub struct CYW4343xSpiBus<'a, S: SpiMasterDevice<'a>, A: crate::kernel::hil::tim
     irq_fired: Cell<bool>,
 }
 
-impl<'a, S: SpiMasterDevice<'a>, A: crate::kernel::hil::time::Alarm<'a>> CYW4343xSpiBus<'a, S, A> {
+impl<'a, S: SpiMasterDevice<'a>, A: kernel::hil::time::Alarm<'a>> CYW4343xSpiBus<'a, S, A> {
     pub fn new(
         gspi: &'a S,
         alarm: &'a A,
@@ -160,7 +160,7 @@ impl<'a, S: SpiMasterDevice<'a>, A: crate::kernel::hil::time::Alarm<'a>> CYW4343
     }
 }
 
-impl<'a, S: SpiMasterDevice<'a>, A: crate::kernel::hil::time::Alarm<'a>> CYW4343xSpiBus<'a, S, A> {
+impl<'a, S: SpiMasterDevice<'a>, A: kernel::hil::time::Alarm<'a>> CYW4343xSpiBus<'a, S, A> {
     /// Execute an initialisation task (read/write bytes on the bus or set a delay)
     fn do_task(&self, task: GspiTask) -> Result<(), ErrorCode> {
         match task {
@@ -201,7 +201,7 @@ impl<'a, S: SpiMasterDevice<'a>, A: crate::kernel::hil::time::Alarm<'a>> CYW4343
     }
 }
 
-impl<'a, S: SpiMasterDevice<'a>, A: crate::kernel::hil::time::Alarm<'a>> CYW4343xSpiBus<'a, S, A> {
+impl<'a, S: SpiMasterDevice<'a>, A: kernel::hil::time::Alarm<'a>> CYW4343xSpiBus<'a, S, A> {
     /// Write bytes to a backplane memory region from a base address and base buffer.
     /// As this is likely to be done in chunks of MAX_SPI_BP_CHUNK_SIZE bytes,
     /// an inner offset will be kept to be added to the base_address.
@@ -345,14 +345,14 @@ impl<'a, S: SpiMasterDevice<'a>, A: crate::kernel::hil::time::Alarm<'a>> CYW4343
     }
 }
 
-impl<'a, S: SpiMasterDevice<'a>, A: crate::kernel::hil::time::Alarm<'a>> CYW4343xBus<'a>
+impl<'a, S: SpiMasterDevice<'a>, A: kernel::hil::time::Alarm<'a>> CYW4343xBus<'a>
     for CYW4343xSpiBus<'a, S, A>
 {
     fn set_client(&self, client: &'a dyn CYW4343xBusClient) {
         self.client.set(client);
     }
 
-    fn state(&self) -> Result<BusState, crate::kernel::ErrorCode> {
+    fn state(&self) -> Result<BusState, kernel::ErrorCode> {
         if let State::NotInit = self.inner_state.get() {
             return Err(ErrorCode::BUSY);
         }
@@ -380,7 +380,7 @@ impl<'a, S: SpiMasterDevice<'a>, A: crate::kernel::hil::time::Alarm<'a>> CYW4343
     fn write_bytes(
         &self,
         mut buffer: SubSliceMut<'static, u8>,
-    ) -> Result<(), (crate::kernel::ErrorCode, SubSliceMut<'static, u8>)> {
+    ) -> Result<(), (kernel::ErrorCode, SubSliceMut<'static, u8>)> {
         let Some((mut data, mut extra)) = Option::zip(self.data.take(), self.extra.take()) else {
             return Err((ErrorCode::NOMEM, buffer));
         };
@@ -417,7 +417,7 @@ impl<'a, S: SpiMasterDevice<'a>, A: crate::kernel::hil::time::Alarm<'a>> CYW4343
         &self,
         mut buffer: SubSliceMut<'static, u8>,
         len: usize,
-    ) -> Result<(), (crate::kernel::ErrorCode, SubSliceMut<'static, u8>)> {
+    ) -> Result<(), (kernel::ErrorCode, SubSliceMut<'static, u8>)> {
         let Some((mut extra, mut data)) = Option::zip(self.extra.take(), self.data.take()) else {
             return Err((ErrorCode::NOMEM, buffer));
         };
@@ -473,7 +473,7 @@ pub(super) const NVRAM_MAGIC_CMD: u32 = cmd32(
     RegLen::Word as _,
 );
 
-impl<'a, S: SpiMasterDevice<'a>, A: crate::kernel::hil::time::Alarm<'a>> SpiMasterClient
+impl<'a, S: SpiMasterDevice<'a>, A: kernel::hil::time::Alarm<'a>> SpiMasterClient
     for CYW4343xSpiBus<'a, S, A>
 {
     fn read_write_done(
@@ -600,7 +600,7 @@ impl<'a, S: SpiMasterDevice<'a>, A: crate::kernel::hil::time::Alarm<'a>> SpiMast
     }
 }
 
-impl<'a, S: SpiMasterDevice<'a>, A: crate::kernel::hil::time::Alarm<'a>> time::AlarmClient
+impl<'a, S: SpiMasterDevice<'a>, A: kernel::hil::time::Alarm<'a>> time::AlarmClient
     for CYW4343xSpiBus<'a, S, A>
 {
     fn alarm(&self) {
@@ -622,7 +622,7 @@ impl<'a, S: SpiMasterDevice<'a>, A: crate::kernel::hil::time::Alarm<'a>> time::A
 
 // Implementation of the `gpio` Client trait.
 // The WiFi chip should signal on the interrupt line when a WLAN (F2) packet is ready to be read.
-impl<'a, S: SpiMasterDevice<'a>, A: crate::kernel::hil::time::Alarm<'a>> gpio::Client
+impl<'a, S: SpiMasterDevice<'a>, A: kernel::hil::time::Alarm<'a>> gpio::Client
     for CYW4343xSpiBus<'a, S, A>
 {
     fn fired(&self) {

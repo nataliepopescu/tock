@@ -34,11 +34,11 @@
 //! ```
 
 use core::cell::Cell;
-use crate::kernel::ErrorCode;
-use crate::kernel::hil::flash::{self, Flash};
-use crate::kernel::hil::hasher::{self, Hasher};
-use crate::kernel::utilities::cells::{MapCell, OptionalCell, TakeCell};
-use crate::kernel::utilities::leasable_buffer::{SubSlice, SubSliceMut};
+use kernel::ErrorCode;
+use kernel::hil::flash::{self, Flash};
+use kernel::hil::hasher::{self, Hasher};
+use kernel::utilities::cells::{MapCell, OptionalCell, TakeCell};
+use kernel::utilities::leasable_buffer::{SubSlice, SubSliceMut};
 use tickv::AsyncTicKV;
 
 /// The type of keys, this should define the output size of the digest

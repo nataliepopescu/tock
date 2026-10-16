@@ -4,10 +4,10 @@
 
 use core::cell::Cell;
 
-use crate::kernel::ErrorCode;
-use crate::kernel::hil::screen::{Screen, ScreenClient, ScreenPixelFormat, ScreenRotation};
-use crate::kernel::utilities::cells::OptionalCell;
-use crate::kernel::utilities::leasable_buffer::SubSliceMut;
+use kernel::ErrorCode;
+use kernel::hil::screen::{Screen, ScreenClient, ScreenPixelFormat, ScreenRotation};
+use kernel::utilities::cells::OptionalCell;
+use kernel::utilities::leasable_buffer::SubSliceMut;
 
 use super::utils::Frame;
 

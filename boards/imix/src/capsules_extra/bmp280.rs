@@ -11,12 +11,12 @@
 //! Not implemented: pressure
 
 use core::cell::Cell;
-use crate::kernel::ErrorCode;
-use crate::kernel::debug;
-use crate::kernel::hil;
-use crate::kernel::hil::i2c;
-use crate::kernel::hil::time::{Alarm, ConvertTicks};
-use crate::kernel::utilities::cells::{OptionalCell, TakeCell};
+use kernel::ErrorCode;
+use kernel::debug;
+use kernel::hil;
+use kernel::hil::i2c;
+use kernel::hil::time::{Alarm, ConvertTicks};
+use kernel::utilities::cells::{OptionalCell, TakeCell};
 
 pub static BASE_ADDR: u8 = 0x76;
 

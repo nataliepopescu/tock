@@ -242,12 +242,12 @@ use crate::net::util::{network_slice_to_u16, u16_to_network_slice};
 use core::cell::Cell;
 use core::cmp::min;
 
-use crate::kernel::ErrorCode;
-use crate::kernel::collections::list::{List, ListLink, ListNode};
-use crate::kernel::hil::radio;
-use crate::kernel::hil::time;
-use crate::kernel::hil::time::{Frequency, Ticks};
-use crate::kernel::utilities::cells::{MapCell, TakeCell};
+use kernel::ErrorCode;
+use kernel::collections::list::{List, ListLink, ListNode};
+use kernel::hil::radio;
+use kernel::hil::time;
+use kernel::hil::time::{Frequency, Ticks};
+use kernel::utilities::cells::{MapCell, TakeCell};
 
 // Reassembly timeout in seconds
 const FRAG_TIMEOUT: u32 = 60;

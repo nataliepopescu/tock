@@ -24,17 +24,17 @@
 use capsules_core::virtualizers::virtual_i2c::{I2CDevice, MuxI2C};
 use capsules_extra::chirp_i2c_moisture::{BUFFER_SIZE, ChirpI2cMoisture};
 use core::mem::MaybeUninit;
-use crate::kernel::component::Component;
-use crate::kernel::hil::i2c;
+use kernel::component::Component;
+use kernel::hil::i2c;
 
 // Setup static space for the objects.
 #[macro_export]
 macro_rules! chirp_i2c_moisture_component_static {
     ($I:ty $(,)?) => {{
         let i2c_device =
-            crate::kernel::static_buf!(capsules_core::virtualizers::virtual_i2c::I2CDevice<'static, $I>);
-        let i2c_buffer = crate::kernel::static_buf!([u8; capsules_extra::chirp_i2c_moisture::BUFFER_SIZE]);
-        let chirp_i2c_moisture = crate::kernel::static_buf!(
+            kernel::static_buf!(capsules_core::virtualizers::virtual_i2c::I2CDevice<'static, $I>);
+        let i2c_buffer = kernel::static_buf!([u8; capsules_extra::chirp_i2c_moisture::BUFFER_SIZE]);
+        let chirp_i2c_moisture = kernel::static_buf!(
             capsules_extra::chirp_i2c_moisture::ChirpI2cMoisture<
                 'static,
                 capsules_core::virtualizers::virtual_i2c::I2CDevice<$I>,

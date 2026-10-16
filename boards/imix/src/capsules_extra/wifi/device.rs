@@ -10,7 +10,7 @@
 use core::num::NonZeroU8;
 use enum_primitive::cast::FromPrimitive;
 use enum_primitive::enum_from_primitive;
-use crate::kernel::ErrorCode;
+use kernel::ErrorCode;
 
 /// Maximum lengths for buffers
 pub mod len {

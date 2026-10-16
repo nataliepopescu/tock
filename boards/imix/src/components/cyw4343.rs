@@ -44,18 +44,18 @@ use capsules_extra::cyw4343::CYW4343x;
 use capsules_extra::cyw4343::CYW4343xBus;
 use capsules_extra::cyw4343::spi_bus;
 use core::mem::MaybeUninit;
-use crate::kernel::component::Component;
-use crate::kernel::hil::{gpio, spi, time};
+use kernel::component::Component;
+use kernel::hil::{gpio, spi, time};
 use time::Alarm;
 
 // Setup static space for the objects.
 #[macro_export]
 macro_rules! cyw4343_component_static {
     ($P:ty, $A:ty, $B:ty $(,)?) => {{
-        let alarm = crate::kernel::static_buf!(
+        let alarm = kernel::static_buf!(
             capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, $A>
         );
-        let driver = crate::kernel::static_buf!(
+        let driver = kernel::static_buf!(
             capsules_extra::cyw4343::CYW4343x<
                 'static,
                 $P,
@@ -63,7 +63,7 @@ macro_rules! cyw4343_component_static {
                 $B,
             >
         );
-        let buffer = crate::kernel::static_buf!([u8; 1600]);
+        let buffer = kernel::static_buf!([u8; 1600]);
 
         (alarm, driver, buffer)
     }};
@@ -124,12 +124,12 @@ impl<P: 'static + gpio::Pin, A: 'static + time::Alarm<'static>, B: 'static + CYW
 #[macro_export]
 macro_rules! cyw4343x_spi_bus_component_static {
     ($S:ty, $A:ty) => {{
-        let extra = crate::kernel::static_buf!([u8; capsules_extra::cyw4343::spi_bus::WORD_SIZE]);
-        let buffer = crate::kernel::static_buf!([u8; capsules_extra::cyw4343::spi_bus::MAX_PACKET_SIZE]);
-        let alarm = crate::kernel::static_buf!(
+        let extra = kernel::static_buf!([u8; capsules_extra::cyw4343::spi_bus::WORD_SIZE]);
+        let buffer = kernel::static_buf!([u8; capsules_extra::cyw4343::spi_bus::MAX_PACKET_SIZE]);
+        let alarm = kernel::static_buf!(
             capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, $A>
         );
-        let bus = crate::kernel::static_buf!(
+        let bus = kernel::static_buf!(
             capsules_extra::cyw4343::spi_bus::CYW4343xSpiBus<
                 'static,
                 $S,

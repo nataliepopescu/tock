@@ -4,12 +4,12 @@
 
 use core::cell::Cell;
 
-use crate::kernel::ErrorCode;
-use crate::kernel::hil::adc;
-use crate::kernel::hil::gpio;
-use crate::kernel::hil::sensors::{SoundPressure, SoundPressureClient};
-use crate::kernel::utilities::cells::{OptionalCell, TakeCell};
-use crate::kernel::utilities::math;
+use kernel::ErrorCode;
+use kernel::hil::adc;
+use kernel::hil::gpio;
+use kernel::hil::sensors::{SoundPressure, SoundPressureClient};
+use kernel::utilities::cells::{OptionalCell, TakeCell};
+use kernel::utilities::math;
 
 #[derive(Copy, Clone, PartialEq)]
 enum State {

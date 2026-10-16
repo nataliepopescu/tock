@@ -28,10 +28,10 @@
 //! ```
 
 use crate::tickv::{KVSystem, KVSystemClient, KeyType};
-use crate::kernel::ErrorCode;
-use crate::kernel::hil::kv;
-use crate::kernel::utilities::cells::{MapCell, OptionalCell, TakeCell};
-use crate::kernel::utilities::leasable_buffer::SubSliceMut;
+use kernel::ErrorCode;
+use kernel::hil::kv;
+use kernel::utilities::cells::{MapCell, OptionalCell, TakeCell};
+use kernel::utilities::leasable_buffer::SubSliceMut;
 
 #[derive(Clone, Copy, PartialEq, Debug)]
 enum Operation {

@@ -19,8 +19,8 @@
 //!         sam4l::gpio::GPIOPin,
 //!         (
 //!             &sam4l::gpio::PC[24],
-//!             crate::kernel::hil::gpio::ActivationMode::ActiveLow,
-//!             crate::kernel::hil::gpio::FloatingState::PullUp
+//!             kernel::hil::gpio::ActivationMode::ActiveLow,
+//!             kernel::hil::gpio::FloatingState::PullUp
 //!         )
 //!     ),
 //! )
@@ -34,10 +34,10 @@
 
 use capsules_core::button::Button;
 use core::mem::MaybeUninit;
-use crate::kernel::capabilities::MemoryAllocationCapability;
-use crate::kernel::component::Component;
-use crate::kernel::hil::gpio;
-use crate::kernel::hil::gpio::InterruptWithValue;
+use kernel::capabilities::MemoryAllocationCapability;
+use kernel::component::Component;
+use kernel::hil::gpio;
+use kernel::hil::gpio::InterruptWithValue;
 
 #[macro_export]
 macro_rules! button_component_helper_owned {
@@ -56,13 +56,13 @@ macro_rules! button_component_helper_owned {
 #[macro_export]
 macro_rules! button_component_helper {
     ($Pin:ty, $(($P:expr, $M:expr, $F:expr)),+ $(,)?) => {{
-        use crate::kernel::static_init;
-        use crate::kernel::count_expressions;
-        use crate::kernel::hil::gpio::InterruptValueWrapper;
+        use kernel::static_init;
+        use kernel::count_expressions;
+        use kernel::hil::gpio::InterruptValueWrapper;
         const NUM_BUTTONS: usize = count_expressions!($($P),+);
 
         static_init!(
-            [(&'static InterruptValueWrapper<'static, $Pin>, crate::kernel::hil::gpio::ActivationMode, crate::kernel::hil::gpio::FloatingState); NUM_BUTTONS],
+            [(&'static InterruptValueWrapper<'static, $Pin>, kernel::hil::gpio::ActivationMode, kernel::hil::gpio::FloatingState); NUM_BUTTONS],
             [
                 $(
                     (static_init!(InterruptValueWrapper<$Pin>, InterruptValueWrapper::new($P))
@@ -78,7 +78,7 @@ macro_rules! button_component_helper {
 
 #[macro_export]
 macro_rules! button_component_static {
-    ($Pin:ty $(,)?) => {{ crate::kernel::static_buf!(capsules_core::button::Button<'static, $Pin>) }};
+    ($Pin:ty $(,)?) => {{ kernel::static_buf!(capsules_core::button::Button<'static, $Pin>) }};
 }
 
 pub type ButtonComponentType<IP> = capsules_core::button::Button<'static, IP>;
@@ -87,7 +87,7 @@ pub struct ButtonComponent<
     IP: 'static + gpio::InterruptPin<'static>,
     CAP: MemoryAllocationCapability + 'static,
 > {
-    board_kernel: &'static crate::kernel::Kernel,
+    board_kernel: &'static kernel::Kernel,
     driver_num: usize,
     button_pins: &'static [(
         &'static gpio::InterruptValueWrapper<'static, IP>,
@@ -101,7 +101,7 @@ impl<IP: 'static + gpio::InterruptPin<'static>, CAP: MemoryAllocationCapability 
     ButtonComponent<IP, CAP>
 {
     pub fn new(
-        board_kernel: &'static crate::kernel::Kernel,
+        board_kernel: &'static kernel::Kernel,
         driver_num: usize,
         button_pins: &'static [(
             &'static gpio::InterruptValueWrapper<'static, IP>,

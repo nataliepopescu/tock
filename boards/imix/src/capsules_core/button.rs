@@ -12,7 +12,7 @@
 //! -----
 //!
 //! ```rust,ignore
-//! # use crate::kernel::static_init;
+//! # use kernel::static_init;
 //!
 //! let button_pins = static_init!(
 //!     [&'static sam4l::gpio::GPIOPin; 1],
@@ -57,11 +57,11 @@
 
 use core::cell::Cell;
 
-use crate::kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
-use crate::kernel::hil::gpio;
-use crate::kernel::hil::gpio::{Configure, Input, InterruptWithValue};
-use crate::kernel::syscall::{CommandReturn, SyscallDriver};
-use crate::kernel::{ErrorCode, ProcessId};
+use kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
+use kernel::hil::gpio;
+use kernel::hil::gpio::{Configure, Input, InterruptWithValue};
+use kernel::syscall::{CommandReturn, SyscallDriver};
+use kernel::{ErrorCode, ProcessId};
 
 /// Syscall driver number.
 use crate::driver;
@@ -221,7 +221,7 @@ impl<'a, P: gpio::InterruptPin<'a>> SyscallDriver for Button<'a, P> {
         }
     }
 
-    fn allocate_grant(&self, processid: ProcessId) -> Result<(), crate::kernel::process::Error> {
+    fn allocate_grant(&self, processid: ProcessId) -> Result<(), kernel::process::Error> {
         self.apps.enter(processid, |_, _| {})
     }
 }

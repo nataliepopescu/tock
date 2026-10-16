@@ -14,14 +14,14 @@
 //! is running. The only way for a process to longer be the highest priority is
 //! for an interrupt to occur, which will cause the process to stop running.
 
-use crate::kernel::Kernel;
-use crate::kernel::capabilities::ProcessManagementCapability;
-use crate::kernel::deferred_call::DeferredCall;
-use crate::kernel::platform::chip::Chip;
-use crate::kernel::process::ProcessId;
-use crate::kernel::process::StoppedExecutingReason;
-use crate::kernel::scheduler::{Scheduler, SchedulingDecision};
-use crate::kernel::utilities::cells::OptionalCell;
+use kernel::Kernel;
+use kernel::capabilities::ProcessManagementCapability;
+use kernel::deferred_call::DeferredCall;
+use kernel::platform::chip::Chip;
+use kernel::process::ProcessId;
+use kernel::process::StoppedExecutingReason;
+use kernel::scheduler::{Scheduler, SchedulingDecision};
+use kernel::utilities::cells::OptionalCell;
 
 /// Priority scheduler based on the order of processes in the `PROCESSES` array.
 pub struct PrioritySched<CAP: ProcessManagementCapability> {

@@ -31,23 +31,23 @@ use capsules_core::virtualizers::virtual_i2c::{I2CDevice, MuxI2C};
 use capsules_extra::ambient_light::AmbientLight;
 use capsules_extra::isl29035::Isl29035;
 use core::mem::MaybeUninit;
-use crate::kernel::capabilities::MemoryAllocationCapability;
-use crate::kernel::component::Component;
-use crate::kernel::hil;
-use crate::kernel::hil::i2c;
-use crate::kernel::hil::time::{self, Alarm};
+use kernel::capabilities::MemoryAllocationCapability;
+use kernel::component::Component;
+use kernel::hil;
+use kernel::hil::i2c;
+use kernel::hil::time::{self, Alarm};
 
 // Setup static space for the objects.
 #[macro_export]
 macro_rules! isl29035_component_static {
     ($A:ty, $I:ty $(,)?) => {{
-        let alarm = crate::kernel::static_buf!(
+        let alarm = kernel::static_buf!(
             capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, $A>
         );
         let i2c_device =
-            crate::kernel::static_buf!(capsules_core::virtualizers::virtual_i2c::I2CDevice<'static, $I>);
-        let i2c_buffer = crate::kernel::static_buf!([u8; capsules_extra::isl29035::BUF_LEN]);
-        let isl29035 = crate::kernel::static_buf!(
+            kernel::static_buf!(capsules_core::virtualizers::virtual_i2c::I2CDevice<'static, $I>);
+        let i2c_buffer = kernel::static_buf!([u8; capsules_extra::isl29035::BUF_LEN]);
+        let isl29035 = kernel::static_buf!(
             capsules_extra::isl29035::Isl29035<
                 'static,
                 capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, $A>,
@@ -60,7 +60,7 @@ macro_rules! isl29035_component_static {
 
 #[macro_export]
 macro_rules! ambient_light_component_static {
-    () => {{ crate::kernel::static_buf!(capsules_extra::ambient_light::AmbientLight<'static>) }};
+    () => {{ kernel::static_buf!(capsules_extra::ambient_light::AmbientLight<'static>) }};
 }
 
 pub struct Isl29035Component<
@@ -116,7 +116,7 @@ pub struct AmbientLightComponent<
     L: 'static + hil::sensors::AmbientLight<'static>,
     CAP: MemoryAllocationCapability + 'static,
 > {
-    board_kernel: &'static crate::kernel::Kernel,
+    board_kernel: &'static kernel::Kernel,
     driver_num: usize,
     light_sensor: &'static L,
     mem_cap: CAP,
@@ -126,7 +126,7 @@ impl<L: 'static + hil::sensors::AmbientLight<'static>, CAP: MemoryAllocationCapa
     AmbientLightComponent<L, CAP>
 {
     pub fn new(
-        board_kernel: &'static crate::kernel::Kernel,
+        board_kernel: &'static kernel::Kernel,
         driver_num: usize,
         light_sensor: &'static L,
         mem_cap: CAP,

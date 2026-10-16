@@ -25,9 +25,9 @@ use capsules_core::virtualizers::virtual_pwm::PwmPinUser;
 use capsules_extra::buzzer_driver::Buzzer;
 use capsules_extra::buzzer_pwm::PwmBuzzer;
 use core::mem::MaybeUninit;
-use crate::kernel::capabilities::MemoryAllocationCapability;
-use crate::kernel::component::Component;
-use crate::kernel::hil;
+use kernel::capabilities::MemoryAllocationCapability;
+use kernel::component::Component;
+use kernel::hil;
 
 #[macro_export]
 macro_rules! buzzer_component_static {
@@ -36,11 +36,11 @@ macro_rules! buzzer_component_static {
         use capsules_core::virtualizers::virtual_pwm::PwmPinUser;
         use capsules_extra::buzzer_driver::Buzzer;
         use capsules_extra::buzzer_pwm::PwmBuzzer;
-        let alarm = crate::kernel::static_buf!(VirtualMuxAlarm<'static, $A>);
-        let pwm_buzzer = crate::kernel::static_buf!(
+        let alarm = kernel::static_buf!(VirtualMuxAlarm<'static, $A>);
+        let pwm_buzzer = kernel::static_buf!(
             PwmBuzzer<'static, VirtualMuxAlarm<'static, $A>, PwmPinUser<'static, $P>>
         );
-        let buzzer = crate::kernel::static_buf!(
+        let buzzer = kernel::static_buf!(
             Buzzer<
                 'static,
                 PwmBuzzer<'static, VirtualMuxAlarm<'static, $A>, PwmPinUser<'static, $P>>,
@@ -64,7 +64,7 @@ pub struct BuzzerComponent<
     P: 'static + hil::pwm::Pwm,
     CAP: MemoryAllocationCapability + 'static,
 > {
-    board_kernel: &'static crate::kernel::Kernel,
+    board_kernel: &'static kernel::Kernel,
     driver_num: usize,
     mux_alarm: &'static MuxAlarm<'static, A>,
     pwm_pin: &'static PwmPinUser<'static, P>,
@@ -78,7 +78,7 @@ impl<
 > BuzzerComponent<A, P, CAP>
 {
     pub fn new(
-        board_kernel: &'static crate::kernel::Kernel,
+        board_kernel: &'static kernel::Kernel,
         driver_num: usize,
         mux_alarm: &'static MuxAlarm<'static, A>,
         pwm_pin: &'static PwmPinUser<'static, P>,

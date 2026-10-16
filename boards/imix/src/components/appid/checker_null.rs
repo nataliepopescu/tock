@@ -6,11 +6,11 @@
 //! processes.
 
 use core::mem::MaybeUninit;
-use crate::kernel::component::Component;
+use kernel::component::Component;
 
 #[macro_export]
 macro_rules! app_checker_null_component_static {
-    () => {{ crate::kernel::static_buf!(capsules_system::process_checker::basic::AppCheckerNull) }};
+    () => {{ kernel::static_buf!(capsules_system::process_checker::basic::AppCheckerNull) }};
 }
 
 pub type AppCheckerNullComponentType = capsules_system::process_checker::basic::AppCheckerNull;

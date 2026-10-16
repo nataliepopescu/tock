@@ -8,9 +8,9 @@
 //! but instead of using GPIO pins as the underlying source for the buttons
 //! it uses keyboard key presses.
 
-use crate::kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
-use crate::kernel::syscall::{CommandReturn, SyscallDriver};
-use crate::kernel::{ErrorCode, ProcessId};
+use kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
+use kernel::syscall::{CommandReturn, SyscallDriver};
+use kernel::{ErrorCode, ProcessId};
 
 /// Syscall driver number.
 use capsules_core::driver;
@@ -113,12 +113,12 @@ impl SyscallDriver for ButtonKeyboard<'_> {
         }
     }
 
-    fn allocate_grant(&self, processid: ProcessId) -> Result<(), crate::kernel::process::Error> {
+    fn allocate_grant(&self, processid: ProcessId) -> Result<(), kernel::process::Error> {
         self.apps.enter(processid, |_, _| {})
     }
 }
 
-impl crate::kernel::hil::keyboard::KeyboardClient for ButtonKeyboard<'_> {
+impl kernel::hil::keyboard::KeyboardClient for ButtonKeyboard<'_> {
     fn keys_pressed(&self, keys: &[(u16, bool)], result: Result<(), ErrorCode>) {
         if result.is_ok() {
             // Iterate all key presses we received.

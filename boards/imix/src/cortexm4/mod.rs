@@ -9,7 +9,7 @@
 use core::fmt::Write;
 
 pub mod mpu {
-    use crate::kernel::utilities::StaticRef;
+    use kernel::utilities::StaticRef;
 
     pub type MPU = cortexm::mpu::MPU<8, 32>;
 

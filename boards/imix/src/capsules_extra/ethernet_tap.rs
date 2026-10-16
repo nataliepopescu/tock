@@ -162,15 +162,15 @@
 //!   transmit by the driver. The frame transmission must still be scheduled by
 //!   issuing the appropriate command system call (*command system call `6`*).
 
-use crate::kernel::ErrorCode;
-use crate::kernel::ProcessId;
-use crate::kernel::errorcode::into_statuscode;
-use crate::kernel::grant::{AllowRoCount, AllowRwCount, Grant, GrantKernelData, UpcallCount};
-use crate::kernel::hil::ethernet::{EthernetAdapterDatapath, EthernetAdapterDatapathClient};
-use crate::kernel::processbuffer::{ReadableProcessBuffer, WriteableProcessBuffer};
-use crate::kernel::syscall::{CommandReturn, SyscallDriver};
-use crate::kernel::utilities::cells::MapCell;
-use crate::kernel::utilities::streaming_process_slice::StreamingProcessSlice;
+use kernel::ErrorCode;
+use kernel::ProcessId;
+use kernel::errorcode::into_statuscode;
+use kernel::grant::{AllowRoCount, AllowRwCount, Grant, GrantKernelData, UpcallCount};
+use kernel::hil::ethernet::{EthernetAdapterDatapath, EthernetAdapterDatapathClient};
+use kernel::processbuffer::{ReadableProcessBuffer, WriteableProcessBuffer};
+use kernel::syscall::{CommandReturn, SyscallDriver};
+use kernel::utilities::cells::MapCell;
+use kernel::utilities::streaming_process_slice::StreamingProcessSlice;
 
 /// Syscall driver number.
 pub const DRIVER_NUM: usize = capsules_core::driver::NUM::EthernetTap as usize;
@@ -512,7 +512,7 @@ impl<'a, E: EthernetAdapterDatapath<'a>> SyscallDriver for EthernetTapDriver<'a,
         }
     }
 
-    fn allocate_grant(&self, processid: ProcessId) -> Result<(), crate::kernel::process::Error> {
+    fn allocate_grant(&self, processid: ProcessId) -> Result<(), kernel::process::Error> {
         self.apps.enter(processid, |_, _| {})
     }
 }
@@ -609,7 +609,7 @@ impl<'a, E: EthernetAdapterDatapath<'a>> EthernetAdapterDatapathClient
         let len_u16: u16 = match frame.len().try_into() {
             Ok(len) => len,
             Err(_) => {
-                crate::kernel::debug!(
+                kernel::debug!(
                     "Incoming frame exceeds {} bytes ({} bytes), discarding.",
                     u16::MAX,
                     frame.len()

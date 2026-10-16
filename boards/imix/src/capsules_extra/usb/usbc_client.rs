@@ -13,11 +13,11 @@ use super::descriptors::{
 };
 use super::usbc_client_ctrl::ClientCtrl;
 
-use crate::kernel::debug;
-use crate::kernel::hil;
-use crate::kernel::hil::usb::TransferType;
-use crate::kernel::utilities::registers::InMemoryRegister;
-use crate::kernel::utilities::registers::interfaces::{Readable, Writeable};
+use kernel::debug;
+use kernel::hil;
+use kernel::hil::usb::TransferType;
+use kernel::utilities::registers::InMemoryRegister;
+use kernel::utilities::registers::interfaces::{Readable, Writeable};
 
 const VENDOR_ID: u16 = 0x6667;
 const PRODUCT_ID: u16 = 0xabcd;

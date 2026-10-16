@@ -9,10 +9,10 @@ mod fmt;
 
 use core::cell::Cell;
 
-use crate::kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
-use crate::kernel::hil::uart::{Transmit, TransmitClient};
-use crate::kernel::syscall::CommandReturn;
-use crate::kernel::{ErrorCode, ProcessId};
+use kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
+use kernel::hil::uart::{Transmit, TransmitClient};
+use kernel::syscall::CommandReturn;
+use kernel::{ErrorCode, ProcessId};
 
 // LowLevelDebug requires a &mut [u8] buffer of length at least BUF_LEN.
 pub use fmt::BUF_LEN;
@@ -47,7 +47,7 @@ impl<'u, U: Transmit<'u>> LowLevelDebug<'u, U> {
     }
 }
 
-impl<'u, U: Transmit<'u>> crate::kernel::syscall::SyscallDriver for LowLevelDebug<'u, U> {
+impl<'u, U: Transmit<'u>> kernel::syscall::SyscallDriver for LowLevelDebug<'u, U> {
     fn command(
         &self,
         minor_num: usize,
@@ -65,7 +65,7 @@ impl<'u, U: Transmit<'u>> crate::kernel::syscall::SyscallDriver for LowLevelDebu
         CommandReturn::success()
     }
 
-    fn allocate_grant(&self, processid: ProcessId) -> Result<(), crate::kernel::process::Error> {
+    fn allocate_grant(&self, processid: ProcessId) -> Result<(), kernel::process::Error> {
         self.grant.enter(processid, |_, _| {})
     }
 }

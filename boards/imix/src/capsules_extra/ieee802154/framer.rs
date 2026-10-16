@@ -59,7 +59,7 @@
 //! 802.15.4 frames:
 //!
 //! ```rust,ignore
-//! use crate::kernel::static_init;
+//! use kernel::static_init;
 //!
 //! let radio_capsule = static_init!(
 //!     capsules_extra::ieee802154::RadioDriver<'static>,
@@ -86,12 +86,12 @@ use crate::net::stream::{encode_bytes, encode_u8, encode_u32};
 
 use core::cell::Cell;
 
-use crate::kernel::ErrorCode;
-use crate::kernel::hil::radio::{self, LQI_SIZE};
-use crate::kernel::hil::symmetric_encryption::{AES128, AESCCM, CCMClient};
-use crate::kernel::processbuffer::ReadableProcessSlice;
-use crate::kernel::utilities::cells::{MapCell, OptionalCell};
-use crate::kernel::utilities::leasable_buffer::SubSliceMut;
+use kernel::ErrorCode;
+use kernel::hil::radio::{self, LQI_SIZE};
+use kernel::hil::symmetric_encryption::{AES128, AESCCM, CCMClient};
+use kernel::processbuffer::ReadableProcessSlice;
+use kernel::utilities::cells::{MapCell, OptionalCell};
+use kernel::utilities::leasable_buffer::SubSliceMut;
 
 /// Wraps a static mutable byte slice along with header information
 /// for a payload.
@@ -318,7 +318,7 @@ enum RxState {
     ReadyToYield(FrameInfo, &'static mut [u8], u8),
 }
 
-/// Wraps an IEEE 802.15.4 [crate::kernel::hil::radio::Radio]
+/// Wraps an IEEE 802.15.4 [kernel::hil::radio::Radio]
 /// and exposes [`capsules_extra::ieee802154::mac::Mac`](crate::ieee802154::mac::Mac) functionality.
 ///
 /// It hides header preparation, transmission and processing logic
@@ -464,12 +464,12 @@ impl<'a, M: Mac<'a>, A: AESCCM<'a, AES128>> Framer<'a, M, A> {
                             Some(mac) => match mac {
                                 MacAddress::Long(val) => val,
                                 MacAddress::Short(_) => {
-                                    crate::kernel::debug!("[15.4] DROPPED PACKET - error only short address provided on encrypted packet.");
+                                    kernel::debug!("[15.4] DROPPED PACKET - error only short address provided on encrypted packet.");
                                     return None
                                 },
                             },
                             None => {
-                                crate::kernel::debug!("[15.4] DROPPED PACKET - Malformed, no src address provided.");
+                                kernel::debug!("[15.4] DROPPED PACKET - Malformed, no src address provided.");
                                 return None
                             },
                         };
@@ -620,7 +620,7 @@ impl<'a, M: Mac<'a>, A: AESCCM<'a, AES128>> Framer<'a, M, A> {
                             {
                                 // No error is returned for the receive function because recv occurs implicitly
                                 // Log debug statement here so that this error does not occur silently
-                                crate::kernel::debug!(
+                                kernel::debug!(
                                     "[15.4 RECV FAIL] - Failed setting crypto key/nonce."
                                 );
                                 self.mac.set_receive_buffer(buf);

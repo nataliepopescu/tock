@@ -9,10 +9,10 @@
 
 use core::cell::Cell;
 
-use crate::kernel::collections::list::{List, ListLink, ListNode};
-use crate::kernel::deferred_call::{DeferredCall, DeferredCallClient};
-use crate::kernel::hil::i2c::{self, Error, I2CClient, I2CHwMasterClient, NoSMBus};
-use crate::kernel::utilities::cells::{OptionalCell, TakeCell};
+use kernel::collections::list::{List, ListLink, ListNode};
+use kernel::deferred_call::{DeferredCall, DeferredCallClient};
+use kernel::hil::i2c::{self, Error, I2CClient, I2CHwMasterClient, NoSMBus};
+use kernel::utilities::cells::{OptionalCell, TakeCell};
 // `NoSMBus` provides a placeholder for `SMBusMaster` in case the board doesn't have a SMBus
 pub struct MuxI2C<'a, I: i2c::I2CMaster<'a>, S: i2c::SMBusMaster<'a> = NoSMBus> {
     i2c: &'a I,

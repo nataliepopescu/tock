@@ -16,7 +16,7 @@
 //! -----
 //!
 //! ```rust,ignore
-//! # use crate::kernel::{hil, static_init};
+//! # use kernel::{hil, static_init};
 //!
 //! // Create the mux.
 //! let mux_flash = static_init!(
@@ -32,10 +32,10 @@
 
 use core::cell::Cell;
 
-use crate::kernel::ErrorCode;
-use crate::kernel::collections::list::{List, ListLink, ListNode};
-use crate::kernel::hil;
-use crate::kernel::utilities::cells::{OptionalCell, TakeCell};
+use kernel::ErrorCode;
+use kernel::collections::list::{List, ListLink, ListNode};
+use kernel::hil;
+use kernel::utilities::cells::{OptionalCell, TakeCell};
 
 /// Handle keeping a list of active users of flash hardware and serialize their
 /// requests.

@@ -27,20 +27,20 @@ use capsules_core::virtualizers::virtual_i2c::{I2CDevice, MuxI2C};
 use capsules_extra::lsm303agr::Lsm303agrI2C;
 use capsules_extra::lsm303xx;
 use core::mem::MaybeUninit;
-use crate::kernel::capabilities::MemoryAllocationCapability;
-use crate::kernel::component::Component;
-use crate::kernel::hil::i2c;
+use kernel::capabilities::MemoryAllocationCapability;
+use kernel::component::Component;
+use kernel::hil::i2c;
 
 // Setup static space for the objects.
 #[macro_export]
 macro_rules! lsm303agr_component_static {
     ($I:ty $(,)?) => {{
-        let buffer = crate::kernel::static_buf!([u8; 8]);
+        let buffer = kernel::static_buf!([u8; 8]);
         let accelerometer_i2c =
-            crate::kernel::static_buf!(capsules_core::virtualizers::virtual_i2c::I2CDevice<$I>);
+            kernel::static_buf!(capsules_core::virtualizers::virtual_i2c::I2CDevice<$I>);
         let magnetometer_i2c =
-            crate::kernel::static_buf!(capsules_core::virtualizers::virtual_i2c::I2CDevice<$I>);
-        let lsm303agr = crate::kernel::static_buf!(
+            kernel::static_buf!(capsules_core::virtualizers::virtual_i2c::I2CDevice<$I>);
+        let lsm303agr = kernel::static_buf!(
             capsules_extra::lsm303agr::Lsm303agrI2C<
                 'static,
                 capsules_core::virtualizers::virtual_i2c::I2CDevice<$I>,
@@ -58,7 +58,7 @@ pub struct Lsm303agrI2CComponent<
     i2c_mux: &'static MuxI2C<'static, I>,
     accelerometer_i2c_address: u8,
     magnetometer_i2c_address: u8,
-    board_kernel: &'static crate::kernel::Kernel,
+    board_kernel: &'static kernel::Kernel,
     driver_num: usize,
     mem_cap: CAP,
 }
@@ -70,7 +70,7 @@ impl<I: 'static + i2c::I2CMaster<'static>, CAP: MemoryAllocationCapability + 'st
         i2c_mux: &'static MuxI2C<'static, I>,
         accelerometer_i2c_address: Option<u8>,
         magnetometer_i2c_address: Option<u8>,
-        board_kernel: &'static crate::kernel::Kernel,
+        board_kernel: &'static kernel::Kernel,
         driver_num: usize,
         mem_cap: CAP,
     ) -> Lsm303agrI2CComponent<I, CAP> {

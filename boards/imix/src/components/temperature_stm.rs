@@ -7,15 +7,15 @@
 use capsules_core::virtualizers::virtual_adc::AdcDevice;
 use capsules_extra::temperature_stm::TemperatureSTM;
 use core::mem::MaybeUninit;
-use crate::kernel::component::Component;
-use crate::kernel::hil::adc;
-use crate::kernel::hil::adc::AdcChannel;
+use kernel::component::Component;
+use kernel::hil::adc;
+use kernel::hil::adc::AdcChannel;
 
 #[macro_export]
 macro_rules! temperature_stm_adc_component_static {
     ($A:ty $(,)?) => {{
         let adc_device = components::adc_component_static!($A);
-        let temperature_stm = crate::kernel::static_buf!(
+        let temperature_stm = kernel::static_buf!(
             capsules_extra::temperature_stm::TemperatureSTM<
                 'static,
                 capsules_core::virtualizers::virtual_adc::AdcDevice<'static, $A>,

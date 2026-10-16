@@ -28,9 +28,9 @@
 use capsules_extra::isolated_nonvolatile_storage_driver::IsolatedNonvolatileStorage;
 use capsules_extra::nonvolatile_to_pages::NonvolatileToPages;
 use core::mem::MaybeUninit;
-use crate::kernel::capabilities::MemoryAllocationCapability;
-use crate::kernel::component::Component;
-use crate::kernel::hil;
+use kernel::capabilities::MemoryAllocationCapability;
+use kernel::component::Component;
+use kernel::hil;
 
 // How much storage space to allocate per-app. Currently, regions are not
 // growable, so this will be all the space the app gets.
@@ -41,18 +41,18 @@ pub const ISOLATED_NONVOLATILE_STORAGE_APP_REGION_SIZE_DEFAULT: usize = 2048;
 #[macro_export]
 macro_rules! isolated_nonvolatile_storage_component_static {
     ($F:ty, $APP_REGION_SIZE:expr $(,)?) => {{
-        let page = crate::kernel::static_buf!(<$F as crate::kernel::hil::flash::Flash>::Page);
-        let ntp = crate::kernel::static_buf!(
+        let page = kernel::static_buf!(<$F as kernel::hil::flash::Flash>::Page);
+        let ntp = kernel::static_buf!(
             capsules_extra::nonvolatile_to_pages::NonvolatileToPages<'static, $F>
         );
-        let ns = crate::kernel::static_buf!(
+        let ns = kernel::static_buf!(
             capsules_extra::isolated_nonvolatile_storage_driver::IsolatedNonvolatileStorage<
                 'static,
                 $APP_REGION_SIZE,
             >
         );
         let buffer =
-            crate::kernel::static_buf!([u8; capsules_extra::isolated_nonvolatile_storage_driver::BUF_LEN]);
+            kernel::static_buf!([u8; capsules_extra::isolated_nonvolatile_storage_driver::BUF_LEN]);
 
         (page, ntp, ns, buffer)
     }};
@@ -66,7 +66,7 @@ pub struct IsolatedNonvolatileStorageComponent<
     const APP_REGION_SIZE: usize,
     CAP: MemoryAllocationCapability + 'static,
 > {
-    board_kernel: &'static crate::kernel::Kernel,
+    board_kernel: &'static kernel::Kernel,
     driver_num: usize,
     flash: &'static F,
     userspace_start: usize,
@@ -81,7 +81,7 @@ impl<
 > IsolatedNonvolatileStorageComponent<F, APP_REGION_SIZE, CAP>
 {
     pub fn new(
-        board_kernel: &'static crate::kernel::Kernel,
+        board_kernel: &'static kernel::Kernel,
         driver_num: usize,
         flash: &'static F,
         userspace_start: usize,

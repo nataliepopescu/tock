@@ -10,7 +10,7 @@
 use enum_primitive::cast::FromPrimitive;
 use enum_primitive::enum_from_primitive;
 
-use crate::kernel::utilities::registers::register_bitfields;
+use kernel::utilities::registers::register_bitfields;
 
 pub const ACCELEROMETER_BASE_ADDRESS: u8 = 0x19;
 pub const MAGNETOMETER_BASE_ADDRESS: u8 = 0x1e;

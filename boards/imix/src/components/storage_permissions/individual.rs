@@ -6,7 +6,7 @@
 //! access to their own stored state.
 //!
 //! ```rust
-//! crate::kernel::create_typed_capability!(app_store_cap, AppStoreCap: crate::kernel::capabilities::ApplicationStorageCapability);
+//! kernel::create_typed_capability!(app_store_cap, AppStoreCap: kernel::capabilities::ApplicationStorageCapability);
 //! let storage_permissions_policy =
 //!     components::storage_permissions::individual::StoragePermissionsIndividualComponent::new(
 //!         app_store_cap,
@@ -14,22 +14,22 @@
 //!     .finalize(
 //!         components::storage_permissions_individual_component_static!(
 //!             nrf52840dk_lib::Chip,
-//!             crate::kernel::process::ProcessStandardDebugFull,
+//!             kernel::process::ProcessStandardDebugFull,
 //!             AppStoreCap,
 //!         ),
 //!     );
 //! ```
 
 use core::mem::MaybeUninit;
-use crate::kernel::capabilities::ApplicationStorageCapability;
-use crate::kernel::component::Component;
-use crate::kernel::platform::chip::Chip;
-use crate::kernel::process::ProcessStandardDebug;
+use kernel::capabilities::ApplicationStorageCapability;
+use kernel::component::Component;
+use kernel::platform::chip::Chip;
+use kernel::process::ProcessStandardDebug;
 
 #[macro_export]
 macro_rules! storage_permissions_individual_component_static {
     ($C:ty, $D:ty, $CAP:ty $(,)?) => {{
-        crate::kernel::static_buf!(
+        kernel::static_buf!(
             capsules_system::storage_permissions::individual::IndividualStoragePermissions<
                 $C,
                 $D,

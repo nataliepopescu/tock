@@ -5,8 +5,8 @@
 //! Implementation of [`SchedulerTimer`] trait on top of a virtual alarm.
 
 use core::num::NonZeroU32;
-use crate::kernel::hil::time::{self, Frequency, Ticks};
-use crate::kernel::platform::scheduler_timer::SchedulerTimer;
+use kernel::hil::time::{self, Frequency, Ticks};
+use kernel::platform::scheduler_timer::SchedulerTimer;
 
 /// Implementation of [`SchedulerTimer`] trait on top of a virtual alarm.
 ///

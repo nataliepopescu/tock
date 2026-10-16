@@ -99,7 +99,7 @@
 //! let temp = static_init!(
 //! capsules::temperature::TemperatureSensor<'static>,
 //!     capsules::temperature::TemperatureSensor::new(l3gd20, grant_temperature));
-//! crate::kernel::hil::sensors::TemperatureDriver::set_client(l3gd20, temp);
+//! kernel::hil::sensors::TemperatureDriver::set_client(l3gd20, temp);
 //!
 //! ```
 //!
@@ -108,13 +108,13 @@
 
 use core::cell::Cell;
 
-use crate::kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
-use crate::kernel::hil::sensors;
-use crate::kernel::hil::spi;
-use crate::kernel::syscall::{CommandReturn, SyscallDriver};
-use crate::kernel::utilities::cells::{MapCell, OptionalCell};
-use crate::kernel::utilities::leasable_buffer::SubSliceMut;
-use crate::kernel::{ErrorCode, ProcessId};
+use kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
+use kernel::hil::sensors;
+use kernel::hil::spi;
+use kernel::syscall::{CommandReturn, SyscallDriver};
+use kernel::utilities::cells::{MapCell, OptionalCell};
+use kernel::utilities::leasable_buffer::SubSliceMut;
+use kernel::{ErrorCode, ProcessId};
 
 use capsules_core::driver;
 pub const DRIVER_NUM: usize = driver::NUM::L3gd20 as usize;
@@ -424,7 +424,7 @@ impl<'a, S: spi::SpiMasterDevice<'a>> SyscallDriver for L3gd20Spi<'a, S> {
         }
     }
 
-    fn allocate_grant(&self, processid: ProcessId) -> Result<(), crate::kernel::process::Error> {
+    fn allocate_grant(&self, processid: ProcessId) -> Result<(), kernel::process::Error> {
         self.grants.enter(processid, |_, _| {})
     }
 }

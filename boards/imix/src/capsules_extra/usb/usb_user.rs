@@ -14,7 +14,7 @@
 //! example:
 //!
 //! ```rust,ignore
-//! # use crate::kernel::static_init;
+//! # use kernel::static_init;
 //!
 //! // Configure the USB controller
 //! let usb_client = static_init!(
@@ -30,11 +30,11 @@
 //!         usb_client, board_kernel.create_grant(&grant_cap)));
 //! ```
 
-use crate::kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
-use crate::kernel::hil;
-use crate::kernel::syscall::{CommandReturn, SyscallDriver};
-use crate::kernel::utilities::cells::OptionalCell;
-use crate::kernel::{ErrorCode, ProcessId};
+use kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
+use kernel::hil;
+use kernel::syscall::{CommandReturn, SyscallDriver};
+use kernel::utilities::cells::OptionalCell;
+use kernel::{ErrorCode, ProcessId};
 
 use capsules_core::driver;
 pub const DRIVER_NUM: usize = driver::NUM::UsbUser as usize;
@@ -86,7 +86,7 @@ where
                             // Schedule a callback immediately
                             let _ = upcalls.schedule_upcall(
                                 0,
-                                (crate::kernel::errorcode::into_statuscode(Ok(())), 0, 0),
+                                (kernel::errorcode::into_statuscode(Ok(())), 0, 0),
                             );
                             app.awaiting = None;
                         }
@@ -152,7 +152,7 @@ where
         }
     }
 
-    fn allocate_grant(&self, processid: ProcessId) -> Result<(), crate::kernel::process::Error> {
+    fn allocate_grant(&self, processid: ProcessId) -> Result<(), kernel::process::Error> {
         self.apps.enter(processid, |_, _| {})
     }
 }

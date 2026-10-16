@@ -8,7 +8,7 @@
 //! -----
 //!
 //! ```ignore
-//! use crate::kernel::static_init;
+//! use kernel::static_init;
 //! let mux_pwm = components::pwm::PwmMuxComponent::new(&peripherals.pwm)
 //! .finalize(components::pwm_mux_component_static!(rp2040::pwm::Pwm));
 //!
@@ -35,9 +35,9 @@
 //! );
 //! ```
 
-use crate::kernel::hil;
-use crate::kernel::syscall::{CommandReturn, SyscallDriver};
-use crate::kernel::{ErrorCode, ProcessId};
+use kernel::hil;
+use kernel::syscall::{CommandReturn, SyscallDriver};
+use kernel::{ErrorCode, ProcessId};
 
 /// Syscall driver number.
 use capsules_core::driver;
@@ -106,7 +106,7 @@ impl<const SERVO_COUNT: usize> SyscallDriver for Servo<'_, SERVO_COUNT> {
         }
     }
 
-    fn allocate_grant(&self, _process_id: ProcessId) -> Result<(), crate::kernel::process::Error> {
+    fn allocate_grant(&self, _process_id: ProcessId) -> Result<(), kernel::process::Error> {
         Ok(())
     }
 }

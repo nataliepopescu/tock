@@ -17,15 +17,15 @@
 
 use capsules_system::scheduler::cooperative::{CoopProcessNode, CooperativeSched};
 use core::mem::MaybeUninit;
-use crate::kernel::component::Component;
-use crate::kernel::process::ProcessArray;
+use kernel::component::Component;
+use kernel::process::ProcessArray;
 
 #[macro_export]
 macro_rules! cooperative_component_static {
     ($N:expr $(,)?) => {{
         let coop_sched =
-            crate::kernel::static_buf!(capsules_system::scheduler::cooperative::CooperativeSched<'static>);
-        let coop_nodes = crate::kernel::static_buf!(
+            kernel::static_buf!(capsules_system::scheduler::cooperative::CooperativeSched<'static>);
+        let coop_nodes = kernel::static_buf!(
             [core::mem::MaybeUninit<
                 capsules_system::scheduler::cooperative::CoopProcessNode<'static>,
             >; $N]

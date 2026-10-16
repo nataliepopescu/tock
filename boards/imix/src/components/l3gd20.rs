@@ -16,22 +16,22 @@
 use capsules_core::virtualizers::virtual_spi::{MuxSpiMaster, VirtualSpiMasterDevice};
 use capsules_extra::l3gd20::L3gd20Spi;
 use core::mem::MaybeUninit;
-use crate::kernel::capabilities::MemoryAllocationCapability;
-use crate::kernel::component::Component;
-use crate::kernel::hil::spi;
-use crate::kernel::hil::spi::SpiMasterDevice;
+use kernel::capabilities::MemoryAllocationCapability;
+use kernel::component::Component;
+use kernel::hil::spi;
+use kernel::hil::spi::SpiMasterDevice;
 
 // Setup static space for the objects.
 #[macro_export]
 macro_rules! l3gd20_component_static {
     ($S:ty $(,)?) => {{
-        let txbuffer = crate::kernel::static_buf!([u8; capsules_extra::l3gd20::TX_BUF_LEN]);
-        let rxbuffer = crate::kernel::static_buf!([u8; capsules_extra::l3gd20::RX_BUF_LEN]);
+        let txbuffer = kernel::static_buf!([u8; capsules_extra::l3gd20::TX_BUF_LEN]);
+        let rxbuffer = kernel::static_buf!([u8; capsules_extra::l3gd20::RX_BUF_LEN]);
 
-        let spi = crate::kernel::static_buf!(
+        let spi = kernel::static_buf!(
             capsules_core::virtualizers::virtual_spi::VirtualSpiMasterDevice<'static, $S>
         );
-        let l3gd20spi = crate::kernel::static_buf!(
+        let l3gd20spi = kernel::static_buf!(
             capsules_extra::l3gd20::L3gd20Spi<
                 'static,
                 capsules_core::virtualizers::virtual_spi::VirtualSpiMasterDevice<'static, $S>,
@@ -51,7 +51,7 @@ pub struct L3gd20Component<
 > {
     spi_mux: &'static MuxSpiMaster<'static, S>,
     chip_select: CS,
-    board_kernel: &'static crate::kernel::Kernel,
+    board_kernel: &'static kernel::Kernel,
     driver_num: usize,
     mem_cap: CAP,
 }
@@ -65,7 +65,7 @@ impl<
     pub fn new(
         spi_mux: &'static MuxSpiMaster<'static, S>,
         chip_select: CS,
-        board_kernel: &'static crate::kernel::Kernel,
+        board_kernel: &'static kernel::Kernel,
         driver_num: usize,
         mem_cap: CAP,
     ) -> Self {

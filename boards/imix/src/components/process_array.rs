@@ -5,11 +5,11 @@
 //! Component for the array of process references used by the kernel.
 
 use core::mem::MaybeUninit;
-use crate::kernel::component::Component;
+use kernel::component::Component;
 
 #[macro_export]
 macro_rules! process_array_component_static {
-    ($NUM_PROCS:ty $(,)?) => {{ crate::kernel::static_buf!(crate::kernel::process::ProcessArray<$NUM_PROCS>) }};
+    ($NUM_PROCS:ty $(,)?) => {{ kernel::static_buf!(kernel::process::ProcessArray<$NUM_PROCS>) }};
 }
 
 pub struct ProcessArrayComponent<const NUM_PROCS: usize> {}
@@ -21,10 +21,10 @@ impl<const NUM_PROCS: usize> ProcessArrayComponent<NUM_PROCS> {
 }
 
 impl<const NUM_PROCS: usize> Component for ProcessArrayComponent<NUM_PROCS> {
-    type StaticInput = &'static mut MaybeUninit<crate::kernel::process::ProcessArray<NUM_PROCS>>;
-    type Output = &'static crate::kernel::process::ProcessArray<NUM_PROCS>;
+    type StaticInput = &'static mut MaybeUninit<kernel::process::ProcessArray<NUM_PROCS>>;
+    type Output = &'static kernel::process::ProcessArray<NUM_PROCS>;
 
     fn finalize(self, static_buffer: Self::StaticInput) -> Self::Output {
-        static_buffer.write(crate::kernel::process::ProcessArray::new())
+        static_buffer.write(kernel::process::ProcessArray::new())
     }
 }

@@ -17,10 +17,10 @@
 use capsules_core::driver;
 pub const DRIVER_NUM: usize = driver::NUM::CycleCount as usize;
 
-use crate::kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
-use crate::kernel::syscall::{CommandReturn, SyscallDriver};
-use crate::kernel::utilities::cells::OptionalCell;
-use crate::kernel::{ErrorCode, ProcessId, hil};
+use kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
+use kernel::syscall::{CommandReturn, SyscallDriver};
+use kernel::utilities::cells::OptionalCell;
+use kernel::{ErrorCode, ProcessId, hil};
 
 #[derive(Default)]
 pub struct App;
@@ -107,7 +107,7 @@ impl<P: hil::hw_debug::CycleCounter> SyscallDriver for CycleCount<'_, P> {
         }
     }
 
-    fn allocate_grant(&self, processid: ProcessId) -> Result<(), crate::kernel::process::Error> {
+    fn allocate_grant(&self, processid: ProcessId) -> Result<(), kernel::process::Error> {
         self.apps.enter(processid, |_, _| {})
     }
 }

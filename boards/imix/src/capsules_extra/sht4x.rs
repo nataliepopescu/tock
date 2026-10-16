@@ -7,10 +7,10 @@
 use core::cell::Cell;
 use enum_primitive::cast::FromPrimitive;
 use enum_primitive::enum_from_primitive;
-use crate::kernel::ErrorCode;
-use crate::kernel::hil::i2c;
-use crate::kernel::hil::time::{self, Alarm, ConvertTicks};
-use crate::kernel::utilities::cells::{OptionalCell, TakeCell};
+use kernel::ErrorCode;
+use kernel::hil::i2c;
+use kernel::hil::time::{self, Alarm, ConvertTicks};
+use kernel::utilities::cells::{OptionalCell, TakeCell};
 
 pub static BASE_ADDR: u8 = 0x44;
 
@@ -68,8 +68,8 @@ fn crc8(data: &[u8]) -> u8 {
 
 pub struct SHT4x<'a, A: Alarm<'a>, I: i2c::I2CDevice> {
     i2c: &'a I,
-    humidity_client: OptionalCell<&'a dyn crate::kernel::hil::sensors::HumidityClient>,
-    temperature_client: OptionalCell<&'a dyn crate::kernel::hil::sensors::TemperatureClient>,
+    humidity_client: OptionalCell<&'a dyn kernel::hil::sensors::HumidityClient>,
+    temperature_client: OptionalCell<&'a dyn kernel::hil::sensors::TemperatureClient>,
     state: Cell<State>,
     buffer: TakeCell<'static, [u8]>,
     read_temp: Cell<bool>,
@@ -239,10 +239,10 @@ impl<'a, A: Alarm<'a>, I: i2c::I2CDevice> i2c::I2CClient for SHT4x<'a, A, I> {
     }
 }
 
-impl<'a, A: Alarm<'a>, I: i2c::I2CDevice> crate::kernel::hil::sensors::HumidityDriver<'a>
+impl<'a, A: Alarm<'a>, I: i2c::I2CDevice> kernel::hil::sensors::HumidityDriver<'a>
     for SHT4x<'a, A, I>
 {
-    fn set_client(&self, client: &'a dyn crate::kernel::hil::sensors::HumidityClient) {
+    fn set_client(&self, client: &'a dyn kernel::hil::sensors::HumidityClient) {
         self.humidity_client.set(client);
     }
 
@@ -251,10 +251,10 @@ impl<'a, A: Alarm<'a>, I: i2c::I2CDevice> crate::kernel::hil::sensors::HumidityD
     }
 }
 
-impl<'a, A: Alarm<'a>, I: i2c::I2CDevice> crate::kernel::hil::sensors::TemperatureDriver<'a>
+impl<'a, A: Alarm<'a>, I: i2c::I2CDevice> kernel::hil::sensors::TemperatureDriver<'a>
     for SHT4x<'a, A, I>
 {
-    fn set_client(&self, client: &'a dyn crate::kernel::hil::sensors::TemperatureClient) {
+    fn set_client(&self, client: &'a dyn kernel::hil::sensors::TemperatureClient) {
         self.temperature_client.set(client);
     }
 

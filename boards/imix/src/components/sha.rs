@@ -24,19 +24,19 @@
 
 use capsules_extra::sha256_driver::ShaDriver;
 use core::mem::MaybeUninit;
-use crate::kernel::capabilities::MemoryAllocationCapability;
-use crate::kernel::component::Component;
-use crate::kernel::hil::digest;
+use kernel::capabilities::MemoryAllocationCapability;
+use kernel::component::Component;
+use kernel::hil::digest;
 
 // Setup static space for the objects.
 #[macro_export]
 macro_rules! sha_driver_component_static {
     ($A:ty, $L:expr$(,)?) => {{
         let sha_driver =
-            crate::kernel::static_buf!(capsules_extra::sha256_driver::ShaDriver<'static, $A, $L>);
+            kernel::static_buf!(capsules_extra::sha256_driver::ShaDriver<'static, $A, $L>);
 
-        let data_buffer = crate::kernel::static_buf!([u8; 64]);
-        let dest_buffer = crate::kernel::static_buf!([u8; $L]);
+        let data_buffer = kernel::static_buf!([u8; 64]);
+        let dest_buffer = kernel::static_buf!([u8; $L]);
 
         (sha_driver, data_buffer, dest_buffer)
     }};
@@ -49,7 +49,7 @@ pub struct ShaDriverComponent<
     const L: usize,
     CAP: MemoryAllocationCapability + 'static,
 > {
-    board_kernel: &'static crate::kernel::Kernel,
+    board_kernel: &'static kernel::Kernel,
     driver_num: usize,
     sha: &'static A,
     mem_cap: CAP,
@@ -62,7 +62,7 @@ impl<
 > ShaDriverComponent<A, L, CAP>
 {
     pub fn new(
-        board_kernel: &'static crate::kernel::Kernel,
+        board_kernel: &'static kernel::Kernel,
         driver_num: usize,
         sha: &'static A,
         mem_cap: CAP,
@@ -77,7 +77,7 @@ impl<
 }
 
 impl<
-    A: crate::kernel::hil::digest::Sha256 + 'static + digest::DigestDataHash<'static, L>,
+    A: kernel::hil::digest::Sha256 + 'static + digest::DigestDataHash<'static, L>,
     const L: usize,
     CAP: MemoryAllocationCapability + 'static,
 > Component for ShaDriverComponent<A, L, CAP>
@@ -110,7 +110,7 @@ impl<
 
 #[macro_export]
 macro_rules! sha_software_256_component_static {
-    ($(,)?) => {{ crate::kernel::static_buf!(capsules_extra::sha256::Sha256Software<'static>) }};
+    ($(,)?) => {{ kernel::static_buf!(capsules_extra::sha256::Sha256Software<'static>) }};
 }
 
 pub type ShaSoftware256ComponentType = capsules_extra::sha256::Sha256Software<'static>;
@@ -131,7 +131,7 @@ impl Component for ShaSoftware256Component {
     fn finalize(self, s: Self::StaticInput) -> Self::Output {
         let sha_256_sw = s.write(capsules_extra::sha256::Sha256Software::new());
 
-        crate::kernel::deferred_call::DeferredCallClient::register(sha_256_sw);
+        kernel::deferred_call::DeferredCallClient::register(sha_256_sw);
 
         sha_256_sw
     }

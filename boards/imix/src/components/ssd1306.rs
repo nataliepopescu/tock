@@ -16,15 +16,15 @@
 //! ```
 
 use core::mem::MaybeUninit;
-use crate::kernel::component::Component;
-use crate::kernel::hil;
+use kernel::component::Component;
+use kernel::hil;
 
 // Setup static space for the objects.
 #[macro_export]
 macro_rules! ssd1306_component_static {
     ($I: ty $(,)?) => {{
-        let buffer = crate::kernel::static_buf!([u8; capsules_extra::ssd1306::BUFFER_SIZE]);
-        let ssd1306 = crate::kernel::static_buf!(
+        let buffer = kernel::static_buf!([u8; capsules_extra::ssd1306::BUFFER_SIZE]);
+        let ssd1306 = kernel::static_buf!(
             capsules_extra::ssd1306::Ssd1306<
                 'static,
                 capsules_core::virtualizers::virtual_i2c::I2CDevice<'static, $I>,

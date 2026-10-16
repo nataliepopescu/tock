@@ -35,13 +35,13 @@
 //! - 6: Change the process state. `data1` is the process ID, and `data2` is the
 //!   new state.(1=start, 2=stop, 3=fault, 4=terminate, 5=boot).
 
-use crate::kernel::Kernel;
-use crate::kernel::capabilities::{ProcessManagementCapability, ProcessStartCapability};
-use crate::kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
-use crate::kernel::process;
-use crate::kernel::processbuffer::WriteableProcessBuffer;
-use crate::kernel::syscall::{CommandReturn, SyscallDriver};
-use crate::kernel::{ErrorCode, ProcessId};
+use kernel::Kernel;
+use kernel::capabilities::{ProcessManagementCapability, ProcessStartCapability};
+use kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
+use kernel::process;
+use kernel::processbuffer::WriteableProcessBuffer;
+use kernel::syscall::{CommandReturn, SyscallDriver};
+use kernel::{ErrorCode, ProcessId};
 
 /// Syscall driver number.
 use capsules_core::driver;
@@ -76,7 +76,7 @@ impl<C: ProcessManagementCapability + ProcessStartCapability> ProcessInfo<C> {
 
     fn iterate_u32<F>(&self, process_id: ProcessId, func: F) -> u32
     where
-        F: Fn(&dyn crate::kernel::process::Process) -> u32,
+        F: Fn(&dyn kernel::process::Process) -> u32,
     {
         let mut count = 0;
         let _ = self.apps.enter(process_id, |_app, kernel_data| {
@@ -131,8 +131,8 @@ impl<C: ProcessManagementCapability + ProcessStartCapability> SyscallDriver for 
 
             3 => {
                 let count = self.iterate_u32(process_id, |process| match process.short_app_id() {
-                    crate::kernel::process::ShortId::LocallyUnique => 0,
-                    crate::kernel::process::ShortId::Fixed(id) => id.into(),
+                    kernel::process::ShortId::LocallyUnique => 0,
+                    kernel::process::ShortId::Fixed(id) => id.into(),
                 });
                 CommandReturn::success_u32(count)
             }
@@ -284,7 +284,7 @@ impl<C: ProcessManagementCapability + ProcessStartCapability> SyscallDriver for 
         }
     }
 
-    fn allocate_grant(&self, processid: ProcessId) -> Result<(), crate::kernel::process::Error> {
+    fn allocate_grant(&self, processid: ProcessId) -> Result<(), kernel::process::Error> {
         self.apps.enter(processid, |_, _| {})
     }
 }

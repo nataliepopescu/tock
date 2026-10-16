@@ -23,17 +23,17 @@
 use capsules_core::low_level_debug::LowLevelDebug;
 use capsules_core::virtualizers::virtual_uart::{MuxUart, UartDevice};
 use core::mem::MaybeUninit;
-use crate::kernel::capabilities::MemoryAllocationCapability;
-use crate::kernel::component::Component;
-use crate::kernel::hil;
+use kernel::capabilities::MemoryAllocationCapability;
+use kernel::component::Component;
+use kernel::hil;
 
 #[macro_export]
 macro_rules! low_level_debug_component_static {
     () => {{
         let uart =
-            crate::kernel::static_buf!(capsules_core::virtualizers::virtual_uart::UartDevice<'static>);
-        let buffer = crate::kernel::static_buf!([u8; capsules_core::low_level_debug::BUF_LEN]);
-        let lldb = crate::kernel::static_buf!(
+            kernel::static_buf!(capsules_core::virtualizers::virtual_uart::UartDevice<'static>);
+        let buffer = kernel::static_buf!([u8; capsules_core::low_level_debug::BUF_LEN]);
+        let lldb = kernel::static_buf!(
             capsules_core::low_level_debug::LowLevelDebug<
                 'static,
                 capsules_core::virtualizers::virtual_uart::UartDevice<'static>,
@@ -45,7 +45,7 @@ macro_rules! low_level_debug_component_static {
 }
 
 pub struct LowLevelDebugComponent<CAP: MemoryAllocationCapability + 'static> {
-    board_kernel: &'static crate::kernel::Kernel,
+    board_kernel: &'static kernel::Kernel,
     driver_num: usize,
     uart_mux: &'static MuxUart<'static>,
     mem_cap: CAP,
@@ -53,7 +53,7 @@ pub struct LowLevelDebugComponent<CAP: MemoryAllocationCapability + 'static> {
 
 impl<CAP: MemoryAllocationCapability + 'static> LowLevelDebugComponent<CAP> {
     pub fn new(
-        board_kernel: &'static crate::kernel::Kernel,
+        board_kernel: &'static kernel::Kernel,
         driver_num: usize,
         uart_mux: &'static MuxUart,
         mem_cap: CAP,

@@ -24,16 +24,16 @@
 use capsules_core::virtualizers::virtual_spi::VirtualSpiMasterDevice;
 use capsules_extra::rf233::RF233;
 use core::mem::MaybeUninit;
-use crate::kernel::component::Component;
-use crate::kernel::hil::radio::RadioConfig;
-use crate::kernel::hil::spi::{SpiMaster, SpiMasterDevice};
-use crate::kernel::hil::{self, radio};
+use kernel::component::Component;
+use kernel::hil::radio::RadioConfig;
+use kernel::hil::spi::{SpiMaster, SpiMasterDevice};
+use kernel::hil::{self, radio};
 
 // Setup static space for the objects.
 #[macro_export]
 macro_rules! rf233_component_static {
     ($S:ty $(,)?) => {{
-        let spi_device = crate::kernel::static_buf!(
+        let spi_device = kernel::static_buf!(
             capsules_extra::rf233::RF233<
                 'static,
                 capsules_core::virtualizers::virtual_spi::VirtualSpiMasterDevice<'static, $S>,
@@ -47,11 +47,11 @@ macro_rules! rf233_component_static {
         //   2. rx_buf: buffer to receive packets into
         //   3 + 4: two small buffers for performing registers
         //      operations (one read, one write).
-        let rf233_buf = crate::kernel::static_buf!([u8; crate::kernel::hil::radio::MAX_BUF_SIZE]);
+        let rf233_buf = kernel::static_buf!([u8; kernel::hil::radio::MAX_BUF_SIZE]);
         let rf233_reg_write =
-            crate::kernel::static_buf!([u8; capsules_extra::rf233::SPI_REGISTER_TRANSACTION_LENGTH]);
+            kernel::static_buf!([u8; capsules_extra::rf233::SPI_REGISTER_TRANSACTION_LENGTH]);
         let rf233_reg_read =
-            crate::kernel::static_buf!([u8; capsules_extra::rf233::SPI_REGISTER_TRANSACTION_LENGTH]);
+            kernel::static_buf!([u8; capsules_extra::rf233::SPI_REGISTER_TRANSACTION_LENGTH]);
 
         (spi_device, rf233_buf, rf233_reg_write, rf233_reg_read)
     }};

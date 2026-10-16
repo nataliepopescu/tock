@@ -13,23 +13,23 @@ use core::mem::MaybeUninit;
 
 use capsules_core::virtualizers::virtual_alarm::{MuxAlarm, VirtualMuxAlarm};
 use capsules_system::scheduler::mlfq::{MLFQProcessNode, MLFQSched};
-use crate::kernel::component::Component;
-use crate::kernel::hil::time;
-use crate::kernel::process::ProcessArray;
+use kernel::component::Component;
+use kernel::hil::time;
+use kernel::process::ProcessArray;
 
 #[macro_export]
 macro_rules! mlfq_component_static {
     ($A:ty, $N:expr $(,)?) => {{
-        let alarm = crate::kernel::static_buf!(
+        let alarm = kernel::static_buf!(
             capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, $A>
         );
-        let mlfq_sched = crate::kernel::static_buf!(
+        let mlfq_sched = kernel::static_buf!(
             capsules_system::scheduler::mlfq::MLFQSched<
                 'static,
                 capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, $A>,
             >
         );
-        let mlfq_node = crate::kernel::static_buf!(
+        let mlfq_node = kernel::static_buf!(
             [core::mem::MaybeUninit<capsules_system::scheduler::mlfq::MLFQProcessNode<'static>>;
                 $N]
         );

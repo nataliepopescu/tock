@@ -30,7 +30,7 @@
 //! Example usage:
 //!
 //! ```rust,ignore
-//! # use crate::kernel::static_init;
+//! # use kernel::static_init;
 //!
 //! // Configure the MCP230xx. Device address 0x20.
 //! let mcp230xx_i2c = static_init!(
@@ -70,11 +70,11 @@
 //! `mcp230xx` object is created.
 
 use core::cell::Cell;
-use crate::kernel::ErrorCode;
-use crate::kernel::hil;
-use crate::kernel::hil::gpio;
-use crate::kernel::hil::gpio_async;
-use crate::kernel::utilities::cells::{OptionalCell, TakeCell};
+use kernel::ErrorCode;
+use kernel::hil;
+use kernel::hil::gpio;
+use kernel::hil::gpio_async;
+use kernel::utilities::cells::{OptionalCell, TakeCell};
 
 // Buffer to use for I2C messages
 pub const BUFFER_LENGTH: usize = 7;

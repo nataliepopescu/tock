@@ -24,14 +24,14 @@
 //! setting up the device.
 
 use core::cell::Cell;
-use crate::kernel::ErrorCode;
-use crate::kernel::debug;
-use crate::kernel::hil::i2c::{self, I2CClient, I2CDevice};
-use crate::kernel::hil::public_key_crypto::keys;
-use crate::kernel::hil::public_key_crypto::signature::{ClientVerify, SignatureVerify};
-use crate::kernel::hil::{digest, entropy, entropy::Entropy32};
-use crate::kernel::utilities::cells::{MapCell, OptionalCell, TakeCell};
-use crate::kernel::utilities::leasable_buffer::{SubSlice, SubSliceMut, SubSliceMutImmut};
+use kernel::ErrorCode;
+use kernel::debug;
+use kernel::hil::i2c::{self, I2CClient, I2CDevice};
+use kernel::hil::public_key_crypto::keys;
+use kernel::hil::public_key_crypto::signature::{ClientVerify, SignatureVerify};
+use kernel::hil::{digest, entropy, entropy::Entropy32};
+use kernel::utilities::cells::{MapCell, OptionalCell, TakeCell};
+use kernel::utilities::leasable_buffer::{SubSlice, SubSliceMut, SubSliceMutImmut};
 
 /* Protocol + Cryptographic defines */
 const RESPONSE_COUNT_SIZE: usize = 1;
@@ -204,7 +204,7 @@ pub struct Atecc508a<'a> {
     ext_public_key: TakeCell<'static, [u8; 64]>,
     ext_public_key_temp: TakeCell<'static, [u8; 64]>,
     key_set_client: OptionalCell<&'a dyn keys::SetKeyBySliceClient<64>>,
-    deferred_call: crate::kernel::deferred_call::DeferredCall,
+    deferred_call: kernel::deferred_call::DeferredCall,
 
     wakeup_device: fn(),
 
@@ -241,7 +241,7 @@ impl<'a> Atecc508a<'a> {
             ext_public_key: TakeCell::empty(),
             ext_public_key_temp: TakeCell::empty(),
             key_set_client: OptionalCell::empty(),
-            deferred_call: crate::kernel::deferred_call::DeferredCall::new(),
+            deferred_call: kernel::deferred_call::DeferredCall::new(),
             wakeup_device,
             config_lock: Cell::new(false),
             data_lock: Cell::new(false),
@@ -1422,7 +1422,7 @@ impl<'a> keys::SetKeyBySlice<'a, 64> for Atecc508a<'a> {
     }
 }
 
-impl crate::kernel::deferred_call::DeferredCallClient for Atecc508a<'_> {
+impl kernel::deferred_call::DeferredCallClient for Atecc508a<'_> {
     fn handle_deferred_call(&self) {
         self.key_set_client.map(|client| {
             self.ext_public_key_temp

@@ -4,8 +4,8 @@
 
 use core::cell::Cell;
 use core::mem::size_of;
-use crate::kernel::ErrorCode;
-use crate::kernel::hil;
+use kernel::ErrorCode;
+use kernel::hil;
 pub struct Sg90<'a, P: hil::pwm::PwmPin> {
     /// The underlying PWM generator to change the angle.
     pwm_pin: &'a P,
@@ -22,7 +22,7 @@ impl<'a, P: hil::pwm::PwmPin> Sg90<'a, P> {
     }
 }
 
-impl<'a, P: hil::pwm::PwmPin> crate::kernel::hil::servo::Servo<'a> for Sg90<'a, P> {
+impl<'a, P: hil::pwm::PwmPin> kernel::hil::servo::Servo<'a> for Sg90<'a, P> {
     fn set_angle(&self, angle: u16) -> Result<(), ErrorCode> {
         // The assert! macro ensures that the code will not compile on platforms
         // where `usize` is smaller than `u16`.

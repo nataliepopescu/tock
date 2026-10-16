@@ -73,7 +73,7 @@
 //! let temp = static_init!(
 //! capsules::temperature::TemperatureSensor<'static>,
 //!     capsules::temperature::TemperatureSensor::new(lsm303dlhc, grant_temperature));
-//! crate::kernel::hil::sensors::TemperatureDriver::set_client(lsm303dlhc, temp);
+//! kernel::hil::sensors::TemperatureDriver::set_client(lsm303dlhc, temp);
 //! ```
 //!
 //! Author: Alexandru Radovici <msg4alex@gmail.com>
@@ -86,12 +86,12 @@ use core::cell::Cell;
 use enum_primitive::cast::FromPrimitive;
 use enum_primitive::enum_from_primitive;
 
-use crate::kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
-use crate::kernel::hil::i2c;
-use crate::kernel::hil::sensors;
-use crate::kernel::syscall::{CommandReturn, SyscallDriver};
-use crate::kernel::utilities::cells::{OptionalCell, TakeCell};
-use crate::kernel::{ErrorCode, ProcessId};
+use kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
+use kernel::hil::i2c;
+use kernel::hil::sensors;
+use kernel::syscall::{CommandReturn, SyscallDriver};
+use kernel::utilities::cells::{OptionalCell, TakeCell};
+use kernel::{ErrorCode, ProcessId};
 
 use crate::lsm303xx::{
     AccelerometerRegisters, CTRL_REG1, CTRL_REG4, Lsm303AccelDataRate, Lsm303MagnetoDataRate,
@@ -909,7 +909,7 @@ impl<I: i2c::I2CDevice> SyscallDriver for Lsm303agrI2C<'_, I> {
         }
     }
 
-    fn allocate_grant(&self, processid: ProcessId) -> Result<(), crate::kernel::process::Error> {
+    fn allocate_grant(&self, processid: ProcessId) -> Result<(), kernel::process::Error> {
         self.apps.enter(processid, |_, _| {})
     }
 }

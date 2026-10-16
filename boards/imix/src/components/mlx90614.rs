@@ -15,23 +15,23 @@
 //!        capsules_extra::temperature::TemperatureSensor<'static>,
 //!        capsules_extra::temperature::TemperatureSensor::new(mlx90614,
 //!                                                 grant_temperature));
-//! crate::kernel::hil::sensors::TemperatureDriver::set_client(mlx90614, temp);
+//! kernel::hil::sensors::TemperatureDriver::set_client(mlx90614, temp);
 //! ```
 
 use capsules_core::virtualizers::virtual_i2c::{MuxI2C, SMBusDevice};
 use capsules_extra::mlx90614::Mlx90614SMBus;
 use core::mem::MaybeUninit;
-use crate::kernel::capabilities::MemoryAllocationCapability;
-use crate::kernel::component::Component;
-use crate::kernel::hil::i2c::{self, NoSMBus};
+use kernel::capabilities::MemoryAllocationCapability;
+use kernel::component::Component;
+use kernel::hil::i2c::{self, NoSMBus};
 
 // Setup static space for the objects.
 #[macro_export]
 macro_rules! mlx90614_component_static {
     () => {{
-        let i2c_device = crate::kernel::static_buf!(capsules_core::virtualizers::virtual_i2c::SMBusDevice);
-        let buffer = crate::kernel::static_buf!([u8; 14]);
-        let mlx90614 = crate::kernel::static_buf!(capsules_extra::mlx90614::Mlx90614SMBus<'static>);
+        let i2c_device = kernel::static_buf!(capsules_core::virtualizers::virtual_i2c::SMBusDevice);
+        let buffer = kernel::static_buf!([u8; 14]);
+        let mlx90614 = kernel::static_buf!(capsules_extra::mlx90614::Mlx90614SMBus<'static>);
 
         (i2c_device, buffer, mlx90614)
     }};
@@ -44,7 +44,7 @@ pub struct Mlx90614SMBusComponent<
 > {
     i2c_mux: &'static MuxI2C<'static, I, S>,
     i2c_address: u8,
-    board_kernel: &'static crate::kernel::Kernel,
+    board_kernel: &'static kernel::Kernel,
     driver_num: usize,
     mem_cap: CAP,
 }
@@ -58,7 +58,7 @@ impl<
     pub fn new(
         i2c: &'static MuxI2C<'static, I, S>,
         i2c_address: u8,
-        board_kernel: &'static crate::kernel::Kernel,
+        board_kernel: &'static kernel::Kernel,
         driver_num: usize,
         mem_cap: CAP,
     ) -> Self {

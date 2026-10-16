@@ -6,11 +6,11 @@
 //! instantiated and tested in parallel.
 use crate::virtualizers::virtual_uart::UartDevice;
 
-use crate::kernel::ErrorCode;
-use crate::kernel::debug;
-use crate::kernel::hil::uart;
-use crate::kernel::hil::uart::Receive;
-use crate::kernel::utilities::cells::TakeCell;
+use kernel::ErrorCode;
+use kernel::debug;
+use kernel::hil::uart;
+use kernel::hil::uart::Receive;
+use kernel::utilities::cells::TakeCell;
 
 pub struct TestVirtualUartReceive {
     device: &'static UartDevice<'static>,

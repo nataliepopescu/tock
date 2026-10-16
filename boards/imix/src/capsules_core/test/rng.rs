@@ -13,10 +13,10 @@
 
 use core::cell::Cell;
 
-use crate::kernel::ErrorCode;
-use crate::kernel::debug;
-use crate::kernel::hil::entropy;
-use crate::kernel::hil::rng;
+use kernel::ErrorCode;
+use kernel::debug;
+use kernel::hil::entropy;
+use kernel::hil::rng;
 
 const ELEMENTS: usize = 8;
 

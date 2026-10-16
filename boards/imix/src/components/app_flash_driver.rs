@@ -18,20 +18,20 @@
 use capsules_extra::app_flash_driver::AppFlash;
 use capsules_extra::nonvolatile_to_pages::NonvolatileToPages;
 use core::mem::MaybeUninit;
-use crate::kernel::capabilities::MemoryAllocationCapability;
-use crate::kernel::component::Component;
-use crate::kernel::hil;
-use crate::kernel::hil::nonvolatile_storage::NonvolatileStorage;
+use kernel::capabilities::MemoryAllocationCapability;
+use kernel::component::Component;
+use kernel::hil;
+use kernel::hil::nonvolatile_storage::NonvolatileStorage;
 
 #[macro_export]
 macro_rules! app_flash_component_static {
     ($F:ty, $buffer_size: literal) => {{
-        let buffer = crate::kernel::static_buf!([u8; $buffer_size]);
-        let page_buffer = crate::kernel::static_buf!(<$F as crate::kernel::hil::flash::Flash>::Page);
-        let nv_to_page = crate::kernel::static_buf!(
+        let buffer = kernel::static_buf!([u8; $buffer_size]);
+        let page_buffer = kernel::static_buf!(<$F as kernel::hil::flash::Flash>::Page);
+        let nv_to_page = kernel::static_buf!(
             capsules_extra::nonvolatile_to_pages::NonvolatileToPages<'static, $F>
         );
-        let app_flash = crate::kernel::static_buf!(capsules_extra::app_flash_driver::AppFlash<'static>);
+        let app_flash = kernel::static_buf!(capsules_extra::app_flash_driver::AppFlash<'static>);
         (buffer, page_buffer, nv_to_page, app_flash)
     }};
 }
@@ -43,7 +43,7 @@ pub struct AppFlashComponent<
     const BUF_LEN: usize,
     CAP: MemoryAllocationCapability + 'static,
 > {
-    board_kernel: &'static crate::kernel::Kernel,
+    board_kernel: &'static kernel::Kernel,
     driver_num: usize,
     storage: &'static F,
     mem_cap: CAP,
@@ -56,7 +56,7 @@ impl<
 > AppFlashComponent<F, BUF_LEN, CAP>
 {
     pub fn new(
-        board_kernel: &'static crate::kernel::Kernel,
+        board_kernel: &'static kernel::Kernel,
         driver_num: usize,
         storage: &'static F,
         mem_cap: CAP,

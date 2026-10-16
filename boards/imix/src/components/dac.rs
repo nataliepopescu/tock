@@ -13,12 +13,12 @@
 
 use capsules_extra::dac::Dac;
 use core::mem::MaybeUninit;
-use crate::kernel::component::Component;
-use crate::kernel::hil;
+use kernel::component::Component;
+use kernel::hil;
 
 #[macro_export]
 macro_rules! dac_component_static {
-    () => {{ crate::kernel::static_buf!(capsules_extra::dac::Dac<'static>) }};
+    () => {{ kernel::static_buf!(capsules_extra::dac::Dac<'static>) }};
 }
 
 pub struct DacComponent {

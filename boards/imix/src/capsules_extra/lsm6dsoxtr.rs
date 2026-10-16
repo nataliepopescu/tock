@@ -20,19 +20,19 @@ use capsules_core::driver;
 use core::cell::Cell;
 use enum_primitive::cast::FromPrimitive;
 use enum_primitive::enum_from_primitive;
-use crate::kernel::errorcode::into_statuscode;
-use crate::kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
-use crate::kernel::hil::i2c;
-use crate::kernel::hil::sensors;
-use crate::kernel::hil::sensors::{NineDof, NineDofClient};
-use crate::kernel::syscall::{CommandReturn, SyscallDriver};
-use crate::kernel::utilities::cells::{OptionalCell, TakeCell};
-use crate::kernel::utilities::registers::LocalRegisterCopy;
-use crate::kernel::{ErrorCode, ProcessId};
+use kernel::errorcode::into_statuscode;
+use kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
+use kernel::hil::i2c;
+use kernel::hil::sensors;
+use kernel::hil::sensors::{NineDof, NineDofClient};
+use kernel::syscall::{CommandReturn, SyscallDriver};
+use kernel::utilities::cells::{OptionalCell, TakeCell};
+use kernel::utilities::registers::LocalRegisterCopy;
+use kernel::{ErrorCode, ProcessId};
 
 pub const DRIVER_NUM: usize = driver::NUM::Lsm6dsoxtr as usize;
 
-use crate::kernel::utilities::registers::register_bitfields;
+use kernel::utilities::registers::register_bitfields;
 
 pub const CHIP_ID: u8 = 0x6C;
 pub const ACCELEROMETER_BASE_ADDRESS: u8 = 0x6A;
@@ -611,7 +611,7 @@ impl<I: i2c::I2CDevice> SyscallDriver for Lsm6dsoxtrI2C<'_, I> {
             _ => CommandReturn::failure(ErrorCode::NOSUPPORT),
         }
     }
-    fn allocate_grant(&self, processid: ProcessId) -> Result<(), crate::kernel::process::Error> {
+    fn allocate_grant(&self, processid: ProcessId) -> Result<(), kernel::process::Error> {
         self.apps.enter(processid, |_, _| {})
     }
 }

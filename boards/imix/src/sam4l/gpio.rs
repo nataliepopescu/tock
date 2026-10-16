@@ -6,12 +6,12 @@
 
 use core::ops::{Index, IndexMut};
 use core::sync::atomic::{AtomicUsize, Ordering};
-use crate::kernel::hil;
-use crate::kernel::hil::gpio;
-use crate::kernel::utilities::StaticRef;
-use crate::kernel::utilities::cells::OptionalCell;
-use crate::kernel::utilities::registers::interfaces::{Readable, Writeable};
-use crate::kernel::utilities::registers::{ReadOnly, ReadWrite, WriteOnly};
+use kernel::hil;
+use kernel::hil::gpio;
+use kernel::utilities::StaticRef;
+use kernel::utilities::cells::OptionalCell;
+use kernel::utilities::registers::interfaces::{Readable, Writeable};
+use kernel::utilities::registers::{ReadOnly, ReadWrite, WriteOnly};
 
 #[repr(C)]
 struct Register {

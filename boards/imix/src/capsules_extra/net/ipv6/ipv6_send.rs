@@ -31,11 +31,11 @@ use crate::net::thread::thread_utils::{MULTICAST_IPV6, mac_from_ipv6};
 
 use core::cell::Cell;
 
-use crate::kernel::ErrorCode;
-use crate::kernel::debug;
-use crate::kernel::hil::time::{self, ConvertTicks};
-use crate::kernel::utilities::cells::{OptionalCell, TakeCell};
-use crate::kernel::utilities::leasable_buffer::SubSliceMut;
+use kernel::ErrorCode;
+use kernel::debug;
+use kernel::hil::time::{self, ConvertTicks};
+use kernel::utilities::cells::{OptionalCell, TakeCell};
+use kernel::utilities::leasable_buffer::SubSliceMut;
 
 /// Client trait for receiving transmission completiong events.
 ///

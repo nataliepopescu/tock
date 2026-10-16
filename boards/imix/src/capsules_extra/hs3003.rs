@@ -36,7 +36,7 @@
 //! -----
 //!
 //! ```rust,ignore
-//! # use crate::kernel::static_init;
+//! # use kernel::static_init;
 //!
 //! let hs3003_i2c = static_init!(
 //!     capsules::virtual_i2c::I2CDevice,
@@ -49,10 +49,10 @@
 //! ```
 
 use core::cell::Cell;
-use crate::kernel::ErrorCode;
-use crate::kernel::hil::i2c::{self, I2CClient, I2CDevice};
-use crate::kernel::hil::sensors::{HumidityClient, HumidityDriver, TemperatureClient, TemperatureDriver};
-use crate::kernel::utilities::cells::{OptionalCell, TakeCell};
+use kernel::ErrorCode;
+use kernel::hil::i2c::{self, I2CClient, I2CDevice};
+use kernel::hil::sensors::{HumidityClient, HumidityDriver, TemperatureClient, TemperatureDriver};
+use kernel::utilities::cells::{OptionalCell, TakeCell};
 
 pub struct Hs3003<'a, I: I2CDevice> {
     buffer: TakeCell<'static, [u8]>,

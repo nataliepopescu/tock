@@ -36,12 +36,12 @@ use crate::net::udp::udp_port_table::UdpPortBindingTx;
 
 use core::cell::Cell;
 
-use crate::kernel::ErrorCode;
-use crate::kernel::capabilities::UdpDriverCapability;
-use crate::kernel::collections::list::{List, ListLink, ListNode};
-use crate::kernel::debug;
-use crate::kernel::utilities::cells::{MapCell, OptionalCell};
-use crate::kernel::utilities::leasable_buffer::SubSliceMut;
+use kernel::ErrorCode;
+use kernel::capabilities::UdpDriverCapability;
+use kernel::collections::list::{List, ListLink, ListNode};
+use kernel::debug;
+use kernel::utilities::cells::{MapCell, OptionalCell};
+use kernel::utilities::leasable_buffer::SubSliceMut;
 
 pub struct MuxUdpSender<'a, T: IP6Sender<'a>> {
     sender_list: List<'a, UDPSendStruct<'a, T>>,

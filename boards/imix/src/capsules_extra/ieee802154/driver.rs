@@ -59,13 +59,13 @@ use crate::net::stream::{SResult, decode_bytes, decode_u8, encode_bytes, encode_
 
 use core::cell::Cell;
 
-use crate::kernel::deferred_call::{DeferredCall, DeferredCallClient};
-use crate::kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
-use crate::kernel::hil::radio;
-use crate::kernel::processbuffer::{ReadableProcessBuffer, WriteableProcessBuffer};
-use crate::kernel::syscall::{CommandReturn, SyscallDriver};
-use crate::kernel::utilities::cells::{MapCell, OptionalCell, TakeCell};
-use crate::kernel::{ErrorCode, ProcessId};
+use kernel::deferred_call::{DeferredCall, DeferredCallClient};
+use kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
+use kernel::hil::radio;
+use kernel::processbuffer::{ReadableProcessBuffer, WriteableProcessBuffer};
+use kernel::syscall::{CommandReturn, SyscallDriver};
+use kernel::utilities::cells::{MapCell, OptionalCell, TakeCell};
+use kernel::{ErrorCode, ProcessId};
 
 const MAX_NEIGHBORS: usize = 4;
 const MAX_KEYS: usize = 4;
@@ -541,7 +541,7 @@ impl<'a, M: device::MacDevice<'a>> DeferredCallClient for RadioDriver<'a, M> {
                 let _ = upcalls.schedule_upcall(
                     upcall::FRAME_TRANSMITTED,
                     (
-                        crate::kernel::errorcode::into_statuscode(
+                        kernel::errorcode::into_statuscode(
                             self.saved_result.unwrap_or_panic(), // Unwrap fail = missing result
                         ),
                         0,
@@ -968,7 +968,7 @@ impl<'a, M: device::MacDevice<'a>> SyscallDriver for RadioDriver<'a, M> {
         }
     }
 
-    fn allocate_grant(&self, processid: ProcessId) -> Result<(), crate::kernel::process::Error> {
+    fn allocate_grant(&self, processid: ProcessId) -> Result<(), kernel::process::Error> {
         self.apps.enter(processid, |_, _| {})
     }
 }
@@ -981,7 +981,7 @@ impl<'a, M: device::MacDevice<'a>> device::TxClient for RadioDriver<'a, M> {
                 let _ = upcalls.schedule_upcall(
                     upcall::FRAME_TRANSMITTED,
                     (
-                        crate::kernel::errorcode::into_statuscode(result),
+                        kernel::errorcode::into_statuscode(result),
                         acked as usize,
                         0,
                     ),
@@ -1030,7 +1030,7 @@ impl<'a, M: device::MacDevice<'a>> device::RxClient for RadioDriver<'a, M> {
                             || !(rbuf.len() - RING_BUF_METADATA_SIZE)
                                 .is_multiple_of(USER_FRAME_MAX_SIZE)
                         {
-                            // crate::kernel::debug!("[15.4 Driver] Error - improperly formatted readwrite buffer provided");
+                            // kernel::debug!("[15.4 Driver] Error - improperly formatted readwrite buffer provided");
                             return false;
                         }
 
@@ -1045,7 +1045,7 @@ impl<'a, M: device::MacDevice<'a>> device::RxClient for RadioDriver<'a, M> {
 
                         // confirm user modifiable metadata is valid (i.e. within bounds of the provided buffer)
                         if read_index >= max_pending_rx || write_index >= max_pending_rx {
-                            // crate::kernel::debug!("[15.4 driver] Invalid read or write index");
+                            // kernel::debug!("[15.4 driver] Invalid read or write index");
                             return false;
                         }
 
@@ -1070,7 +1070,7 @@ impl<'a, M: device::MacDevice<'a>> device::RxClient for RadioDriver<'a, M> {
                         if write_index == read_index {
                             read_index = (read_index + 1) % max_pending_rx;
                             rbuf[0].set(read_index as u8);
-                            // crate::kernel::debug!("[15.4 driver] Provided RX buffer is full");
+                            // kernel::debug!("[15.4 driver] Provided RX buffer is full");
                         }
 
                         // update write index metadata (we do not modify the read index

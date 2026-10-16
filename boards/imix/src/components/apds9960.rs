@@ -7,22 +7,22 @@
 use capsules_core::virtualizers::virtual_i2c::{I2CDevice, MuxI2C};
 use capsules_extra::apds9960::APDS9960;
 use core::mem::MaybeUninit;
-use crate::kernel::component::Component;
-use crate::kernel::hil::gpio;
-use crate::kernel::hil::i2c;
+use kernel::component::Component;
+use kernel::hil::gpio;
+use kernel::hil::i2c;
 
 #[macro_export]
 macro_rules! apds9960_component_static {
     ($I:ty $(,)?) => {{
         let i2c_device =
-            crate::kernel::static_buf!(capsules_core::virtualizers::virtual_i2c::I2CDevice<'static, $I>);
-        let apds9960 = crate::kernel::static_buf!(
+            kernel::static_buf!(capsules_core::virtualizers::virtual_i2c::I2CDevice<'static, $I>);
+        let apds9960 = kernel::static_buf!(
             capsules_extra::apds9960::APDS9960<
                 'static,
                 capsules_core::virtualizers::virtual_i2c::I2CDevice<$I>,
             >
         );
-        let buffer = crate::kernel::static_buf!([u8; capsules_extra::apds9960::BUF_LEN]);
+        let buffer = kernel::static_buf!([u8; capsules_extra::apds9960::BUF_LEN]);
 
         (i2c_device, apds9960, buffer)
     }};

@@ -19,17 +19,17 @@
 
 use capsules_extra::hmac::HmacDriver;
 use core::mem::MaybeUninit;
-use crate::kernel::capabilities::MemoryAllocationCapability;
-use crate::kernel::component::Component;
-use crate::kernel::hil::digest;
+use kernel::capabilities::MemoryAllocationCapability;
+use kernel::component::Component;
+use kernel::hil::digest;
 
 #[macro_export]
 macro_rules! hmac_component_static {
     ($A:ty, $L:expr $(,)?) => {{
-        let hmac = crate::kernel::static_buf!(capsules_extra::hmac::HmacDriver<'static, $A, $L>);
+        let hmac = kernel::static_buf!(capsules_extra::hmac::HmacDriver<'static, $A, $L>);
 
-        let data_buffer = crate::kernel::static_buf!([u8; 64]);
-        let dest_buffer = crate::kernel::static_buf!([u8; $L]);
+        let data_buffer = kernel::static_buf!([u8; 64]);
+        let dest_buffer = kernel::static_buf!([u8; $L]);
 
         (hmac, data_buffer, dest_buffer)
     }};
@@ -42,7 +42,7 @@ pub struct HmacComponent<
     const L: usize,
     CAP: MemoryAllocationCapability + 'static,
 > {
-    board_kernel: &'static crate::kernel::Kernel,
+    board_kernel: &'static kernel::Kernel,
     driver_num: usize,
     hmac: &'static A,
     mem_cap: CAP,
@@ -55,7 +55,7 @@ impl<
 > HmacComponent<A, L, CAP>
 {
     pub fn new(
-        board_kernel: &'static crate::kernel::Kernel,
+        board_kernel: &'static kernel::Kernel,
         driver_num: usize,
         hmac: &'static A,
         mem_cap: CAP,
@@ -70,7 +70,7 @@ impl<
 }
 
 impl<
-    A: crate::kernel::hil::digest::HmacSha256
+    A: kernel::hil::digest::HmacSha256
         + digest::HmacSha384
         + digest::HmacSha512
         + digest::HmacMd5
@@ -111,10 +111,10 @@ impl<
 macro_rules! hmac_sha256_software_component_static {
     ($S:ty $(,)?) => {{
         let hmac_sha256 =
-            crate::kernel::static_buf!(capsules_extra::hmac_sha256::HmacSha256Software<'static, $S>);
+            kernel::static_buf!(capsules_extra::hmac_sha256::HmacSha256Software<'static, $S>);
 
-        let data_buffer = crate::kernel::static_buf!([u8; 64]);
-        let verify_buffer = crate::kernel::static_buf!([u8; 32]);
+        let data_buffer = kernel::static_buf!([u8; 64]);
+        let verify_buffer = kernel::static_buf!([u8; 32]);
 
         (hmac_sha256, data_buffer, verify_buffer)
     }};
@@ -159,7 +159,7 @@ impl<
                 verify_buffer,
             ));
 
-        crate::kernel::hil::digest::Digest::set_client(self.sha_256, hmac_sha256_sw);
+        kernel::hil::digest::Digest::set_client(self.sha_256, hmac_sha256_sw);
 
         hmac_sha256_sw
     }

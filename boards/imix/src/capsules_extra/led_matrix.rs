@@ -13,13 +13,13 @@
 //!     nrf52::rtc::Rtc<'static>,
 //!     mux_alarm,
 //!     @fps => 60,
-//!     @cols => crate::kernel::hil::gpio::ActivationMode::ActiveLow,
+//!     @cols => kernel::hil::gpio::ActivationMode::ActiveLow,
 //!         &nrf52833_peripherals.gpio_port[LED_MATRIX_COLS[0]],
 //!         &nrf52833_peripherals.gpio_port[LED_MATRIX_COLS[1]],
 //!         &nrf52833_peripherals.gpio_port[LED_MATRIX_COLS[2]],
 //!         &nrf52833_peripherals.gpio_port[LED_MATRIX_COLS[3]],
 //!         &nrf52833_peripherals.gpio_port[LED_MATRIX_COLS[4]],
-//!     @rows => crate::kernel::hil::gpio::ActivationMode::ActiveHigh,
+//!     @rows => kernel::hil::gpio::ActivationMode::ActiveHigh,
 //!         &nrf52833_peripherals.gpio_port[LED_MATRIX_ROWS[0]],
 //!         &nrf52833_peripherals.gpio_port[LED_MATRIX_ROWS[1]],
 //!         &nrf52833_peripherals.gpio_port[LED_MATRIX_ROWS[2]],
@@ -76,12 +76,12 @@
 
 use core::cell::Cell;
 
-use crate::kernel::ErrorCode;
-use crate::kernel::utilities::cells::TakeCell;
+use kernel::ErrorCode;
+use kernel::utilities::cells::TakeCell;
 
-use crate::kernel::hil::gpio::{ActivationMode, Pin};
-use crate::kernel::hil::led::Led;
-use crate::kernel::hil::time::{Alarm, AlarmClient, ConvertTicks};
+use kernel::hil::gpio::{ActivationMode, Pin};
+use kernel::hil::led::Led;
+use kernel::hil::time::{Alarm, AlarmClient, ConvertTicks};
 
 /// Holds the array of LEDs and implements a `Driver` interface to
 /// control them.

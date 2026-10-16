@@ -8,9 +8,9 @@
 //! managing processes. For example, these policies control decisions such as
 //! whether a specific process should be restarted.
 
-use crate::kernel::process;
-use crate::kernel::process::Process;
-use crate::kernel::process::ProcessFaultPolicy;
+use kernel::process;
+use kernel::process::Process;
+use kernel::process::ProcessFaultPolicy;
 
 /// Simply panic the entire board if a process faults.
 pub struct PanicFaultPolicy {}
@@ -37,7 +37,7 @@ pub struct StopWithDebugFaultPolicy {}
 
 impl ProcessFaultPolicy for StopWithDebugFaultPolicy {
     fn action(&self, process: &dyn Process) -> process::FaultAction {
-        crate::kernel::debug!(
+        kernel::debug!(
             "Process {} faulted and was stopped.",
             process.get_process_name()
         );
@@ -59,7 +59,7 @@ pub struct RestartWithDebugFaultPolicy {}
 
 impl ProcessFaultPolicy for RestartWithDebugFaultPolicy {
     fn action(&self, process: &dyn Process) -> process::FaultAction {
-        crate::kernel::debug!(
+        kernel::debug!(
             "Process {} faulted and will be restarted.",
             process.get_process_name()
         );

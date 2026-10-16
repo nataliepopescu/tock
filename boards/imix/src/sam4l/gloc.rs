@@ -9,9 +9,9 @@
 
 use crate::pm::{self, Clock, PBAClock};
 use crate::scif::{self, ClockSource, GenericClock};
-use crate::kernel::utilities::StaticRef;
-use crate::kernel::utilities::registers::interfaces::{ReadWriteable, Readable, Writeable};
-use crate::kernel::utilities::registers::{ReadWrite, register_bitfields};
+use kernel::utilities::StaticRef;
+use kernel::utilities::registers::interfaces::{ReadWriteable, Readable, Writeable};
+use kernel::utilities::registers::{ReadWrite, register_bitfields};
 
 #[repr(C)]
 pub struct GlocRegisters {

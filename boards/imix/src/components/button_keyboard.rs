@@ -9,13 +9,13 @@
 //! Implements the button system call with keyboard inputs.
 
 use core::mem::MaybeUninit;
-use crate::kernel::capabilities::MemoryAllocationCapability;
-use crate::kernel::component::Component;
-use crate::kernel::hil;
+use kernel::capabilities::MemoryAllocationCapability;
+use kernel::component::Component;
+use kernel::hil;
 
 #[macro_export]
 macro_rules! keyboard_button_component_static {
-    () => {{ crate::kernel::static_buf!(capsules_extra::button_keyboard::ButtonKeyboard<'static>) }};
+    () => {{ kernel::static_buf!(capsules_extra::button_keyboard::ButtonKeyboard<'static>) }};
 }
 
 pub type KeyboardButtonComponentType = capsules_extra::button_keyboard::ButtonKeyboard<'static>;
@@ -24,7 +24,7 @@ pub struct KeyboardButtonComponent<
     K: 'static + hil::keyboard::Keyboard<'static>,
     CAP: MemoryAllocationCapability + 'static,
 > {
-    board_kernel: &'static crate::kernel::Kernel,
+    board_kernel: &'static kernel::Kernel,
     driver_num: usize,
     keyboard: &'static K,
     key_codes: &'static [u16],
@@ -35,7 +35,7 @@ impl<K: 'static + hil::keyboard::Keyboard<'static>, CAP: MemoryAllocationCapabil
     KeyboardButtonComponent<K, CAP>
 {
     pub fn new(
-        board_kernel: &'static crate::kernel::Kernel,
+        board_kernel: &'static kernel::Kernel,
         driver_num: usize,
         keyboard: &'static K,
         key_codes: &'static [u16],

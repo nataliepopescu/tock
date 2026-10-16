@@ -20,20 +20,20 @@
 
 use capsules_extra::nrf51822_serialization::Nrf51822Serialization;
 use core::mem::MaybeUninit;
-use crate::kernel::capabilities::MemoryAllocationCapability;
-use crate::kernel::component::Component;
-use crate::kernel::hil;
+use kernel::capabilities::MemoryAllocationCapability;
+use kernel::component::Component;
+use kernel::hil;
 
 #[macro_export]
 macro_rules! nrf51822_component_static {
     () => {{
-        let nrf = crate::kernel::static_buf!(
+        let nrf = kernel::static_buf!(
             capsules_extra::nrf51822_serialization::Nrf51822Serialization<'static>
         );
         let write_buffer =
-            crate::kernel::static_buf!([u8; capsules_extra::nrf51822_serialization::WRITE_BUF_LEN]);
+            kernel::static_buf!([u8; capsules_extra::nrf51822_serialization::WRITE_BUF_LEN]);
         let read_buffer =
-            crate::kernel::static_buf!([u8; capsules_extra::nrf51822_serialization::READ_BUF_LEN]);
+            kernel::static_buf!([u8; capsules_extra::nrf51822_serialization::READ_BUF_LEN]);
 
         (nrf, write_buffer, read_buffer)
     }};
@@ -44,7 +44,7 @@ pub struct Nrf51822Component<
     G: 'static + hil::gpio::Pin,
     CAP: MemoryAllocationCapability + 'static,
 > {
-    board_kernel: &'static crate::kernel::Kernel,
+    board_kernel: &'static kernel::Kernel,
     driver_num: usize,
     uart: &'static U,
     reset_pin: &'static G,
@@ -58,7 +58,7 @@ impl<
 > Nrf51822Component<U, G, CAP>
 {
     pub fn new(
-        board_kernel: &'static crate::kernel::Kernel,
+        board_kernel: &'static kernel::Kernel,
         driver_num: usize,
         uart: &'static U,
         reset_pin: &'static G,

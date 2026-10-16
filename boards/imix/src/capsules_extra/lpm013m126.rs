@@ -14,15 +14,15 @@
 
 use core::cell::Cell;
 use core::cmp;
-use crate::kernel::ErrorCode;
-use crate::kernel::debug;
-use crate::kernel::deferred_call::{DeferredCall, DeferredCallClient};
-use crate::kernel::hil::gpio::Pin;
-use crate::kernel::hil::screen::{Screen, ScreenClient, ScreenPixelFormat, ScreenRotation, ScreenSetup};
-use crate::kernel::hil::spi::{SpiMasterClient, SpiMasterDevice};
-use crate::kernel::hil::time::{Alarm, AlarmClient, ConvertTicks};
-use crate::kernel::utilities::cells::{OptionalCell, TakeCell};
-use crate::kernel::utilities::leasable_buffer::SubSliceMut;
+use kernel::ErrorCode;
+use kernel::debug;
+use kernel::deferred_call::{DeferredCall, DeferredCallClient};
+use kernel::hil::gpio::Pin;
+use kernel::hil::screen::{Screen, ScreenClient, ScreenPixelFormat, ScreenRotation, ScreenSetup};
+use kernel::hil::spi::{SpiMasterClient, SpiMasterDevice};
+use kernel::hil::time::{Alarm, AlarmClient, ConvertTicks};
+use kernel::utilities::cells::{OptionalCell, TakeCell};
+use kernel::utilities::leasable_buffer::SubSliceMut;
 
 /// 4-bit frame buffer bytes.
 ///
@@ -659,7 +659,7 @@ where
 }
 
 impl<'a, A: Alarm<'a>, P: Pin, S: SpiMasterDevice<'a>> ScreenSetup<'a> for Lpm013m126<'a, A, P, S> {
-    fn set_client(&self, _client: &'a dyn crate::kernel::hil::screen::ScreenSetupClient) {
+    fn set_client(&self, _client: &'a dyn kernel::hil::screen::ScreenSetupClient) {
         todo!()
     }
 

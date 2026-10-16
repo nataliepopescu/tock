@@ -13,11 +13,11 @@
 
 use capsules_extra::eui64::Eui64;
 use core::mem::MaybeUninit;
-use crate::kernel::component::Component;
+use kernel::component::Component;
 
 #[macro_export]
 macro_rules! eui64_component_static {
-    () => {{ crate::kernel::static_buf!(capsules_extra::eui64::Eui64) }};
+    () => {{ kernel::static_buf!(capsules_extra::eui64::Eui64) }};
 }
 
 pub type Eui64ComponentType = capsules_extra::eui64::Eui64;

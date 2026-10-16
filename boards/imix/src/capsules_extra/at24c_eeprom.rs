@@ -45,9 +45,9 @@
 use core::cell::Cell;
 use core::cmp;
 
-use crate::kernel::hil::i2c::{Error, I2CClient, I2CDevice};
-use crate::kernel::utilities::cells::{OptionalCell, TakeCell};
-use crate::kernel::{ErrorCode, hil};
+use kernel::hil::i2c::{Error, I2CClient, I2CDevice};
+use kernel::utilities::cells::{OptionalCell, TakeCell};
+use kernel::{ErrorCode, hil};
 
 const PAGE_SIZE: usize = 32;
 

@@ -4,17 +4,17 @@
 
 use core::cell::Cell;
 
-use crate::kernel::ErrorCode;
-use crate::kernel::ProcessId;
-use crate::kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
-use crate::kernel::hil::symmetric_encryption::{AES, AES_BLOCK_SIZE, AES128, AESCtr, Client};
-use crate::kernel::processbuffer::{ReadableProcessBuffer, WriteableProcessBuffer};
-use crate::kernel::syscall::{CommandReturn, SyscallDriver};
-use crate::kernel::utilities::cells::{OptionalCell, TakeCell};
+use kernel::ErrorCode;
+use kernel::ProcessId;
+use kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
+use kernel::hil::symmetric_encryption::{AES, AES_BLOCK_SIZE, AES128, AESCtr, Client};
+use kernel::processbuffer::{ReadableProcessBuffer, WriteableProcessBuffer};
+use kernel::syscall::{CommandReturn, SyscallDriver};
+use kernel::utilities::cells::{OptionalCell, TakeCell};
 
 pub const DRIVER_NUM: usize = 0x99999;
 
-pub static KEY: &[u8; crate::kernel::hil::symmetric_encryption::AES128_KEY_SIZE] = b"InsecureAESKey12";
+pub static KEY: &[u8; kernel::hil::symmetric_encryption::AES128_KEY_SIZE] = b"InsecureAESKey12";
 
 #[derive(Default)]
 pub struct ProcessState {
@@ -163,7 +163,7 @@ impl<'a, A: AES<'a, AES128> + AESCtr> EncryptionOracleDriver<'a, A> {
                         .and_then(|iv| {
                             iv.enter(|iv| {
                                 let mut static_buf =
-                                    [0; crate::kernel::hil::symmetric_encryption::AES128_KEY_SIZE];
+                                    [0; kernel::hil::symmetric_encryption::AES128_KEY_SIZE];
                                 // Determine the size of the static buffer we have
                                 let copy_len = core::cmp::min(static_buf.len(), iv.len());
 
@@ -253,7 +253,7 @@ impl<'a, A: AES<'a, AES128> + AESCtr> EncryptionOracleDriver<'a, A> {
                 if let Err(e) = res {
                     let _ = kernel_data.schedule_upcall(
                         upcall::DONE,
-                        (crate::kernel::errorcode::into_statuscode(Err(e)), 0, 0),
+                        (kernel::errorcode::into_statuscode(Err(e)), 0, 0),
                     );
                 }
             });
@@ -293,7 +293,7 @@ impl<'a, A: AES<'a, AES128> + AESCtr> SyscallDriver for EncryptionOracleDriver<'
         }
     }
 
-    fn allocate_grant(&self, processid: ProcessId) -> Result<(), crate::kernel::process::Error> {
+    fn allocate_grant(&self, processid: ProcessId) -> Result<(), kernel::process::Error> {
         self.process_grants.enter(processid, |_, _| {})
     }
 }

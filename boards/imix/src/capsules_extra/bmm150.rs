@@ -25,7 +25,7 @@
 //! -----
 //!
 //! ```rust,ignore
-//! # use crate::kernel::static_init;
+//! # use kernel::static_init;
 //!
 //! let bmm150_i2c = static_init!(
 //!     capsules::virtual_i2c::I2CDevice,
@@ -38,10 +38,10 @@
 //! ```
 
 use core::cell::Cell;
-use crate::kernel::ErrorCode;
-use crate::kernel::hil::i2c::{self, I2CClient, I2CDevice};
-use crate::kernel::hil::sensors::{NineDof, NineDofClient};
-use crate::kernel::utilities::cells::{OptionalCell, TakeCell};
+use kernel::ErrorCode;
+use kernel::hil::i2c::{self, I2CClient, I2CDevice};
+use kernel::hil::sensors::{NineDof, NineDofClient};
+use kernel::utilities::cells::{OptionalCell, TakeCell};
 
 #[allow(dead_code)]
 enum Registers {

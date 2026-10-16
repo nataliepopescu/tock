@@ -18,7 +18,7 @@
 //! -----
 //!
 //! ```rust,ignore
-//! # use crate::kernel::{hil, static_init};
+//! # use kernel::{hil, static_init};
 //! # use capsules_core::virtual_uart::{MuxUart, UartDevice};
 //!
 //! // Create a shared UART channel for the console and for kernel debug.
@@ -48,11 +48,11 @@
 use core::cell::Cell;
 use core::cmp;
 
-use crate::kernel::ErrorCode;
-use crate::kernel::collections::list::{List, ListLink, ListNode};
-use crate::kernel::deferred_call::{DeferredCall, DeferredCallClient};
-use crate::kernel::hil::uart;
-use crate::kernel::utilities::cells::{OptionalCell, TakeCell};
+use kernel::ErrorCode;
+use kernel::collections::list::{List, ListLink, ListNode};
+use kernel::deferred_call::{DeferredCall, DeferredCallClient};
+use kernel::hil::uart;
+use kernel::utilities::cells::{OptionalCell, TakeCell};
 
 pub const RX_BUF_LEN: usize = 64;
 

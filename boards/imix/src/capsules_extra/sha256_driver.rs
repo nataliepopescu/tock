@@ -7,15 +7,15 @@
 //! Currently only supports SHA256.
 
 use capsules_core::driver;
-use crate::kernel::errorcode::into_statuscode;
-use crate::kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
-use crate::kernel::hil::digest;
-use crate::kernel::processbuffer::{ReadableProcessBuffer, WriteableProcessBuffer};
-use crate::kernel::syscall::{CommandReturn, SyscallDriver};
-use crate::kernel::utilities::cells::{OptionalCell, TakeCell};
-use crate::kernel::utilities::leasable_buffer::SubSlice;
-use crate::kernel::utilities::leasable_buffer::SubSliceMut;
-use crate::kernel::{ErrorCode, ProcessId};
+use kernel::errorcode::into_statuscode;
+use kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
+use kernel::hil::digest;
+use kernel::processbuffer::{ReadableProcessBuffer, WriteableProcessBuffer};
+use kernel::syscall::{CommandReturn, SyscallDriver};
+use kernel::utilities::cells::{OptionalCell, TakeCell};
+use kernel::utilities::leasable_buffer::SubSlice;
+use kernel::utilities::leasable_buffer::SubSliceMut;
+use kernel::{ErrorCode, ProcessId};
 
 /// Syscall driver number.
 pub const DRIVER_NUM: usize = driver::NUM::Sha as usize;
@@ -283,8 +283,8 @@ impl<'a, H: digest::DigestDataHash<'a, DIGEST_LEN> + digest::Sha256, const DIGES
                     }
                 })
                 .map_err(|err| {
-                    if err == crate::kernel::process::Error::NoSuchApp
-                        || err == crate::kernel::process::Error::InactiveApp
+                    if err == kernel::process::Error::NoSuchApp
+                        || err == kernel::process::Error::InactiveApp
                     {
                         self.sha.clear_data();
                         self.processid.clear();
@@ -445,7 +445,7 @@ impl<'a, H: digest::DigestDataHash<'a, DIGEST_LEN> + digest::Sha256, const DIGES
         }
     }
 
-    fn allocate_grant(&self, processid: ProcessId) -> Result<(), crate::kernel::process::Error> {
+    fn allocate_grant(&self, processid: ProcessId) -> Result<(), kernel::process::Error> {
         self.apps.enter(processid, |_, _| {})
     }
 }

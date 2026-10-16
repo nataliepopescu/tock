@@ -2,15 +2,15 @@
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 // Copyright Tock Contributors 2022.
 
-use crate::kernel::ErrorCode;
-use crate::kernel::ProcessId;
-use crate::kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
-use crate::kernel::hil::symmetric_encryption::{AES, AES128, AESCtr};
-use crate::kernel::syscall::{CommandReturn, SyscallDriver};
+use kernel::ErrorCode;
+use kernel::ProcessId;
+use kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
+use kernel::hil::symmetric_encryption::{AES, AES128, AESCtr};
+use kernel::syscall::{CommandReturn, SyscallDriver};
 
 pub const DRIVER_NUM: usize = 0x99999;
 
-pub static KEY: &[u8; crate::kernel::hil::symmetric_encryption::AES128_KEY_SIZE] = b"InsecureAESKey12";
+pub static KEY: &[u8; kernel::hil::symmetric_encryption::AES128_KEY_SIZE] = b"InsecureAESKey12";
 
 #[derive(Default)]
 pub struct ProcessState {
@@ -63,7 +63,7 @@ impl<'a, A: AES<'a, AES128> + AESCtr> SyscallDriver for EncryptionOracleDriver<'
         }
     }
 
-    fn allocate_grant(&self, processid: ProcessId) -> Result<(), crate::kernel::process::Error> {
+    fn allocate_grant(&self, processid: ProcessId) -> Result<(), kernel::process::Error> {
         self.process_grants.enter(processid, |_, _| {})
     }
 }

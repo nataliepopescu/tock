@@ -33,10 +33,10 @@
 use crate::tickv::{KVSystem, KVSystemClient, KeyType};
 use core::cell::Cell;
 use core::marker::PhantomData;
-use crate::kernel::ErrorCode;
-use crate::kernel::debug;
-use crate::kernel::utilities::cells::{MapCell, TakeCell};
-use crate::kernel::utilities::leasable_buffer::SubSliceMut;
+use kernel::ErrorCode;
+use kernel::debug;
+use kernel::utilities::cells::{MapCell, TakeCell};
+use kernel::utilities::leasable_buffer::SubSliceMut;
 
 #[derive(Clone, Copy, PartialEq)]
 enum CurrentState {

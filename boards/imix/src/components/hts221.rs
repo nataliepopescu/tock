@@ -16,17 +16,17 @@
 use capsules_core::virtualizers::virtual_i2c::{I2CDevice, MuxI2C};
 use capsules_extra::hts221::Hts221;
 use core::mem::MaybeUninit;
-use crate::kernel::component::Component;
-use crate::kernel::hil::i2c;
+use kernel::component::Component;
+use kernel::hil::i2c;
 
 // Setup static space for the objects.
 #[macro_export]
 macro_rules! hts221_component_static {
     ($I:ty $(,)?) => {{
         let i2c_device =
-            crate::kernel::static_buf!(capsules_core::virtualizers::virtual_i2c::I2CDevice<$I>);
-        let buffer = crate::kernel::static_buf!([u8; 17]);
-        let hts221 = crate::kernel::static_buf!(
+            kernel::static_buf!(capsules_core::virtualizers::virtual_i2c::I2CDevice<$I>);
+        let buffer = kernel::static_buf!([u8; 17]);
+        let hts221 = kernel::static_buf!(
             capsules_extra::hts221::Hts221<
                 'static,
                 capsules_core::virtualizers::virtual_i2c::I2CDevice<$I>,

@@ -25,7 +25,7 @@
 //! -----
 //!
 //! ```rust,ignore
-//! # use crate::kernel::{hil, static_init};
+//! # use kernel::{hil, static_init};
 
 //! sam4l::flashcalw::FLASH_CONTROLLER.configure();
 //! let page_buffer = static_init!(
@@ -42,10 +42,10 @@
 
 use core::cell::Cell;
 use core::cmp;
-use crate::kernel::ErrorCode;
-use crate::kernel::hil;
-use crate::kernel::utilities::cells::NumericCellExt;
-use crate::kernel::utilities::cells::{OptionalCell, TakeCell};
+use kernel::ErrorCode;
+use kernel::hil;
+use kernel::utilities::cells::NumericCellExt;
+use kernel::utilities::cells::{OptionalCell, TakeCell};
 
 /// This module is either waiting to do something, or handling a read/write.
 #[derive(Clone, Copy, Debug, PartialEq)]

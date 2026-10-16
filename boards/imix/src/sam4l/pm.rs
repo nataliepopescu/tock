@@ -11,10 +11,10 @@ use crate::gpio;
 use crate::scif;
 use core::cell::Cell;
 use core::sync::atomic::Ordering;
-use crate::kernel::platform::chip::ClockInterface;
-use crate::kernel::utilities::StaticRef;
-use crate::kernel::utilities::registers::interfaces::{Readable, Writeable};
-use crate::kernel::utilities::registers::{
+use kernel::platform::chip::ClockInterface;
+use kernel::utilities::StaticRef;
+use kernel::utilities::registers::interfaces::{Readable, Writeable};
+use kernel::utilities::registers::{
     FieldValue, ReadOnly, ReadWrite, WriteOnly, register_bitfields,
 };
 

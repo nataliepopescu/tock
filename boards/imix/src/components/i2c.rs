@@ -23,30 +23,30 @@
 
 use capsules_core::virtualizers::virtual_i2c::{I2CDevice, MuxI2C};
 use core::mem::MaybeUninit;
-use crate::kernel::capabilities::MemoryAllocationCapability;
-use crate::kernel::component::Component;
-use crate::kernel::hil::i2c::{self, NoSMBus};
+use kernel::capabilities::MemoryAllocationCapability;
+use kernel::component::Component;
+use kernel::hil::i2c::{self, NoSMBus};
 
 // Setup static space for the objects.
 #[macro_export]
 macro_rules! i2c_mux_component_static {
-    ($I:ty $(,)?) => {{ crate::kernel::static_buf!(capsules_core::virtualizers::virtual_i2c::MuxI2C<'static, $I>) }};
-    ($I:ty, $S:ty $(,)?) => {{ crate::kernel::static_buf!(capsules::virtual_i2c::MuxI2C<'static, $I, $S>) }};
+    ($I:ty $(,)?) => {{ kernel::static_buf!(capsules_core::virtualizers::virtual_i2c::MuxI2C<'static, $I>) }};
+    ($I:ty, $S:ty $(,)?) => {{ kernel::static_buf!(capsules::virtual_i2c::MuxI2C<'static, $I, $S>) }};
 }
 
 #[macro_export]
 macro_rules! i2c_component_static {
-    ($I:ty $(,)?) => {{ crate::kernel::static_buf!(capsules_core::virtualizers::virtual_i2c::I2CDevice<'static, $I>) }};
+    ($I:ty $(,)?) => {{ kernel::static_buf!(capsules_core::virtualizers::virtual_i2c::I2CDevice<'static, $I>) }};
 }
 
 #[macro_export]
 macro_rules! i2c_master_slave_component_static {
     ($I:ty $(,)?) => {{
-        let i2c_master_buffer = crate::kernel::static_buf!([u8; 32]);
-        let i2c_slave_buffer1 = crate::kernel::static_buf!([u8; 32]);
-        let i2c_slave_buffer2 = crate::kernel::static_buf!([u8; 32]);
+        let i2c_master_buffer = kernel::static_buf!([u8; 32]);
+        let i2c_slave_buffer1 = kernel::static_buf!([u8; 32]);
+        let i2c_slave_buffer2 = kernel::static_buf!([u8; 32]);
 
-        let driver = crate::kernel::static_buf!(
+        let driver = kernel::static_buf!(
             capsules_core::i2c_master_slave_driver::I2CMasterSlaveDriver<'static, $I>
         );
 
@@ -62,9 +62,9 @@ macro_rules! i2c_master_slave_component_static {
 #[macro_export]
 macro_rules! i2c_master_driver_component_static {
     ($I:ty $(,)?) => {{
-        let i2c_master_buffer = crate::kernel::static_buf!([u8; 32]);
+        let i2c_master_buffer = kernel::static_buf!([u8; 32]);
 
-        let driver = crate::kernel::static_buf!(capsules_core::i2c_master::I2CMasterDriver<'static, $I>);
+        let driver = kernel::static_buf!(capsules_core::i2c_master::I2CMasterDriver<'static, $I>);
 
         (driver, i2c_master_buffer)
     }};
@@ -94,7 +94,7 @@ impl<I: 'static + i2c::I2CMaster<'static>, S: 'static + i2c::SMBusMaster<'static
 
     fn finalize(self, static_buffer: Self::StaticInput) -> Self::Output {
         let mux_i2c = static_buffer.write(MuxI2C::new(self.i2c, self.smbus));
-        crate::kernel::deferred_call::DeferredCallClient::register(mux_i2c);
+        kernel::deferred_call::DeferredCallClient::register(mux_i2c);
 
         self.i2c.set_master_client(mux_i2c);
 
@@ -134,7 +134,7 @@ pub struct I2CMasterSlaveDriverComponent<
     I: 'static + i2c::I2CMasterSlave<'static>,
     CAP: MemoryAllocationCapability + 'static,
 > {
-    board_kernel: &'static crate::kernel::Kernel,
+    board_kernel: &'static kernel::Kernel,
     driver_num: usize,
     i2c: &'static I,
     mem_cap: CAP,
@@ -144,7 +144,7 @@ impl<I: 'static + i2c::I2CMasterSlave<'static>, CAP: MemoryAllocationCapability 
     I2CMasterSlaveDriverComponent<I, CAP>
 {
     pub fn new(
-        board_kernel: &'static crate::kernel::Kernel,
+        board_kernel: &'static kernel::Kernel,
         driver_num: usize,
         i2c: &'static I,
         mem_cap: CAP,
@@ -198,7 +198,7 @@ pub struct I2CMasterDriverComponent<
     I: 'static + i2c::I2CMaster<'static>,
     CAP: MemoryAllocationCapability + 'static,
 > {
-    board_kernel: &'static crate::kernel::Kernel,
+    board_kernel: &'static kernel::Kernel,
     driver_num: usize,
     i2c: &'static I,
     mem_cap: CAP,
@@ -208,7 +208,7 @@ impl<I: 'static + i2c::I2CMaster<'static>, CAP: MemoryAllocationCapability + 'st
     I2CMasterDriverComponent<I, CAP>
 {
     pub fn new(
-        board_kernel: &'static crate::kernel::Kernel,
+        board_kernel: &'static kernel::Kernel,
         driver_num: usize,
         i2c: &'static I,
         mem_cap: CAP,

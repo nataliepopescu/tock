@@ -28,13 +28,13 @@
 
 use core::cell::Cell;
 use core::{cmp, mem};
-use crate::kernel::ErrorCode;
-use crate::kernel::deferred_call::{DeferredCall, DeferredCallClient};
-use crate::kernel::hil::hasher::{Client, Hasher, SipHash};
-use crate::kernel::utilities::cells::{OptionalCell, TakeCell};
-use crate::kernel::utilities::leasable_buffer::SubSlice;
-use crate::kernel::utilities::leasable_buffer::SubSliceMut;
-use crate::kernel::utilities::leasable_buffer::SubSliceMutImmut;
+use kernel::ErrorCode;
+use kernel::deferred_call::{DeferredCall, DeferredCallClient};
+use kernel::hil::hasher::{Client, Hasher, SipHash};
+use kernel::utilities::cells::{OptionalCell, TakeCell};
+use kernel::utilities::leasable_buffer::SubSlice;
+use kernel::utilities::leasable_buffer::SubSliceMut;
+use kernel::utilities::leasable_buffer::SubSliceMutImmut;
 
 pub struct SipHasher24<'a> {
     client: OptionalCell<&'a dyn Client<8>>,

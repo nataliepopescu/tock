@@ -10,7 +10,7 @@
 //! You need a device that provides the `hil::uart::UART` trait.
 //!
 //! ```rust,ignore
-//! # use crate::kernel::static_init;
+//! # use kernel::static_init;
 //! # use capsules_core::console::Console;
 //!
 //! let console = static_init!(
@@ -41,12 +41,12 @@
 //! the driver. Successive writes must call `allow` each time a buffer is to be
 //! written.
 
-use crate::kernel::grant::{AllowRoCount, AllowRwCount, Grant, GrantKernelData, UpcallCount};
-use crate::kernel::hil::uart;
-use crate::kernel::processbuffer::{ReadableProcessBuffer, WriteableProcessBuffer};
-use crate::kernel::syscall::{CommandReturn, SyscallDriver};
-use crate::kernel::utilities::cells::{OptionalCell, TakeCell};
-use crate::kernel::{ErrorCode, ProcessId};
+use kernel::grant::{AllowRoCount, AllowRwCount, Grant, GrantKernelData, UpcallCount};
+use kernel::hil::uart;
+use kernel::processbuffer::{ReadableProcessBuffer, WriteableProcessBuffer};
+use kernel::syscall::{CommandReturn, SyscallDriver};
+use kernel::utilities::cells::{OptionalCell, TakeCell};
+use kernel::{ErrorCode, ProcessId};
 
 /// Syscall driver number.
 use crate::driver;
@@ -318,7 +318,7 @@ impl SyscallDriver for Console<'_> {
         }
     }
 
-    fn allocate_grant(&self, processid: ProcessId) -> Result<(), crate::kernel::process::Error> {
+    fn allocate_grant(&self, processid: ProcessId) -> Result<(), kernel::process::Error> {
         self.apps.enter(processid, |_, _| {})
     }
 }
@@ -441,7 +441,7 @@ impl uart::ReceiveClient for Console<'_> {
 
                                 let _ = kernel_data.schedule_upcall(
                                     upcall::READ_DONE,
-                                    (crate::kernel::errorcode::into_statuscode(ret), received_length, 0),
+                                    (kernel::errorcode::into_statuscode(ret), received_length, 0),
                                 );
                             }
                             _ => {
@@ -449,7 +449,7 @@ impl uart::ReceiveClient for Console<'_> {
                                 let _ = kernel_data.schedule_upcall(
                                     upcall::READ_DONE,
                                     (
-                                        crate::kernel::errorcode::into_statuscode(Err(ErrorCode::FAIL)),
+                                        kernel::errorcode::into_statuscode(Err(ErrorCode::FAIL)),
                                         0,
                                         0,
                                     ),

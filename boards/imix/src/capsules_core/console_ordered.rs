@@ -41,7 +41,7 @@
 //! of a standard console).
 //!
 //! ```rust,ignore
-//! # use crate::kernel::static_init;
+//! # use kernel::static_init;
 //! # use capsules_core::console_ordered::ConsoleOrdered;
 //! let console = static_init!(
 //!     ConsoleOrdered,
@@ -72,16 +72,16 @@
 use core::cell::Cell;
 use core::cmp;
 
-use crate::kernel::debug::debug_available_len;
-use crate::kernel::debug_process_slice;
+use kernel::debug::debug_available_len;
+use kernel::debug_process_slice;
 
-use crate::kernel::grant::{AllowRoCount, AllowRwCount, Grant, GrantKernelData, UpcallCount};
-use crate::kernel::hil::time::{Alarm, AlarmClient, ConvertTicks};
-use crate::kernel::hil::uart;
-use crate::kernel::processbuffer::{ReadableProcessBuffer, WriteableProcessBuffer};
-use crate::kernel::syscall::{CommandReturn, SyscallDriver};
-use crate::kernel::utilities::cells::{OptionalCell, TakeCell};
-use crate::kernel::{ErrorCode, ProcessId};
+use kernel::grant::{AllowRoCount, AllowRwCount, Grant, GrantKernelData, UpcallCount};
+use kernel::hil::time::{Alarm, AlarmClient, ConvertTicks};
+use kernel::hil::uart;
+use kernel::processbuffer::{ReadableProcessBuffer, WriteableProcessBuffer};
+use kernel::syscall::{CommandReturn, SyscallDriver};
+use kernel::utilities::cells::{OptionalCell, TakeCell};
+use kernel::{ErrorCode, ProcessId};
 
 /// Syscall driver number.
 use crate::driver;
@@ -233,7 +233,7 @@ impl<'a, A: Alarm<'a>> ConsoleOrdered<'a, A> {
         &self,
         app: &mut App,
         kernel_data: &GrantKernelData,
-    ) -> Result<usize, crate::kernel::process::Error> {
+    ) -> Result<usize, kernel::process::Error> {
         // We can ignore the Result because if the call fails, it means
         // the process has terminated, so issuing a callback doesn't matter.
         // If the call fails, just use the alarm to try the next client.
@@ -448,7 +448,7 @@ impl<'a, A: Alarm<'a>> SyscallDriver for ConsoleOrdered<'a, A> {
         }
     }
 
-    fn allocate_grant(&self, processid: ProcessId) -> Result<(), crate::kernel::process::Error> {
+    fn allocate_grant(&self, processid: ProcessId) -> Result<(), kernel::process::Error> {
         self.apps.enter(processid, |_, _| {})
     }
 }
@@ -525,7 +525,7 @@ impl<'a, A: Alarm<'a>> uart::ReceiveClient for ConsoleOrdered<'a, A> {
                                 };
                                 let _ = kernel_data.schedule_upcall(
                                     2,
-                                    (crate::kernel::errorcode::into_statuscode(ret), received_length, 0),
+                                    (kernel::errorcode::into_statuscode(ret), received_length, 0),
                                 );
                             }
                             _ => {
@@ -533,7 +533,7 @@ impl<'a, A: Alarm<'a>> uart::ReceiveClient for ConsoleOrdered<'a, A> {
                                 let _ = kernel_data.schedule_upcall(
                                     2,
                                     (
-                                        crate::kernel::errorcode::into_statuscode(Err(ErrorCode::FAIL)),
+                                        kernel::errorcode::into_statuscode(Err(ErrorCode::FAIL)),
                                         0,
                                         0,
                                     ),

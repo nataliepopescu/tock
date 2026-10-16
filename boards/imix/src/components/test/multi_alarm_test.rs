@@ -6,8 +6,8 @@ use core::mem::MaybeUninit;
 
 use capsules_core::test::random_alarm::TestRandomAlarm;
 use capsules_core::virtualizers::virtual_alarm::{MuxAlarm, VirtualMuxAlarm};
-use crate::kernel::component::Component;
-use crate::kernel::hil::time::{self, Alarm};
+use kernel::component::Component;
+use kernel::hil::time::{self, Alarm};
 
 #[macro_export]
 macro_rules! multi_alarm_test_component_buf {
@@ -15,12 +15,12 @@ macro_rules! multi_alarm_test_component_buf {
         use capsules_core::test::random_alarm::TestRandomAlarm;
         use capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm;
 
-        let buf00 = crate::kernel::static_buf!(VirtualMuxAlarm<'static, $A>);
-        let buf01 = crate::kernel::static_buf!(TestRandomAlarm<'static, VirtualMuxAlarm<'static, $A>>);
-        let buf10 = crate::kernel::static_buf!(VirtualMuxAlarm<'static, $A>);
-        let buf11 = crate::kernel::static_buf!(TestRandomAlarm<'static, VirtualMuxAlarm<'static, $A>>);
-        let buf20 = crate::kernel::static_buf!(VirtualMuxAlarm<'static, $A>);
-        let buf21 = crate::kernel::static_buf!(TestRandomAlarm<'static, VirtualMuxAlarm<'static, $A>>);
+        let buf00 = kernel::static_buf!(VirtualMuxAlarm<'static, $A>);
+        let buf01 = kernel::static_buf!(TestRandomAlarm<'static, VirtualMuxAlarm<'static, $A>>);
+        let buf10 = kernel::static_buf!(VirtualMuxAlarm<'static, $A>);
+        let buf11 = kernel::static_buf!(TestRandomAlarm<'static, VirtualMuxAlarm<'static, $A>>);
+        let buf20 = kernel::static_buf!(VirtualMuxAlarm<'static, $A>);
+        let buf21 = kernel::static_buf!(TestRandomAlarm<'static, VirtualMuxAlarm<'static, $A>>);
 
         ((buf00, buf01)(buf10, buf11)(buf20, buf21))
     }};

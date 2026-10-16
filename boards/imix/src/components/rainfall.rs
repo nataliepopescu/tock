@@ -17,13 +17,13 @@
 
 use capsules_extra::rainfall::RainFallSensor;
 use core::mem::MaybeUninit;
-use crate::kernel::capabilities::MemoryAllocationCapability;
-use crate::kernel::component::Component;
-use crate::kernel::hil;
+use kernel::capabilities::MemoryAllocationCapability;
+use kernel::component::Component;
+use kernel::hil;
 
 #[macro_export]
 macro_rules! rainfall_component_static {
-    ($H: ty $(,)?) => {{ crate::kernel::static_buf!(capsules_extra::rainfall::RainFallSensor<'static, $H>) }};
+    ($H: ty $(,)?) => {{ kernel::static_buf!(capsules_extra::rainfall::RainFallSensor<'static, $H>) }};
 }
 
 pub type RainFallComponentType<H> = capsules_extra::rainfall::RainFallSensor<'static, H>;
@@ -32,7 +32,7 @@ pub struct RainFallComponent<
     T: 'static + hil::sensors::RainFallDriver<'static>,
     CAP: MemoryAllocationCapability + 'static,
 > {
-    board_kernel: &'static crate::kernel::Kernel,
+    board_kernel: &'static kernel::Kernel,
     driver_num: usize,
     sensor: &'static T,
     mem_cap: CAP,
@@ -42,7 +42,7 @@ impl<T: 'static + hil::sensors::RainFallDriver<'static>, CAP: MemoryAllocationCa
     RainFallComponent<T, CAP>
 {
     pub fn new(
-        board_kernel: &'static crate::kernel::Kernel,
+        board_kernel: &'static kernel::Kernel,
         driver_num: usize,
         sensor: &'static T,
         mem_cap: CAP,

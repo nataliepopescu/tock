@@ -16,20 +16,20 @@
 use capsules_core::virtualizers::virtual_spi::{MuxSpiMaster, VirtualSpiMasterDevice};
 use capsules_extra::fm25cl::FM25CL;
 use core::mem::MaybeUninit;
-use crate::kernel::component::Component;
-use crate::kernel::hil::spi;
-use crate::kernel::hil::spi::SpiMasterDevice;
+use kernel::component::Component;
+use kernel::hil::spi;
+use kernel::hil::spi::SpiMasterDevice;
 
 #[macro_export]
 macro_rules! fm25cl_component_static {
     ($S:ty $(,)?) => {{
-        let txbuffer = crate::kernel::static_buf!([u8; capsules_extra::fm25cl::BUF_LEN]);
-        let rxbuffer = crate::kernel::static_buf!([u8; capsules_extra::fm25cl::BUF_LEN]);
+        let txbuffer = kernel::static_buf!([u8; capsules_extra::fm25cl::BUF_LEN]);
+        let rxbuffer = kernel::static_buf!([u8; capsules_extra::fm25cl::BUF_LEN]);
 
-        let spi = crate::kernel::static_buf!(
+        let spi = kernel::static_buf!(
             capsules_core::virtualizers::virtual_spi::VirtualSpiMasterDevice<'static, $S>
         );
-        let fm25cl = crate::kernel::static_buf!(
+        let fm25cl = kernel::static_buf!(
             capsules_extra::fm25cl::FM25CL<
                 'static,
                 capsules_core::virtualizers::virtual_spi::VirtualSpiMasterDevice<'static, $S>,

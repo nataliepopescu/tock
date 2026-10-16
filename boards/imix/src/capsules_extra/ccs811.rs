@@ -13,11 +13,11 @@
 //!
 
 use core::cell::Cell;
-use crate::kernel::ErrorCode;
-use crate::kernel::deferred_call::{DeferredCall, DeferredCallClient};
-use crate::kernel::hil::i2c::{self, I2CClient, I2CDevice};
-use crate::kernel::hil::sensors::{AirQualityClient, AirQualityDriver};
-use crate::kernel::utilities::cells::{OptionalCell, TakeCell};
+use kernel::ErrorCode;
+use kernel::deferred_call::{DeferredCall, DeferredCallClient};
+use kernel::hil::i2c::{self, I2CClient, I2CDevice};
+use kernel::hil::sensors::{AirQualityClient, AirQualityDriver};
+use kernel::utilities::cells::{OptionalCell, TakeCell};
 
 const STATUS: u8 = 0x00;
 const MEAS_MODE: u8 = 0x01;

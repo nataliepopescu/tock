@@ -32,23 +32,23 @@
 //! ```
 
 use core::mem::MaybeUninit;
-use crate::kernel::capabilities::MemoryAllocationCapability;
-use crate::kernel::component::Component;
-use crate::kernel::hil;
+use kernel::capabilities::MemoryAllocationCapability;
+use kernel::component::Component;
+use kernel::hil;
 
 // Setup static space for the objects.
 #[macro_export]
 macro_rules! ctap_component_static {
     ($U:ty $(,)?) => {{
-        let hid = crate::kernel::static_buf!(capsules_extra::usb::ctap::CtapHid<'static, $U>);
-        let driver = crate::kernel::static_buf!(
+        let hid = kernel::static_buf!(capsules_extra::usb::ctap::CtapHid<'static, $U>);
+        let driver = kernel::static_buf!(
             capsules_extra::usb_hid_driver::UsbHidDriver<
                 'static,
                 capsules_extra::usb::usb_hid_driver::UsbHidDriver<'static, $U>,
             >
         );
-        let send_buffer = crate::kernel::static_buf!([u8; 64]);
-        let recv_buffer = crate::kernel::static_buf!([u8; 64]);
+        let send_buffer = kernel::static_buf!([u8; 64]);
+        let recv_buffer = kernel::static_buf!([u8; 64]);
 
         (hid, driver, send_buffer, recv_buffer)
     }};
@@ -58,7 +58,7 @@ pub struct CtapComponent<
     U: 'static + hil::usb::UsbController<'static>,
     CAP: MemoryAllocationCapability + 'static,
 > {
-    board_kernel: &'static crate::kernel::Kernel,
+    board_kernel: &'static kernel::Kernel,
     driver_num: usize,
     usb: &'static U,
     vendor_id: u16,
@@ -71,7 +71,7 @@ impl<U: 'static + hil::usb::UsbController<'static>, CAP: MemoryAllocationCapabil
     CtapComponent<U, CAP>
 {
     pub fn new(
-        board_kernel: &'static crate::kernel::Kernel,
+        board_kernel: &'static kernel::Kernel,
         driver_num: usize,
         usb: &'static U,
         vendor_id: u16,

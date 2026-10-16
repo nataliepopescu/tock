@@ -26,11 +26,11 @@
 
 use core::marker::PhantomData;
 use core::mem::MaybeUninit;
-use crate::kernel::capabilities::MemoryAllocationCapability;
-use crate::kernel::component::Component;
-use crate::kernel::deferred_call::DeferredCallClient;
-use crate::kernel::hil;
-use crate::kernel::hil::symmetric_encryption::{
+use kernel::capabilities::MemoryAllocationCapability;
+use kernel::component::Component;
+use kernel::deferred_call::DeferredCallClient;
+use kernel::hil;
+use kernel::hil::symmetric_encryption::{
     AES, AES128, AESCBC, AESCCM, AESCtr, AESECB, AESGCM, AESKeySize,
 };
 
@@ -38,7 +38,7 @@ const CRYPT_SIZE: usize = 7 * hil::symmetric_encryption::AES_BLOCK_SIZE;
 
 #[macro_export]
 macro_rules! aes_mux_component_static {
-    ($A:ty $(,)?) => {{ crate::kernel::static_buf!(capsules_core::virtualizers::virtual_aes_ccm::MuxAES128CCM<'static, $A>) }};
+    ($A:ty $(,)?) => {{ kernel::static_buf!(capsules_core::virtualizers::virtual_aes_ccm::MuxAES128CCM<'static, $A>) }};
 }
 
 pub type AesMuxComponentType<A> =
@@ -76,11 +76,11 @@ impl<A: 'static + AES<'static, AES128> + AESCtr + AESCBC + AESECB> Component
 #[macro_export]
 macro_rules! aes_virtual_component_static {
     ($A:ty $(,)?) => {{
-        const CRYPT_SIZE: usize = 7 * crate::kernel::hil::symmetric_encryption::AES_BLOCK_SIZE;
-        let virtual_aes = crate::kernel::static_buf!(
+        const CRYPT_SIZE: usize = 7 * kernel::hil::symmetric_encryption::AES_BLOCK_SIZE;
+        let virtual_aes = kernel::static_buf!(
             capsules_core::virtualizers::virtual_aes_ccm::VirtualAES128CCM<'static, $A>
         );
-        let crypt_buf = crate::kernel::static_buf!([u8; CRYPT_SIZE]);
+        let crypt_buf = kernel::static_buf!([u8; CRYPT_SIZE]);
 
         (virtual_aes, crypt_buf)
     }};
@@ -89,10 +89,10 @@ macro_rules! aes_virtual_component_static {
 #[macro_export]
 macro_rules! aes_driver_component_static {
     ($A:ty, $K:ty $(,)?) => {{
-        const CRYPT_SIZE: usize = 7 * crate::kernel::hil::symmetric_encryption::AES_BLOCK_SIZE;
-        let aes_src_buffer = crate::kernel::static_buf!([u8; 32]);
-        let aes_dst_buffer = crate::kernel::static_buf!([u8; CRYPT_SIZE]);
-        let aes_driver = crate::kernel::static_buf!(
+        const CRYPT_SIZE: usize = 7 * kernel::hil::symmetric_encryption::AES_BLOCK_SIZE;
+        let aes_src_buffer = kernel::static_buf!([u8; 32]);
+        let aes_dst_buffer = kernel::static_buf!([u8; CRYPT_SIZE]);
+        let aes_driver = kernel::static_buf!(
             capsules_extra::symmetric_encryption::aes::AesDriver<'static, $A, $K>
         );
 
@@ -143,7 +143,7 @@ pub struct AesDriverComponent<
     A: AES<'static, K> + AESCCM<'static, K> + 'static,
     CAP: MemoryAllocationCapability + 'static,
 > {
-    board_kernel: &'static crate::kernel::Kernel,
+    board_kernel: &'static kernel::Kernel,
     driver_num: usize,
     aes: &'static A,
     mem_cap: CAP,
@@ -157,7 +157,7 @@ impl<
 > AesDriverComponent<K, A, CAP>
 {
     pub fn new(
-        board_kernel: &'static crate::kernel::Kernel,
+        board_kernel: &'static kernel::Kernel,
         driver_num: usize,
         aes: &'static A,
 

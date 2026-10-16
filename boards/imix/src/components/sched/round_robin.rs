@@ -18,15 +18,15 @@
 
 use capsules_system::scheduler::round_robin::{RoundRobinProcessNode, RoundRobinSched};
 use core::mem::MaybeUninit;
-use crate::kernel::component::Component;
-use crate::kernel::process::ProcessArray;
+use kernel::component::Component;
+use kernel::process::ProcessArray;
 
 #[macro_export]
 macro_rules! round_robin_component_static {
     ($N:expr $(,)?) => {{
         let rr_sched =
-            crate::kernel::static_buf!(capsules_system::scheduler::round_robin::RoundRobinSched<'static>);
-        let rr_nodes = crate::kernel::static_buf!(
+            kernel::static_buf!(capsules_system::scheduler::round_robin::RoundRobinSched<'static>);
+        let rr_nodes = kernel::static_buf!(
             [core::mem::MaybeUninit<
                 capsules_system::scheduler::round_robin::RoundRobinProcessNode<'static>,
             >; $N]

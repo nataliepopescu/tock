@@ -5,13 +5,13 @@
 //! Component for SignatureVerifyInMemoryKeys.
 
 use core::mem::MaybeUninit;
-use crate::kernel::component::Component;
-use crate::kernel::deferred_call::DeferredCallClient;
+use kernel::component::Component;
+use kernel::deferred_call::DeferredCallClient;
 
 #[macro_export]
 macro_rules! signature_verify_in_memory_keys_component_static {
     ($S:ty, $NUM_KEYS:expr, $KL:expr, $HL:expr, $SL:expr $(,)?) => {{
-        let verifier = crate::kernel::static_buf!(
+        let verifier = kernel::static_buf!(
             capsules_extra::signature_verify_in_memory_keys::SignatureVerifyInMemoryKeys<
                 'static,
                 $S,
@@ -42,8 +42,8 @@ pub type SignatureVerifyInMemoryKeysComponentType<
 >;
 
 pub struct SignatureVerifyInMemoryKeysComponent<
-    S: crate::kernel::hil::public_key_crypto::signature::SignatureVerify<'static, HL, SL>
-        + crate::kernel::hil::public_key_crypto::keys::SetKeyBySlice<'static, KL>
+    S: kernel::hil::public_key_crypto::signature::SignatureVerify<'static, HL, SL>
+        + kernel::hil::public_key_crypto::keys::SetKeyBySlice<'static, KL>
         + 'static,
     const NUM_KEYS: usize,
     const KL: usize,
@@ -55,8 +55,8 @@ pub struct SignatureVerifyInMemoryKeysComponent<
 }
 
 impl<
-    S: crate::kernel::hil::public_key_crypto::signature::SignatureVerify<'static, HL, SL>
-        + crate::kernel::hil::public_key_crypto::keys::SetKeyBySlice<'static, KL>
+    S: kernel::hil::public_key_crypto::signature::SignatureVerify<'static, HL, SL>
+        + kernel::hil::public_key_crypto::keys::SetKeyBySlice<'static, KL>
         + 'static,
     const NUM_KEYS: usize,
     const KL: usize,
@@ -70,8 +70,8 @@ impl<
 }
 
 impl<
-    S: crate::kernel::hil::public_key_crypto::signature::SignatureVerify<'static, HL, SL>
-        + crate::kernel::hil::public_key_crypto::keys::SetKeyBySlice<'static, KL>
+    S: kernel::hil::public_key_crypto::signature::SignatureVerify<'static, HL, SL>
+        + kernel::hil::public_key_crypto::keys::SetKeyBySlice<'static, KL>
         + 'static,
     const NUM_KEYS: usize,
     const KL: usize,

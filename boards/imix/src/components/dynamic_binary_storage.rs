@@ -8,7 +8,7 @@
 //! a system call interface to SequentialDynamicBinaryStorage.
 //!
 //!```rust, ignore
-//! # use crate::kernel::static_init;
+//! # use kernel::static_init;
 //!
 //! let dynamic_binary_storage = components::dyn_binary_storage::SequentialBinaryStorageComponent::new(
 //!     board_kernel,
@@ -18,19 +18,19 @@
 //! .finalize(components::sequential_binary_storage_component_static!(
 //!     nrf52840::nvmc::Nvmc,
 //!     nrf52840::chip::NRF52<Nrf52840DefaultPeripherals>,
-//!     crate::kernel::process::ProcessStandardDebugFull,
+//!     kernel::process::ProcessStandardDebugFull,
 //! ));
 //! ```
 
 use capsules_extra::nonvolatile_to_pages::NonvolatileToPages;
 use core::mem::MaybeUninit;
-use crate::kernel::component::Component;
-use crate::kernel::deferred_call::DeferredCallClient;
-use crate::kernel::dynamic_binary_storage::SequentialDynamicBinaryStorage;
-use crate::kernel::hil;
-use crate::kernel::platform::chip::Chip;
-use crate::kernel::process::ProcessStandardDebug;
-use crate::kernel::process::SequentialProcessLoaderMachine;
+use kernel::component::Component;
+use kernel::deferred_call::DeferredCallClient;
+use kernel::dynamic_binary_storage::SequentialDynamicBinaryStorage;
+use kernel::hil;
+use kernel::platform::chip::Chip;
+use kernel::process::ProcessStandardDebug;
+use kernel::process::SequentialProcessLoaderMachine;
 
 pub type NVPages<F> = capsules_extra::nonvolatile_to_pages::NonvolatileToPages<'static, F>;
 
@@ -38,12 +38,12 @@ pub type NVPages<F> = capsules_extra::nonvolatile_to_pages::NonvolatileToPages<'
 #[macro_export]
 macro_rules! sequential_binary_storage_component_static {
     ($F:ty, $C:ty, $D:ty $(,)?) => {{
-        let page = crate::kernel::static_buf!(<$F as crate::kernel::hil::flash::Flash>::Page);
-        let ntp = crate::kernel::static_buf!(
+        let page = kernel::static_buf!(<$F as kernel::hil::flash::Flash>::Page);
+        let ntp = kernel::static_buf!(
             capsules_extra::nonvolatile_to_pages::NonvolatileToPages<'static, $F>
         );
-        let pl = crate::kernel::static_buf!(
-            crate::kernel::dynamic_binary_storage::SequentialDynamicBinaryStorage<
+        let pl = kernel::static_buf!(
+            kernel::dynamic_binary_storage::SequentialDynamicBinaryStorage<
                 'static,
                 'static,
                 $C,
@@ -51,7 +51,7 @@ macro_rules! sequential_binary_storage_component_static {
                 capsules_extra::nonvolatile_to_pages::NonvolatileToPages<'static, $F>,
             >
         );
-        let buffer = crate::kernel::static_buf!([u8; crate::kernel::dynamic_binary_storage::BUF_LEN]);
+        let buffer = kernel::static_buf!([u8; kernel::dynamic_binary_storage::BUF_LEN]);
 
         (page, ntp, pl, buffer)
     }};
@@ -62,7 +62,7 @@ pub struct SequentialBinaryStorageComponent<
     C: Chip + 'static,
     D: ProcessStandardDebug + 'static,
 > {
-    board_kernel: &'static crate::kernel::Kernel,
+    board_kernel: &'static kernel::Kernel,
     nv_flash: &'static F,
     loader_driver: &'static SequentialProcessLoaderMachine<'static, C, D>,
 }
@@ -74,7 +74,7 @@ impl<
 > SequentialBinaryStorageComponent<F, C, D>
 {
     pub fn new(
-        board_kernel: &'static crate::kernel::Kernel,
+        board_kernel: &'static kernel::Kernel,
         nv_flash: &'static F,
         loader_driver: &'static SequentialProcessLoaderMachine<'static, C, D>,
     ) -> Self {
@@ -98,7 +98,7 @@ impl<
         &'static mut MaybeUninit<
             SequentialDynamicBinaryStorage<'static, 'static, C, D, NonvolatileToPages<'static, F>>,
         >,
-        &'static mut MaybeUninit<[u8; crate::kernel::dynamic_binary_storage::BUF_LEN]>,
+        &'static mut MaybeUninit<[u8; kernel::dynamic_binary_storage::BUF_LEN]>,
     );
     type Output = &'static SequentialDynamicBinaryStorage<
         'static,
@@ -111,7 +111,7 @@ impl<
     fn finalize(self, static_buffer: Self::StaticInput) -> Self::Output {
         let buffer = static_buffer
             .3
-            .write([0; crate::kernel::dynamic_binary_storage::BUF_LEN]);
+            .write([0; kernel::dynamic_binary_storage::BUF_LEN]);
 
         let flash_pagebuffer = static_buffer
             .0

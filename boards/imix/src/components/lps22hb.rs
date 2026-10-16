@@ -7,21 +7,21 @@
 use capsules_core::virtualizers::virtual_i2c::{I2CDevice, MuxI2C};
 use capsules_extra::lps22hb::Lps22hb;
 use core::mem::MaybeUninit;
-use crate::kernel::component::Component;
-use crate::kernel::hil::i2c;
+use kernel::component::Component;
+use kernel::hil::i2c;
 
 #[macro_export]
 macro_rules! lps22hb_component_static {
     ($I:ty $(,)?) => {{
         let i2c_device =
-            crate::kernel::static_buf!(capsules_core::virtualizers::virtual_i2c::I2CDevice<$I>);
-        let lps22hb = crate::kernel::static_buf!(
+            kernel::static_buf!(capsules_core::virtualizers::virtual_i2c::I2CDevice<$I>);
+        let lps22hb = kernel::static_buf!(
             capsules_extra::lps22hb::Lps22hb<
                 'static,
                 capsules_core::virtualizers::virtual_i2c::I2CDevice<$I>,
             >
         );
-        let buffer = crate::kernel::static_buf!([u8; 4]);
+        let buffer = kernel::static_buf!([u8; 4]);
 
         (i2c_device, lps22hb, buffer)
     }};

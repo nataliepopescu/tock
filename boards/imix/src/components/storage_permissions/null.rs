@@ -6,14 +6,14 @@
 //! permissions.
 
 use core::mem::MaybeUninit;
-use crate::kernel::component::Component;
-use crate::kernel::platform::chip::Chip;
-use crate::kernel::process::ProcessStandardDebug;
+use kernel::component::Component;
+use kernel::platform::chip::Chip;
+use kernel::process::ProcessStandardDebug;
 
 #[macro_export]
 macro_rules! storage_permissions_null_component_static {
     ($C:ty, $D:ty $(,)?) => {{
-        crate::kernel::static_buf!(capsules_system::storage_permissions::null::NullStoragePermissions<$C, $D>)
+        kernel::static_buf!(capsules_system::storage_permissions::null::NullStoragePermissions<$C, $D>)
     }};
 }
 

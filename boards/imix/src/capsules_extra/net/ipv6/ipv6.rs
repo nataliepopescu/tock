@@ -80,8 +80,8 @@ use crate::net::stream::{encode_bytes, encode_u8, encode_u16};
 use crate::net::tcp::TCPHeader;
 use crate::net::udp::UDPHeader;
 
-use crate::kernel::ErrorCode;
-use crate::kernel::utilities::leasable_buffer::SubSliceMut;
+use kernel::ErrorCode;
+use kernel::utilities::leasable_buffer::SubSliceMut;
 
 pub const UDP_HDR_LEN: usize = 8;
 pub const ICMP_HDR_LEN: usize = 8;

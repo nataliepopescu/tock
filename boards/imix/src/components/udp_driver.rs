@@ -10,7 +10,7 @@
 //! Usage
 //! -----
 //! ```rust
-//! crate::kernel::create_typed_capability!(udp_driver_cap, UdpDriverCap: crate::kernel::capabilities::UdpDriverCapability);
+//! kernel::create_typed_capability!(udp_driver_cap, UdpDriverCap: kernel::capabilities::UdpDriverCapability);
 //! let udp_driver = UDPDriverComponent::new(
 //!     board_kernel,
 //!     udp_send_mux,
@@ -34,11 +34,11 @@ use capsules_extra::net::udp::udp_recv::MuxUdpReceiver;
 use capsules_extra::net::udp::udp_recv::UDPReceiver;
 use capsules_extra::net::udp::udp_send::{MuxUdpSender, UDPSendStruct, UDPSender};
 use core::mem::MaybeUninit;
-use crate::kernel::capabilities::{
+use kernel::capabilities::{
     MemoryAllocationCapability, NetworkCapabilityCreationCapability, UdpDriverCapability,
 };
-use crate::kernel::component::Component;
-use crate::kernel::hil::time::Alarm;
+use kernel::component::Component;
+use kernel::hil::time::Alarm;
 
 const MAX_PAYLOAD_LEN: usize = super::udp_mux::MAX_PAYLOAD_LEN;
 
@@ -48,7 +48,7 @@ macro_rules! udp_driver_component_static {
     ($A:ty, $C:ty $(,)?) => {{
         use components::udp_mux::MAX_PAYLOAD_LEN;
 
-        let udp_send = crate::kernel::static_buf!(
+        let udp_send = kernel::static_buf!(
             capsules_extra::net::udp::udp_send::UDPSendStruct<
                 'static,
                 capsules_extra::net::ipv6::ipv6_send::IP6SendStruct<
@@ -58,14 +58,14 @@ macro_rules! udp_driver_component_static {
             >
         );
         let udp_vis_cap =
-            crate::kernel::static_buf!(capsules_extra::net::network_capabilities::UdpVisibilityCapability);
+            kernel::static_buf!(capsules_extra::net::network_capabilities::UdpVisibilityCapability);
         let net_cap =
-            crate::kernel::static_buf!(capsules_extra::net::network_capabilities::NetworkCapability);
-        let udp_driver = crate::kernel::static_buf!(capsules_extra::net::udp::UDPDriver<'static>);
-        let buffer = crate::kernel::static_buf!([u8; MAX_PAYLOAD_LEN]);
+            kernel::static_buf!(capsules_extra::net::network_capabilities::NetworkCapability);
+        let udp_driver = kernel::static_buf!(capsules_extra::net::udp::UDPDriver<'static>);
+        let buffer = kernel::static_buf!([u8; MAX_PAYLOAD_LEN]);
         let udp_recv =
-            crate::kernel::static_buf!(capsules_extra::net::udp::udp_recv::UDPReceiver<'static>);
-        let driver_cap = crate::kernel::static_buf!($C);
+            kernel::static_buf!(capsules_extra::net::udp::udp_recv::UDPReceiver<'static>);
+        let driver_cap = kernel::static_buf!($C);
 
         (
             udp_send,
@@ -87,7 +87,7 @@ pub struct UDPDriverComponent<
     MEM: MemoryAllocationCapability + 'static,
     NET: NetworkCapabilityCreationCapability + 'static,
 > {
-    board_kernel: &'static crate::kernel::Kernel,
+    board_kernel: &'static kernel::Kernel,
     driver_num: usize,
     udp_send_mux:
         &'static MuxUdpSender<'static, IP6SendStruct<'static, VirtualMuxAlarm<'static, A>>>,
@@ -107,7 +107,7 @@ impl<
 > UDPDriverComponent<A, C, MEM, NET>
 {
     pub fn new(
-        board_kernel: &'static crate::kernel::Kernel,
+        board_kernel: &'static kernel::Kernel,
         driver_num: usize,
         udp_send_mux: &'static MuxUdpSender<
             'static,
@@ -184,7 +184,7 @@ impl<
             self.interface_list,
             MAX_PAYLOAD_LEN,
             self.port_table,
-            crate::kernel::utilities::leasable_buffer::SubSliceMut::new(buffer),
+            kernel::utilities::leasable_buffer::SubSliceMut::new(buffer),
             driver_cap,
             net_cap,
         ));

@@ -26,22 +26,22 @@
 use capsules_extra::nonvolatile_storage_driver::NonvolatileStorage;
 use capsules_extra::nonvolatile_to_pages::NonvolatileToPages;
 use core::mem::MaybeUninit;
-use crate::kernel::capabilities::MemoryAllocationCapability;
-use crate::kernel::component::Component;
-use crate::kernel::hil;
+use kernel::capabilities::MemoryAllocationCapability;
+use kernel::component::Component;
+use kernel::hil;
 
 // Setup static space for the objects.
 #[macro_export]
 macro_rules! nonvolatile_storage_component_static {
     ($F:ty $(,)?) => {{
-        let page = crate::kernel::static_buf!(<$F as crate::kernel::hil::flash::Flash>::Page);
-        let ntp = crate::kernel::static_buf!(
+        let page = kernel::static_buf!(<$F as kernel::hil::flash::Flash>::Page);
+        let ntp = kernel::static_buf!(
             capsules_extra::nonvolatile_to_pages::NonvolatileToPages<'static, $F>
         );
-        let ns = crate::kernel::static_buf!(
+        let ns = kernel::static_buf!(
             capsules_extra::nonvolatile_storage_driver::NonvolatileStorage<'static>
         );
-        let buffer = crate::kernel::static_buf!([u8; capsules_extra::nonvolatile_storage_driver::BUF_LEN]);
+        let buffer = kernel::static_buf!([u8; capsules_extra::nonvolatile_storage_driver::BUF_LEN]);
 
         (page, ntp, ns, buffer)
     }};
@@ -53,7 +53,7 @@ pub struct NonvolatileStorageComponent<
     F: 'static + hil::flash::Flash + hil::flash::HasClient<'static, NonvolatileToPages<'static, F>>,
     CAP: MemoryAllocationCapability + 'static,
 > {
-    board_kernel: &'static crate::kernel::Kernel,
+    board_kernel: &'static kernel::Kernel,
     driver_num: usize,
     flash: &'static F,
     userspace_start: usize,
@@ -69,7 +69,7 @@ impl<
 > NonvolatileStorageComponent<F, CAP>
 {
     pub fn new(
-        board_kernel: &'static crate::kernel::Kernel,
+        board_kernel: &'static kernel::Kernel,
         driver_num: usize,
         flash: &'static F,
         userspace_start: usize,

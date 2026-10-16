@@ -19,7 +19,7 @@
 //! -----
 //!
 //! ```rust,ignore
-//! # use crate::kernel::static_init;
+//! # use kernel::static_init;
 //!
 //! // Create a SPI device for this chip.
 //! let fm25cl_spi = static_init!(
@@ -46,10 +46,10 @@
 
 use core::cell::Cell;
 use core::cmp;
-use crate::kernel::ErrorCode;
-use crate::kernel::hil;
-use crate::kernel::utilities::cells::{MapCell, OptionalCell, TakeCell};
-use crate::kernel::utilities::leasable_buffer::SubSliceMut;
+use kernel::ErrorCode;
+use kernel::hil;
+use kernel::utilities::cells::{MapCell, OptionalCell, TakeCell};
+use kernel::utilities::leasable_buffer::SubSliceMut;
 
 pub const BUF_LEN: usize = 512;
 

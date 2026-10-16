@@ -5,15 +5,15 @@
 //! Components for SHA-based credential checkers.
 
 use core::mem::MaybeUninit;
-use crate::kernel::component::Component;
-use crate::kernel::hil::digest;
+use kernel::component::Component;
+use kernel::hil::digest;
 
 #[macro_export]
 macro_rules! app_checker_sha256_component_static {
     () => {{
-        let buffer = crate::kernel::static_buf!([u8; 32]);
+        let buffer = kernel::static_buf!([u8; 32]);
         let checker =
-            crate::kernel::static_buf!(capsules_system::process_checker::basic::AppCheckerSha256);
+            kernel::static_buf!(capsules_system::process_checker::basic::AppCheckerSha256);
 
         (checker, buffer)
     }};
@@ -32,10 +32,10 @@ impl<S: 'static + digest::Digest<'static, 32>> AppCheckerSha256Component<S> {
 }
 
 impl<
-    S: crate::kernel::hil::digest::Sha256
+    S: kernel::hil::digest::Sha256
         + 'static
         + digest::Digest<'static, 32>
-        + crate::kernel::hil::digest::DigestDataVerify<'static, 32>,
+        + kernel::hil::digest::DigestDataVerify<'static, 32>,
 > Component for AppCheckerSha256Component<S>
 {
     type StaticInput = (

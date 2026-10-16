@@ -33,17 +33,17 @@
 use capsules_core::virtualizers::virtual_adc::AdcDevice;
 use capsules_extra::adc_microphone::AdcMicrophone;
 use core::mem::MaybeUninit;
-use crate::kernel::component::Component;
-use crate::kernel::hil::adc::{self, AdcChannel};
-use crate::kernel::hil::gpio;
+use kernel::component::Component;
+use kernel::hil::adc::{self, AdcChannel};
+use kernel::hil::gpio;
 
 #[macro_export]
 macro_rules! adc_microphone_component_static {
     ($A:ty, $LEN:literal, $P: ty $(,)?) => {{
         let adc_device = components::adc_component_static!($A);
-        let buffer = crate::kernel::static_buf!([u16; $LEN]);
+        let buffer = kernel::static_buf!([u16; $LEN]);
         let adc_microphone =
-            crate::kernel::static_buf!(capsules_extra::adc_microphone::AdcMicrophone<'static, $P>);
+            kernel::static_buf!(capsules_extra::adc_microphone::AdcMicrophone<'static, $P>);
 
         (adc_device, buffer, adc_microphone)
     }};

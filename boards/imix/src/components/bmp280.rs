@@ -31,20 +31,20 @@ use capsules_core::virtualizers::virtual_alarm::{MuxAlarm, VirtualMuxAlarm};
 use capsules_core::virtualizers::virtual_i2c::{I2CDevice, MuxI2C};
 use capsules_extra::bmp280::Bmp280;
 use core::mem::MaybeUninit;
-use crate::kernel::component::Component;
-use crate::kernel::hil::i2c;
-use crate::kernel::hil::time::Alarm;
+use kernel::component::Component;
+use kernel::hil::i2c;
+use kernel::hil::time::Alarm;
 
 #[macro_export]
 macro_rules! bmp280_component_static {
     ($A:ty, $I:ty $(,)?) => {{
         let i2c_device =
-            crate::kernel::static_buf!(capsules_core::virtualizers::virtual_i2c::I2CDevice<'static, $I>);
-        let alarm = crate::kernel::static_buf!(
+            kernel::static_buf!(capsules_core::virtualizers::virtual_i2c::I2CDevice<'static, $I>);
+        let alarm = kernel::static_buf!(
             capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, $A>
         );
-        let buffer = crate::kernel::static_buf!([u8; capsules_extra::bmp280::BUFFER_SIZE]);
-        let bmp280 = crate::kernel::static_buf!(
+        let buffer = kernel::static_buf!([u8; capsules_extra::bmp280::BUFFER_SIZE]);
+        let bmp280 = kernel::static_buf!(
             capsules_extra::bmp280::Bmp280<
                 'static,
                 VirtualMuxAlarm<'static, $A>,

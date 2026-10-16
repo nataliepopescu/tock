@@ -6,14 +6,14 @@
 
 use capsules_extra::process_info_driver::{self, ProcessInfo};
 use core::mem::MaybeUninit;
-use crate::kernel::capabilities::MemoryAllocationCapability;
-use crate::kernel::capabilities::{ProcessManagementCapability, ProcessStartCapability};
-use crate::kernel::component::Component;
+use kernel::capabilities::MemoryAllocationCapability;
+use kernel::capabilities::{ProcessManagementCapability, ProcessStartCapability};
+use kernel::component::Component;
 
 #[macro_export]
 macro_rules! process_info_component_static {
     ($C:ty $(,)?) => {{
-        let process_info = crate::kernel::static_buf!(
+        let process_info = kernel::static_buf!(
             capsules_extra::process_info_driver::ProcessInfo<
                 $C,
             >
@@ -27,7 +27,7 @@ pub struct ProcessInfoComponent<
     C: ProcessManagementCapability + ProcessStartCapability,
     CAP: MemoryAllocationCapability + 'static,
 > {
-    board_kernel: &'static crate::kernel::Kernel,
+    board_kernel: &'static kernel::Kernel,
     driver_num: usize,
     capability: C,
     mem_cap: CAP,
@@ -39,7 +39,7 @@ impl<
 > ProcessInfoComponent<C, CAP>
 {
     pub fn new(
-        board_kernel: &'static crate::kernel::Kernel,
+        board_kernel: &'static kernel::Kernel,
         driver_num: usize,
         capability: C,
         mem_cap: CAP,

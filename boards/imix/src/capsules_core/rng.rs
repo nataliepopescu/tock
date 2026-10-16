@@ -18,7 +18,7 @@
 //! -----
 //!
 //! ```rust,ignore
-//! # use crate::kernel::static_init;
+//! # use kernel::static_init;
 //!
 //! let rng = static_init!(
 //!     capsules::rng::RngDriver<'static, sam4l::trng::Trng>,
@@ -29,15 +29,15 @@
 
 use core::cell::Cell;
 
-use crate::kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
-use crate::kernel::hil::entropy;
-use crate::kernel::hil::entropy::{Entropy8, Entropy32};
-use crate::kernel::hil::rng;
-use crate::kernel::hil::rng::{Client, Continue, Random, Rng};
-use crate::kernel::processbuffer::WriteableProcessBuffer;
-use crate::kernel::syscall::{CommandReturn, SyscallDriver};
-use crate::kernel::utilities::cells::OptionalCell;
-use crate::kernel::{ErrorCode, ProcessId};
+use kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
+use kernel::hil::entropy;
+use kernel::hil::entropy::{Entropy8, Entropy32};
+use kernel::hil::rng;
+use kernel::hil::rng::{Client, Continue, Random, Rng};
+use kernel::processbuffer::WriteableProcessBuffer;
+use kernel::syscall::{CommandReturn, SyscallDriver};
+use kernel::utilities::cells::OptionalCell;
+use kernel::{ErrorCode, ProcessId};
 
 /// Syscall driver number.
 use crate::driver;
@@ -215,7 +215,7 @@ impl<'a, R: Rng<'a>> SyscallDriver for RngDriver<'a, R> {
         }
     }
 
-    fn allocate_grant(&self, processid: ProcessId) -> Result<(), crate::kernel::process::Error> {
+    fn allocate_grant(&self, processid: ProcessId) -> Result<(), kernel::process::Error> {
         self.apps.enter(processid, |_, _| {})
     }
 }

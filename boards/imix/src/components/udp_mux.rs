@@ -45,10 +45,10 @@ use capsules_extra::net::udp::udp_port_table::{
 use capsules_extra::net::udp::udp_recv::MuxUdpReceiver;
 use capsules_extra::net::udp::udp_send::MuxUdpSender;
 use core::mem::MaybeUninit;
-use crate::kernel::capabilities::{CreatePortTableCapability, NetworkCapabilityCreationCapability};
-use crate::kernel::component::Component;
-use crate::kernel::hil::radio;
-use crate::kernel::hil::time::Alarm;
+use kernel::capabilities::{CreatePortTableCapability, NetworkCapabilityCreationCapability};
+use kernel::component::Component;
+use kernel::hil::radio;
+use kernel::hil::time::Alarm;
 
 // The UDP stack requires several packet buffers:
 //
@@ -72,24 +72,24 @@ macro_rules! udp_mux_component_static {
         use components::udp_mux::MAX_PAYLOAD_LEN;
         use core::mem::MaybeUninit;
 
-        let alarm = crate::kernel::static_buf!(VirtualMuxAlarm<'static, $A>);
+        let alarm = kernel::static_buf!(VirtualMuxAlarm<'static, $A>);
         let mac_user =
-            crate::kernel::static_buf!(capsules_extra::ieee802154::virtual_mac::MacUser<'static, $M>);
-        let sixlowpan = crate::kernel::static_buf!(
+            kernel::static_buf!(capsules_extra::ieee802154::virtual_mac::MacUser<'static, $M>);
+        let sixlowpan = kernel::static_buf!(
             sixlowpan_state::Sixlowpan<
                 'static,
                 VirtualMuxAlarm<'static, $A>,
                 sixlowpan_compression::Context,
             >
         );
-        let rx_state = crate::kernel::static_buf!(sixlowpan_state::RxState<'static>);
-        let ip6_send = crate::kernel::static_buf!(
+        let rx_state = kernel::static_buf!(sixlowpan_state::RxState<'static>);
+        let ip6_send = kernel::static_buf!(
             capsules_extra::net::ipv6::ipv6_send::IP6SendStruct<
                 'static,
                 VirtualMuxAlarm<'static, $A>,
             >
         );
-        let mux_udp_send = crate::kernel::static_buf!(
+        let mux_udp_send = kernel::static_buf!(
             MuxUdpSender<
                 'static,
                 capsules_extra::net::ipv6::ipv6_send::IP6SendStruct<
@@ -99,13 +99,13 @@ macro_rules! udp_mux_component_static {
             >
         );
         let mux_udp_recv =
-            crate::kernel::static_buf!(capsules_extra::net::udp::udp_recv::MuxUdpReceiver<'static>);
+            kernel::static_buf!(capsules_extra::net::udp::udp_recv::MuxUdpReceiver<'static>);
         let udp_port_manager =
-            crate::kernel::static_buf!(capsules_extra::net::udp::udp_port_table::UdpPortManager);
+            kernel::static_buf!(capsules_extra::net::udp::udp_port_table::UdpPortManager);
 
-        let ip6_packet = crate::kernel::static_buf!(capsules_extra::net::ipv6::IP6Packet<'static>);
+        let ip6_packet = kernel::static_buf!(capsules_extra::net::ipv6::IP6Packet<'static>);
         let ip6_receive =
-            crate::kernel::static_buf!(capsules_extra::net::ipv6::ipv6_recv::IP6RecvStruct<'static>);
+            kernel::static_buf!(capsules_extra::net::ipv6::ipv6_recv::IP6RecvStruct<'static>);
 
         // Rather than require a data structure with 65535 slots (number of UDP ports),
         // we use a structure that can hold up to 16 port bindings. Any given capsule
@@ -118,19 +118,19 @@ macro_rules! udp_mux_component_static {
         // no slots in the table are free, no slots remain to be given out. If a socket
         // is used to bind to a port, the port that is bound is saved in the slot to
         // ensure that subsequent bindings do not also attempt to bind that port number.
-        let used_ports = crate::kernel::static_buf!(
+        let used_ports = kernel::static_buf!(
             [Option<capsules_extra::net::udp::udp_port_table::SocketBindingEntry>;
                 capsules_extra::net::udp::udp_port_table::MAX_NUM_BOUND_PORTS]
         );
 
-        let radio_buf = crate::kernel::static_buf!([u8; crate::kernel::hil::radio::MAX_BUF_SIZE]);
-        let sixlowpan_rx = crate::kernel::static_buf!([u8; 1280]);
-        let udp_dgram = crate::kernel::static_buf!([u8; MAX_PAYLOAD_LEN]);
+        let radio_buf = kernel::static_buf!([u8; kernel::hil::radio::MAX_BUF_SIZE]);
+        let sixlowpan_rx = kernel::static_buf!([u8; 1280]);
+        let udp_dgram = kernel::static_buf!([u8; MAX_PAYLOAD_LEN]);
 
         let udp_vis_cap =
-            crate::kernel::static_buf!(capsules_extra::net::network_capabilities::UdpVisibilityCapability);
+            kernel::static_buf!(capsules_extra::net::network_capabilities::UdpVisibilityCapability);
         let ip_vis_cap =
-            crate::kernel::static_buf!(capsules_extra::net::network_capabilities::IpVisibilityCapability);
+            kernel::static_buf!(capsules_extra::net::network_capabilities::IpVisibilityCapability);
 
         (
             alarm,

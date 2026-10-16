@@ -16,20 +16,20 @@
 //! ```rust
 //! components::panic_button::PanicButtonComponent::new(
 //!     &sam4l::gpio::PC[24],
-//!     crate::kernel::hil::gpio::ActivationMode::ActiveLow,
-//!     crate::kernel::hil::gpio::FloatingState::PullUp
+//!     kernel::hil::gpio::ActivationMode::ActiveLow,
+//!     kernel::hil::gpio::FloatingState::PullUp
 //! )
 //! .finalize(components::panic_button_component_static!(sam4l::gpio::GPIOPin));
 //! ```
 
 use capsules_extra::panic_button::PanicButton;
 use core::mem::MaybeUninit;
-use crate::kernel::component::Component;
-use crate::kernel::hil::gpio;
+use kernel::component::Component;
+use kernel::hil::gpio;
 
 #[macro_export]
 macro_rules! panic_button_component_static {
-    ($Pin:ty $(,)?) => {{ crate::kernel::static_buf!(capsules_core::button::PanicButton<'static, $Pin>) }};
+    ($Pin:ty $(,)?) => {{ kernel::static_buf!(capsules_core::button::PanicButton<'static, $Pin>) }};
 }
 
 pub struct PanicButtonComponent<'a, IP: gpio::InterruptPin<'a>> {

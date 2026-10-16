@@ -9,14 +9,14 @@
 
 use capsules_extra::screen::screen_on_led;
 use core::mem::MaybeUninit;
-use crate::kernel::component::Component;
-use crate::kernel::hil;
+use kernel::component::Component;
+use kernel::hil;
 
 #[macro_export]
 macro_rules! screen_on_led_component_static {
     ($S:ty, $NUM_LEDS:expr, $SCREEN_WIDTH:expr, $SCREEN_HEIGHT:expr $(,)?) => {{
-        let buffer = crate::kernel::static_buf!([u8; ($SCREEN_WIDTH * $SCREEN_HEIGHT) / 8]);
-        let screen_on_led = crate::kernel::static_buf!(
+        let buffer = kernel::static_buf!([u8; ($SCREEN_WIDTH * $SCREEN_HEIGHT) / 8]);
+        let screen_on_led = kernel::static_buf!(
             capsules_extra::screen::screen_on_led::ScreenOnLed<
                 'static,
                 $S,
@@ -83,7 +83,7 @@ impl<
             .1
             .write(screen_on_led::ScreenOnLed::new(self.screen, buffer));
 
-        crate::kernel::hil::screen::Screen::set_client(self.screen, screen_on_led);
+        kernel::hil::screen::Screen::set_client(self.screen, screen_on_led);
 
         screen_on_led
     }

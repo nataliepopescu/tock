@@ -12,18 +12,18 @@
 
 use capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm;
 use core::mem::MaybeUninit;
-use crate::kernel::capabilities::MemoryAllocationCapability;
-use crate::kernel::component::Component;
-use crate::kernel::hil::ble_advertising::BleConfig;
-use crate::kernel::hil::time::Alarm;
+use kernel::capabilities::MemoryAllocationCapability;
+use kernel::component::Component;
+use kernel::hil::ble_advertising::BleConfig;
+use kernel::hil::time::Alarm;
 
 #[macro_export]
 macro_rules! ble_component_static {
     ($A:ty, $B:ty $(,)?) => {{
-        let alarm = crate::kernel::static_buf!(
+        let alarm = kernel::static_buf!(
             capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, $A>
         );
-        let ble = crate::kernel::static_buf!(
+        let ble = kernel::static_buf!(
             capsules_extra::ble_advertising_driver::BLE<
                 'static,
                 $B,
@@ -31,7 +31,7 @@ macro_rules! ble_component_static {
             >
         );
         let buffer =
-            crate::kernel::static_buf!([u8; capsules_extra::ble_advertising_driver::PACKET_LENGTH]);
+            kernel::static_buf!([u8; capsules_extra::ble_advertising_driver::PACKET_LENGTH]);
         (alarm, ble, buffer)
     }};
 }
@@ -40,11 +40,11 @@ pub type BLEComponentType<B, A> =
     capsules_extra::ble_advertising_driver::BLE<'static, B, VirtualMuxAlarm<'static, A>>;
 
 pub struct BLEComponent<
-    A: crate::kernel::hil::time::Alarm<'static> + 'static,
-    B: crate::kernel::hil::ble_advertising::BleAdvertisementDriver<'static> + BleConfig + 'static,
+    A: kernel::hil::time::Alarm<'static> + 'static,
+    B: kernel::hil::ble_advertising::BleAdvertisementDriver<'static> + BleConfig + 'static,
     CAP: MemoryAllocationCapability + 'static,
 > {
-    board_kernel: &'static crate::kernel::Kernel,
+    board_kernel: &'static kernel::Kernel,
     driver_num: usize,
     radio: &'static B,
     mux_alarm: &'static capsules_core::virtualizers::virtual_alarm::MuxAlarm<'static, A>,
@@ -52,13 +52,13 @@ pub struct BLEComponent<
 }
 
 impl<
-    A: crate::kernel::hil::time::Alarm<'static> + 'static,
-    B: crate::kernel::hil::ble_advertising::BleAdvertisementDriver<'static> + BleConfig + 'static,
+    A: kernel::hil::time::Alarm<'static> + 'static,
+    B: kernel::hil::ble_advertising::BleAdvertisementDriver<'static> + BleConfig + 'static,
     CAP: MemoryAllocationCapability + 'static,
 > BLEComponent<A, B, CAP>
 {
     pub fn new(
-        board_kernel: &'static crate::kernel::Kernel,
+        board_kernel: &'static kernel::Kernel,
         driver_num: usize,
         radio: &'static B,
         mux_alarm: &'static capsules_core::virtualizers::virtual_alarm::MuxAlarm<'static, A>,
@@ -75,8 +75,8 @@ impl<
 }
 
 impl<
-    A: crate::kernel::hil::time::Alarm<'static> + 'static,
-    B: crate::kernel::hil::ble_advertising::BleAdvertisementDriver<'static> + BleConfig + 'static,
+    A: kernel::hil::time::Alarm<'static> + 'static,
+    B: kernel::hil::ble_advertising::BleAdvertisementDriver<'static> + BleConfig + 'static,
     CAP: MemoryAllocationCapability + 'static,
 > Component for BLEComponent<A, B, CAP>
 {
@@ -110,10 +110,10 @@ impl<
             buffer,
             ble_radio_virtual_alarm,
         ));
-        crate::kernel::hil::ble_advertising::BleAdvertisementDriver::set_receive_client(
+        kernel::hil::ble_advertising::BleAdvertisementDriver::set_receive_client(
             self.radio, ble_radio,
         );
-        crate::kernel::hil::ble_advertising::BleAdvertisementDriver::set_transmit_client(
+        kernel::hil::ble_advertising::BleAdvertisementDriver::set_transmit_client(
             self.radio, ble_radio,
         );
         ble_radio_virtual_alarm.set_alarm_client(ble_radio);

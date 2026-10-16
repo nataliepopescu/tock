@@ -14,23 +14,23 @@
 
 use capsules_extra::ninedof::NineDof;
 use core::mem::MaybeUninit;
-use crate::kernel::capabilities::MemoryAllocationCapability;
-use crate::kernel::component::Component;
+use kernel::capabilities::MemoryAllocationCapability;
+use kernel::component::Component;
 
 #[macro_export]
 macro_rules! ninedof_component_static {
     ($($P:expr),+ $(,)?) => {{
-        use crate::kernel::count_expressions;
+        use kernel::count_expressions;
 
         const NUM_DRIVERS: usize = count_expressions!($($P),+);
 
-        let drivers = crate::kernel::static_init!(
-            [&'static dyn crate::kernel::hil::sensors::NineDof; NUM_DRIVERS],
+        let drivers = kernel::static_init!(
+            [&'static dyn kernel::hil::sensors::NineDof; NUM_DRIVERS],
             [
                 $($P,)*
             ]
         );
-        let ninedof = crate::kernel::static_buf!(capsules_extra::ninedof::NineDof<'static>);
+        let ninedof = kernel::static_buf!(capsules_extra::ninedof::NineDof<'static>);
         (ninedof, drivers)
     }};
 }
@@ -38,14 +38,14 @@ macro_rules! ninedof_component_static {
 pub type NineDofComponentType = capsules_extra::ninedof::NineDof<'static>;
 
 pub struct NineDofComponent<CAP: MemoryAllocationCapability + 'static> {
-    board_kernel: &'static crate::kernel::Kernel,
+    board_kernel: &'static kernel::Kernel,
     driver_num: usize,
     mem_cap: CAP,
 }
 
 impl<CAP: MemoryAllocationCapability + 'static> NineDofComponent<CAP> {
     pub fn new(
-        board_kernel: &'static crate::kernel::Kernel,
+        board_kernel: &'static kernel::Kernel,
         driver_num: usize,
         mem_cap: CAP,
     ) -> NineDofComponent<CAP> {
@@ -60,7 +60,7 @@ impl<CAP: MemoryAllocationCapability + 'static> NineDofComponent<CAP> {
 impl<CAP: MemoryAllocationCapability + 'static> Component for NineDofComponent<CAP> {
     type StaticInput = (
         &'static mut MaybeUninit<NineDof<'static>>,
-        &'static [&'static dyn crate::kernel::hil::sensors::NineDof<'static>],
+        &'static [&'static dyn kernel::hil::sensors::NineDof<'static>],
     );
     type Output = &'static capsules_extra::ninedof::NineDof<'static>;
 
@@ -75,7 +75,7 @@ impl<CAP: MemoryAllocationCapability + 'static> Component for NineDofComponent<C
         ));
 
         for driver in static_buffer.1 {
-            crate::kernel::hil::sensors::NineDof::set_client(*driver, ninedof);
+            kernel::hil::sensors::NineDof::set_client(*driver, ninedof);
         }
 
         ninedof

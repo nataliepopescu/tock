@@ -19,14 +19,14 @@
 //!     PanicButton,
 //!     PanicButton::new(
 //!         &sam4l::gpio::PA[16],
-//!         crate::kernel::hil::gpio::ActivationMode::ActiveLow,
-//!         crate::kernel::hil::gpio::FloatingState::PullUp
+//!         kernel::hil::gpio::ActivationMode::ActiveLow,
+//!         kernel::hil::gpio::FloatingState::PullUp
 //!     )
 //! );
 //! sam4l::gpio::PA[16].set_client(panic_button);
 //! ```
 
-use crate::kernel::hil::gpio;
+use kernel::hil::gpio;
 
 pub struct PanicButton<'a, IP: gpio::InterruptPin<'a>> {
     pin: &'a IP,

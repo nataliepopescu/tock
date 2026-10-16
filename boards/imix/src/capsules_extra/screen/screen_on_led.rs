@@ -20,10 +20,10 @@
 //! operation hasn't finished yet.
 
 use core::cell::Cell;
-use crate::kernel::ErrorCode;
-use crate::kernel::hil;
-use crate::kernel::utilities::cells::MapCell;
-use crate::kernel::utilities::leasable_buffer::SubSliceMut;
+use kernel::ErrorCode;
+use kernel::hil;
+use kernel::utilities::cells::MapCell;
+use kernel::utilities::leasable_buffer::SubSliceMut;
 
 /// How many pixels of padding on the left and right side of the graphic.
 const LEFT_RIGTH_PADDING: usize = 2;
@@ -36,7 +36,7 @@ const TEXT_SPACING: usize = 2;
 /// How many pixels of padding above and below the "LED" text.
 const TEXT_TOP_BOTTOM_PADDING: usize = 4;
 
-/// Mirror of the [`crate::kernel::hil::led::Led`] trait but that supports LED indices.
+/// Mirror of the [`kernel::hil::led::Led`] trait but that supports LED indices.
 ///
 /// This is implemented by [`ScreenOnLed`]. The trait allows us to avoid having
 /// to replicate the `const` types on [`ScreenOnLed`].

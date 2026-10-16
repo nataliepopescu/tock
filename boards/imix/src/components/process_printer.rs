@@ -12,11 +12,11 @@
 //! ```
 
 use core::mem::MaybeUninit;
-use crate::kernel::component::Component;
+use kernel::component::Component;
 
 #[macro_export]
 macro_rules! process_printer_text_component_static {
-    () => {{ crate::kernel::static_buf!(capsules_system::process_printer::ProcessPrinterText) }};
+    () => {{ kernel::static_buf!(capsules_system::process_printer::ProcessPrinterText) }};
 }
 
 pub struct ProcessPrinterTextComponent {}
