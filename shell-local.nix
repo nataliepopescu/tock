@@ -58,11 +58,22 @@ let
     nixpkgs.fenix.fromToolchainFile { file = ./rust-toolchain.toml; }
   );
 
+  # For VerifOpt: the rust-mono-rewrite toolchain is built without LLD, so
+  # there's no rust-lld in its sysroot, but tock links with
+  # `-C linker=rust-lld -C linker-flavor=ld.lld`. rustc falls back to $PATH,
+  # and invokes it as `rust-lld -flavor gnu ...`, which lld accepts under any
+  # name.
+  rustLldShim = pkgs.writeShellScriptBin "rust-lld" ''
+    exec ${pkgs.lld}/bin/ld.lld "$@"
+  '';
+
 in
   pkgs.mkShell {
     name = "tock-dev";
 
     buildInputs = with pkgs; [
+      rustLldShim
+
       # --- Toolchains ---
       llvm
       rustBuild
@@ -105,9 +116,8 @@ in
       unset OBJCOPY
       unset OBJDUMP
 
-      # for VerifOpt
-      rustup toolchain install nightly-2026-01-13-x86_64-unknown-linux-gnu --profile minimal 2>/dev/null || true
-      export LD_LIBRARY_PATH="$(rustup run nightly-2026-01-13-x86_64-unknown-linux-gnu rustc --print sysroot)/lib:$LD_LIBRARY_PATH"
+      # for VerifOpt: the plugin links the modified compiler's rustc_driver
+      export LD_LIBRARY_PATH="$(rustup run rust-mono-rewrite rustc --print sysroot)/lib:$LD_LIBRARY_PATH"
 
       # make sure these match what Tock currently uses; updates can make these
       # out-of sync
