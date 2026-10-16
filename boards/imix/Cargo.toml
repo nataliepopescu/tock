@@ -10,14 +10,27 @@ build = "../build.rs"
 edition.workspace = true
 
 [dependencies]
-components = { path = "../components" }
-cortexm4 = { path = "../../arch/cortex-m4" }
-#kernel = { path = "../../kernel" }
-sam4l = { path = "../../chips/sam4l" }
 
-capsules-core = { path = "../../capsules/core" }
-capsules-extra = { path = "../../capsules/extra" }
-capsules-system = { path = "../../capsules/system" }
+#components = { path = "../components" }
+segger = { path = "../../chips/segger" }
+
+#cortexm4 = { path = "../../arch/cortex-m4" }
+cortexm = { path = "../../arch/cortex-m" }
+cortexv7m = { path = "../../arch/cortex-v7m" }
+
+#kernel = { path = "../../kernel" }
+tock-registers = { features = ["register_types"], workspace = true }
+tock-cells = { path = "../../libraries/tock-cells" }
+tock-tbf = { path = "../../libraries/tock-tbf" }
+flux-rs = { git  = "https://github.com/flux-rs/flux.git", rev = "8256bd03c72f4ba4633ff969fac6c53928969edc", optional = true }
+
+#sam4l = { path = "../../chips/sam4l" }
+
+#capsules-core = { path = "../../capsules/core" }
+#capsules-extra = { path = "../../capsules/extra" }
+#capsules-system = { path = "../../capsules/system" }
+enum_primitive = { path = "../../libraries/enum_primitive" }
+tickv = { path = "../../libraries/tickv" }
 
 [build-dependencies]
 tock_build_scripts = { path = "../build_scripts" }

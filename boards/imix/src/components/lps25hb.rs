@@ -1,0 +1,92 @@
+// Licensed under the Apache License, Version 2.0 or the MIT License.
+// SPDX-License-Identifier: Apache-2.0 OR MIT
+// Copyright Tock Contributors 2022.
+
+//! Component for LPS25HB pressure sensor.
+
+use capsules_core::virtualizers::virtual_i2c::{I2CDevice, MuxI2C};
+use capsules_extra::lps25hb::LPS25HB;
+use core::mem::MaybeUninit;
+use crate::kernel::capabilities::MemoryAllocationCapability;
+use crate::kernel::component::Component;
+use crate::kernel::hil::gpio;
+use crate::kernel::hil::i2c;
+
+#[macro_export]
+macro_rules! lps25hb_component_static {
+    ($I:ty $(,)?) => {{
+        let i2c_device =
+            crate::kernel::static_buf!(capsules_core::virtualizers::virtual_i2c::I2CDevice<'static>);
+        let lps25hb = crate::kernel::static_buf!(
+            capsules_extra::lps25hb::LPS25HB<
+                'static,
+                capsules_core::virtualizers::virtual_i2c::I2CDevice<'static, $I>,
+            >
+        );
+        let buffer = crate::kernel::static_buf!([u8; capsules_extra::lps25hb::BUF_LEN]);
+
+        (i2c_device, lps25hb, buffer)
+    }};
+}
+
+pub struct Lps25hbComponent<
+    I: 'static + i2c::I2CMaster<'static>,
+    CAP: MemoryAllocationCapability + 'static,
+> {
+    i2c_mux: &'static MuxI2C<'static, I>,
+    i2c_address: u8,
+    interrupt_pin: &'static dyn gpio::InterruptPin<'static>,
+    board_kernel: &'static crate::kernel::Kernel,
+    driver_num: usize,
+    mem_cap: CAP,
+}
+
+impl<I: 'static + i2c::I2CMaster<'static>, CAP: MemoryAllocationCapability + 'static>
+    Lps25hbComponent<I, CAP>
+{
+    pub fn new(
+        i2c_mux: &'static MuxI2C<'static, I>,
+        i2c_address: u8,
+        interrupt_pin: &'static dyn gpio::InterruptPin<'static>,
+        board_kernel: &'static crate::kernel::Kernel,
+        driver_num: usize,
+        mem_cap: CAP,
+    ) -> Self {
+        Lps25hbComponent {
+            i2c_mux,
+            i2c_address,
+            interrupt_pin,
+            board_kernel,
+            driver_num,
+            mem_cap,
+        }
+    }
+}
+
+impl<I: 'static + i2c::I2CMaster<'static>, CAP: MemoryAllocationCapability + 'static> Component
+    for Lps25hbComponent<I, CAP>
+{
+    type StaticInput = (
+        &'static mut MaybeUninit<I2CDevice<'static, I>>,
+        &'static mut MaybeUninit<LPS25HB<'static, I2CDevice<'static, I>>>,
+        &'static mut MaybeUninit<[u8; capsules_extra::lps25hb::BUF_LEN]>,
+    );
+    type Output = &'static LPS25HB<'static, I2CDevice<'static, I>>;
+
+    fn finalize(self, s: Self::StaticInput) -> Self::Output {
+        let grant = self
+            .board_kernel
+            .create_grant(self.driver_num, &self.mem_cap);
+
+        let lps25hb_i2c = s.0.write(I2CDevice::new(self.i2c_mux, self.i2c_address));
+
+        let buffer = s.2.write([0; capsules_extra::lps25hb::BUF_LEN]);
+
+        let lps25hb =
+            s.1.write(LPS25HB::new(lps25hb_i2c, self.interrupt_pin, buffer, grant));
+        lps25hb_i2c.set_client(lps25hb);
+        self.interrupt_pin.set_client(lps25hb);
+
+        lps25hb
+    }
+}

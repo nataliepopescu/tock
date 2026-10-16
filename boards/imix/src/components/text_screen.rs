@@ -1,0 +1,94 @@
+// Licensed under the Apache License, Version 2.0 or the MIT License.
+// SPDX-License-Identifier: Apache-2.0 OR MIT
+// Copyright Tock Contributors 2022.
+
+//! Components for the Text Screen.
+//!
+//! Buffer Size
+//! -----------
+//!
+//! Displays can receive a large amount of data and having larger transfer buffers
+//! optimizes the number of bus writes.
+//!
+//! As memory is limited on some MCUs, the `components::screen_buffer_size``
+//! macro allows users to define the size of the screen buffer.
+//!
+//! Usage
+//! -----
+//!
+//! ```rust
+//! let text_screen =
+//!     components::text_screen::TextScreenComponent::new(board_kernel, tft)
+//!         .finalize(components::text_screen_component_static!(40960));
+//! ```
+//!
+
+use capsules_extra::text_screen::TextScreen;
+use core::mem::MaybeUninit;
+use crate::kernel::capabilities::MemoryAllocationCapability;
+use crate::kernel::component::Component;
+
+#[macro_export]
+macro_rules! text_screen_component_static {
+    ($s:literal $(,)?) => {{
+        let buffer = crate::kernel::static_buf!([u8; $s]);
+        let screen = crate::kernel::static_buf!(capsules_extra::text_screen::TextScreen);
+
+        (buffer, screen)
+    }};
+}
+
+pub struct TextScreenComponent<
+    const SCREEN_BUF_LEN: usize,
+    CAP: MemoryAllocationCapability + 'static,
+> {
+    board_kernel: &'static crate::kernel::Kernel,
+    driver_num: usize,
+    text_screen: &'static dyn crate::kernel::hil::text_screen::TextScreen<'static>,
+    mem_cap: CAP,
+}
+
+impl<const SCREEN_BUF_LEN: usize, CAP: MemoryAllocationCapability + 'static>
+    TextScreenComponent<SCREEN_BUF_LEN, CAP>
+{
+    pub fn new(
+        board_kernel: &'static crate::kernel::Kernel,
+        driver_num: usize,
+        text_screen: &'static dyn crate::kernel::hil::text_screen::TextScreen<'static>,
+        mem_cap: CAP,
+    ) -> TextScreenComponent<SCREEN_BUF_LEN, CAP> {
+        TextScreenComponent {
+            board_kernel,
+            driver_num,
+            text_screen,
+            mem_cap,
+        }
+    }
+}
+
+impl<const SCREEN_BUF_LEN: usize, CAP: MemoryAllocationCapability + 'static> Component
+    for TextScreenComponent<SCREEN_BUF_LEN, CAP>
+{
+    type StaticInput = (
+        &'static mut MaybeUninit<[u8; SCREEN_BUF_LEN]>,
+        &'static mut MaybeUninit<TextScreen<'static>>,
+    );
+    type Output = &'static TextScreen<'static>;
+
+    fn finalize(self, static_input: Self::StaticInput) -> Self::Output {
+        let grant_text_screen = self
+            .board_kernel
+            .create_grant(self.driver_num, &self.mem_cap);
+
+        let buffer = static_input.0.write([0; SCREEN_BUF_LEN]);
+
+        let text_screen =
+            static_input
+                .1
+                .write(TextScreen::new(self.text_screen, buffer, grant_text_screen));
+
+        crate::kernel::hil::text_screen::TextScreen::set_client(self.text_screen, Some(text_screen));
+
+        text_screen
+    }
+}

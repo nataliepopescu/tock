@@ -1,0 +1,97 @@
+// Licensed under the Apache License, Version 2.0 or the MIT License.
+// SPDX-License-Identifier: Apache-2.0 OR MIT
+// Copyright Tock Contributors 2022
+// Copyright OxidOS Automotive SRL 2022
+//
+// Author: Teona Severin <teona.severin@oxidos.io>
+
+//! Component for CAN syscall interface.
+//!
+//! This provides one Component, `CanComponent`, which implements a
+//! userspace syscall interface to the Can peripheral.
+//!
+//! Usage
+//! -----
+//! ```rust
+//! let can = components::can::CanComponent::new(
+//!     board_kernel,
+//!     capsules_extra::can::DRIVER_NUM,
+//!     &peripherals.can1
+//! ).finalize(components::can_component_static!(
+//!     stm32f429zi::can::Can<'static>
+//! ));
+//! ```
+//!
+
+use capsules_extra::can::CanCapsule;
+use core::mem::MaybeUninit;
+use crate::kernel::capabilities::MemoryAllocationCapability;
+use crate::kernel::component::Component;
+use crate::kernel::hil::can;
+
+#[macro_export]
+macro_rules! can_component_static {
+    ($C:ty $(,)?) => {{
+        use capsules_extra::can::CanCapsule;
+        use core::mem::MaybeUninit;
+        use crate::kernel::hil::can;
+        use crate::kernel::static_buf;
+
+        let CAN_TX_BUF = static_buf!([u8; can::STANDARD_CAN_PACKET_SIZE]);
+        let CAN_RX_BUF = static_buf!([u8; can::STANDARD_CAN_PACKET_SIZE]);
+        let can = static_buf!(capsules_extra::can::CanCapsule<'static, $C>);
+        (can, CAN_TX_BUF, CAN_RX_BUF)
+    }};
+}
+
+pub struct CanComponent<A: 'static + can::Can, CAP: MemoryAllocationCapability + 'static> {
+    board_kernel: &'static crate::kernel::Kernel,
+    driver_num: usize,
+    can: &'static A,
+    mem_cap: CAP,
+}
+
+impl<A: 'static + can::Can, CAP: MemoryAllocationCapability + 'static> CanComponent<A, CAP> {
+    pub fn new(
+        board_kernel: &'static crate::kernel::Kernel,
+        driver_num: usize,
+        can: &'static A,
+        mem_cap: CAP,
+    ) -> CanComponent<A, CAP> {
+        CanComponent {
+            board_kernel,
+            driver_num,
+            can,
+            mem_cap,
+        }
+    }
+}
+
+impl<A: 'static + can::Can, CAP: MemoryAllocationCapability + 'static> Component
+    for CanComponent<A, CAP>
+{
+    type StaticInput = (
+        &'static mut MaybeUninit<CanCapsule<'static, A>>,
+        &'static mut MaybeUninit<[u8; can::STANDARD_CAN_PACKET_SIZE]>,
+        &'static mut MaybeUninit<[u8; can::STANDARD_CAN_PACKET_SIZE]>,
+    );
+    type Output = &'static CanCapsule<'static, A>;
+
+    fn finalize(self, static_buffer: Self::StaticInput) -> Self::Output {
+        let grant_can = self
+            .board_kernel
+            .create_grant(self.driver_num, &self.mem_cap);
+
+        let can = static_buffer.0.write(capsules_extra::can::CanCapsule::new(
+            self.can,
+            grant_can,
+            static_buffer.1.write([0; can::STANDARD_CAN_PACKET_SIZE]),
+            static_buffer.2.write([0; can::STANDARD_CAN_PACKET_SIZE]),
+        ));
+        can::Controller::set_client(self.can, Some(can));
+        can::Transmit::set_client(self.can, Some(can));
+        can::Receive::set_client(self.can, Some(can));
+
+        can
+    }
+}

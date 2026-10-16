@@ -1,0 +1,217 @@
+// Licensed under the Apache License, Version 2.0 or the MIT License.
+// SPDX-License-Identifier: Apache-2.0 OR MIT
+// Copyright Tock Contributors 2022.
+
+//! Components for using ADC capsules.
+
+use capsules_core::adc::AdcDedicated;
+use capsules_core::adc::AdcVirtualized;
+use capsules_core::virtualizers::virtual_adc::{AdcDevice, MuxAdc};
+use core::mem::MaybeUninit;
+use crate::kernel::capabilities::MemoryAllocationCapability;
+use crate::kernel::component::Component;
+use crate::kernel::hil::adc;
+
+#[macro_export]
+macro_rules! adc_mux_component_static {
+    ($A:ty $(,)?) => {{ crate::kernel::static_buf!(capsules_core::virtualizers::virtual_adc::MuxAdc<'static, $A>) }};
+}
+
+#[macro_export]
+macro_rules! adc_component_static {
+    ($A:ty $(,)?) => {{ crate::kernel::static_buf!(capsules_core::virtualizers::virtual_adc::AdcDevice<'static, $A>) }};
+}
+
+#[macro_export]
+macro_rules! adc_syscall_component_helper {
+    ($($P:expr),+ $(,)?) => {{
+        use crate::kernel::count_expressions;
+        use crate::kernel::static_init;
+        const NUM_DRIVERS: usize = count_expressions!($($P),+);
+
+        let drivers = static_init!(
+            [&'static dyn crate::kernel::hil::adc::AdcChannel; NUM_DRIVERS],
+            [
+                $($P,)*
+            ]
+        );
+        let adc_virtualized = crate::kernel::static_buf!(capsules_core::adc::AdcVirtualized<'static>);
+        (adc_virtualized, drivers)
+    }};
+}
+
+#[macro_export]
+macro_rules! adc_dedicated_component_static {
+    ($A:ty $(,)?) => {{
+        let adc = crate::kernel::static_buf!(capsules_core::adc::AdcDedicated<'static, $A>);
+        let buffer1 = crate::kernel::static_buf!([u16; capsules_core::adc::BUF_LEN]);
+        let buffer2 = crate::kernel::static_buf!([u16; capsules_core::adc::BUF_LEN]);
+        let buffer3 = crate::kernel::static_buf!([u16; capsules_core::adc::BUF_LEN]);
+
+        (adc, buffer1, buffer2, buffer3)
+    }};
+}
+
+pub struct AdcMuxComponent<A: 'static + adc::Adc<'static>> {
+    adc: &'static A,
+}
+
+impl<A: 'static + adc::Adc<'static>> AdcMuxComponent<A> {
+    pub fn new(adc: &'static A) -> Self {
+        AdcMuxComponent { adc }
+    }
+}
+
+impl<A: 'static + adc::Adc<'static>> Component for AdcMuxComponent<A> {
+    type StaticInput = &'static mut MaybeUninit<MuxAdc<'static, A>>;
+    type Output = &'static MuxAdc<'static, A>;
+
+    fn finalize(self, static_buffer: Self::StaticInput) -> Self::Output {
+        let adc_mux = static_buffer.write(MuxAdc::new(self.adc));
+
+        self.adc.set_client(adc_mux);
+
+        adc_mux
+    }
+}
+
+pub struct AdcComponent<A: 'static + adc::Adc<'static>> {
+    adc_mux: &'static MuxAdc<'static, A>,
+    channel: A::Channel,
+}
+
+impl<A: 'static + adc::Adc<'static>> AdcComponent<A> {
+    pub fn new(mux: &'static MuxAdc<'static, A>, channel: A::Channel) -> Self {
+        AdcComponent {
+            adc_mux: mux,
+            channel,
+        }
+    }
+}
+
+impl<A: 'static + adc::Adc<'static>> Component for AdcComponent<A> {
+    type StaticInput = &'static mut MaybeUninit<AdcDevice<'static, A>>;
+    type Output = &'static AdcDevice<'static, A>;
+
+    fn finalize(self, static_buffer: Self::StaticInput) -> Self::Output {
+        let adc_device = static_buffer.write(AdcDevice::new(self.adc_mux, self.channel));
+
+        adc_device.add_to_mux();
+
+        adc_device
+    }
+}
+
+pub type AdcVirtualComponentType = capsules_core::adc::AdcVirtualized<'static>;
+
+pub struct AdcVirtualComponent<CAP: MemoryAllocationCapability + 'static> {
+    board_kernel: &'static crate::kernel::Kernel,
+    driver_num: usize,
+    mem_cap: CAP,
+}
+
+impl<CAP: MemoryAllocationCapability + 'static> AdcVirtualComponent<CAP> {
+    pub fn new(board_kernel: &'static crate::kernel::Kernel, driver_num: usize, mem_cap: CAP) -> Self {
+        AdcVirtualComponent {
+            board_kernel,
+            driver_num,
+            mem_cap,
+        }
+    }
+}
+
+impl<CAP: MemoryAllocationCapability + 'static> Component for AdcVirtualComponent<CAP> {
+    type StaticInput = (
+        &'static mut MaybeUninit<AdcVirtualized<'static>>,
+        &'static [&'static dyn crate::kernel::hil::adc::AdcChannel<'static>],
+    );
+    type Output = &'static capsules_core::adc::AdcVirtualized<'static>;
+
+    fn finalize(self, static_buffer: Self::StaticInput) -> Self::Output {
+        let grant_adc = self
+            .board_kernel
+            .create_grant(self.driver_num, &self.mem_cap);
+
+        let adc = static_buffer
+            .0
+            .write(capsules_core::adc::AdcVirtualized::new(
+                static_buffer.1,
+                grant_adc,
+            ));
+
+        for driver in static_buffer.1 {
+            crate::kernel::hil::adc::AdcChannel::set_client(*driver, adc);
+        }
+
+        adc
+    }
+}
+
+pub type AdcDedicatedComponentType<A> = capsules_core::adc::AdcDedicated<'static, A>;
+
+pub struct AdcDedicatedComponent<
+    A: crate::kernel::hil::adc::Adc<'static> + crate::kernel::hil::adc::AdcHighSpeed<'static> + 'static,
+    CAP: MemoryAllocationCapability + 'static,
+> {
+    adc: &'static A,
+    channels: &'static [A::Channel],
+    board_kernel: &'static crate::kernel::Kernel,
+    driver_num: usize,
+    mem_cap: CAP,
+}
+
+impl<
+    A: crate::kernel::hil::adc::Adc<'static> + crate::kernel::hil::adc::AdcHighSpeed<'static> + 'static,
+    CAP: MemoryAllocationCapability + 'static,
+> AdcDedicatedComponent<A, CAP>
+{
+    pub fn new(
+        adc: &'static A,
+        channels: &'static [A::Channel],
+        board_kernel: &'static crate::kernel::Kernel,
+        driver_num: usize,
+        mem_cap: CAP,
+    ) -> AdcDedicatedComponent<A, CAP> {
+        AdcDedicatedComponent {
+            adc,
+            channels,
+            board_kernel,
+            driver_num,
+            mem_cap,
+        }
+    }
+}
+
+impl<
+    A: crate::kernel::hil::adc::Adc<'static> + crate::kernel::hil::adc::AdcHighSpeed<'static> + 'static,
+    CAP: MemoryAllocationCapability + 'static,
+> Component for AdcDedicatedComponent<A, CAP>
+{
+    type StaticInput = (
+        &'static mut MaybeUninit<AdcDedicated<'static, A>>,
+        &'static mut MaybeUninit<[u16; capsules_core::adc::BUF_LEN]>,
+        &'static mut MaybeUninit<[u16; capsules_core::adc::BUF_LEN]>,
+        &'static mut MaybeUninit<[u16; capsules_core::adc::BUF_LEN]>,
+    );
+    type Output = &'static AdcDedicated<'static, A>;
+
+    fn finalize(self, s: Self::StaticInput) -> Self::Output {
+        let buffer1 = s.1.write([0; capsules_core::adc::BUF_LEN]);
+        let buffer2 = s.2.write([0; capsules_core::adc::BUF_LEN]);
+        let buffer3 = s.3.write([0; capsules_core::adc::BUF_LEN]);
+
+        let adc = s.0.write(AdcDedicated::new(
+            self.adc,
+            self.board_kernel
+                .create_grant(self.driver_num, &self.mem_cap),
+            self.channels,
+            buffer1,
+            buffer2,
+            buffer3,
+        ));
+        self.adc.set_client(adc);
+        self.adc.set_highspeed_client(adc);
+
+        adc
+    }
+}

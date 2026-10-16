@@ -526,12 +526,15 @@ dependencies = [
 name = "imix"
 version = "0.2.4-dev"
 dependencies = [
- "capsules-core",
- "capsules-extra",
- "capsules-system",
- "components",
- "cortexm4",
- "sam4l",
+ "cortexm",
+ "cortexv7m",
+ "enum_primitive",
+ "flux-rs",
+ "segger",
+ "tickv",
+ "tock-cells",
+ "tock-registers",
+ "tock-tbf",
  "tock_build_scripts",
 ]
 
