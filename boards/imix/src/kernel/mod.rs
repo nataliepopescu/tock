@@ -91,9 +91,6 @@
 
 // `clippy::missing_safety_doc`: Our goal is to apply this in all of Tock,
 // but as of September 2026 we are starting with the kernel crate.
-#![deny(clippy::missing_safety_doc)]
-#![warn(unreachable_pub)]
-#![no_std]
 
 /// Kernel major version.
 ///
@@ -197,3 +194,7 @@ pub use crate::kernel::errorcode::ErrorCode;
 pub use crate::kernel::kernel::Kernel;
 pub use crate::kernel::process::ProcessId;
 pub use crate::kernel::scheduler::Scheduler;
+
+// Re-export of this module's #[macro_export] macros (which live at the crate root).
+#[allow(unused_imports)]
+pub use crate::{count_expressions,create_capability,create_typed_capability,debug,debug_expr,debug_gpio,debug_process_slice,debug_verbose,define_capability_type,init_uninit_struct,mint_defined_capability,stack_size,static_buf,static_init,static_named_buf,storage_volume};

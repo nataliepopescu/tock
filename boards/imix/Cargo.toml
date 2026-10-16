@@ -7,7 +7,7 @@ name = "imix"
 version.workspace = true
 authors.workspace = true
 build = "../build.rs"
-edition.workspace = true
+edition = "2024"
 
 [dependencies]
 
@@ -37,3 +37,11 @@ tock_build_scripts = { path = "../build_scripts" }
 
 [lints]
 workspace = true
+
+# Features of the merged `kernel` module.
+[features]
+trace_syscalls = []
+debug_load_processes = []
+no_debug_panics = []
+debug_process_credentials = []
+flux = ["flux-rs"]

@@ -6,7 +6,6 @@
 //!
 //! <http://www.atmel.com/microsite/sam4l/default.aspx>
 
-#![no_std]
 
 pub mod acifc;
 pub mod adc;

@@ -65,7 +65,6 @@ pub const MAX_PAYLOAD_LEN: usize = 200; //The max size UDP message that can be s
 #[macro_export]
 macro_rules! udp_mux_component_static {
     ($A:ty, $M:ty $(,)?) => {{
-
         use crate::capsules_core::virtualizers::virtual_alarm::{MuxAlarm, VirtualMuxAlarm};
         use crate::capsules_extra::net::sixlowpan::{sixlowpan_compression, sixlowpan_state};
         use crate::capsules_extra::net::udp::udp_send::MuxUdpSender;

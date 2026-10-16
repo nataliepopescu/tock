@@ -2,8 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 // Copyright Tock Contributors 2022.
 
-#![forbid(unsafe_code)]
-#![no_std]
 
 pub mod test;
 pub mod tutorials;
@@ -120,3 +118,7 @@ pub mod usb;
 pub mod usb_hid_driver;
 pub mod virtualizers;
 pub mod wifi;
+
+// Re-export of this module's #[macro_export] macros (which live at the crate root).
+#[allow(unused_imports)]
+pub use crate::{default_parameters_sequence};

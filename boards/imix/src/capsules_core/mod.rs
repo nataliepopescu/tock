@@ -2,8 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 // Copyright Tock Contributors 2023.
 
-#![forbid(unsafe_code)]
-#![no_std]
 
 pub mod test;
 
@@ -27,3 +25,7 @@ pub mod rng;
 pub mod spi_controller;
 pub mod spi_peripheral;
 pub mod virtualizers;
+
+// Re-export of this module's #[macro_export] macros (which live at the crate root).
+#[allow(unused_imports)]
+pub use crate::{dec_consume,dec_try,enc_consume,enc_try,stream_cond,stream_done,stream_err,stream_from_option,stream_len_cond};

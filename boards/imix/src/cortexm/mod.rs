@@ -4,7 +4,6 @@
 
 //! Generic support for all Cortex-M platforms.
 
-#![no_std]
 
 use core::fmt::Write;
 
@@ -425,3 +424,7 @@ pub unsafe extern "C" fn unhandled_interrupt() {
 pub unsafe extern "C" fn initialize_ram_jump_to_main() {
     unimplemented!()
 }
+
+// Re-export of this module's #[macro_export] macros (which live at the crate root).
+#[allow(unused_imports)]
+pub use crate::{interrupt_mask};

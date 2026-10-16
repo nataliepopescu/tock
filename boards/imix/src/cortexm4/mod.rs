@@ -4,7 +4,6 @@
 
 //! Shared implementations for ARM Cortex-M4 MCUs.
 
-#![no_std]
 
 use core::fmt::Write;
 

@@ -2,8 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 // Copyright Tock Contributors 2024.
 
-#![forbid(unsafe_code)]
-#![no_std]
 
 pub mod debug_writer;
 pub mod process_checker;

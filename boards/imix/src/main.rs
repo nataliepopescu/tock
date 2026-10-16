@@ -14,6 +14,7 @@
 mod imix_components;
 
 pub mod kernel;
+#[macro_use]
 pub mod capsules_core;
 pub mod capsules_extra;
 pub mod capsules_system;

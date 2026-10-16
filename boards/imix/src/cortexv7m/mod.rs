@@ -4,7 +4,6 @@
 
 //! Generic support for all Cortex-M platforms.
 
-#![no_std]
 
 /// ARMv7-M systick handler function.
 ///
