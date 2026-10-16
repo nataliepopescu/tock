@@ -531,7 +531,6 @@ dependencies = [
  "capsules-system",
  "components",
  "cortexm4",
- "kernel",
  "sam4l",
  "tock_build_scripts",
 ]
