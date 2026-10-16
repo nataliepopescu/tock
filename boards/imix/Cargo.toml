@@ -12,7 +12,7 @@ edition.workspace = true
 [dependencies]
 
 #components = { path = "../components" }
-segger = { path = "../../chips/segger" }
+#segger = { path = "../../chips/segger" }
 
 #cortexm4 = { path = "../../arch/cortex-m4" }
 #cortexm = { path = "../../arch/cortex-m" }

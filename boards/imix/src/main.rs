@@ -22,6 +22,7 @@ pub mod components;
 pub mod cortexm4;
 pub mod cortexm;
 pub mod cortexv7m;
+pub mod segger;
 
 use capsules_core::alarm::AlarmDriver;
 use capsules_core::console_ordered::ConsoleOrdered;
