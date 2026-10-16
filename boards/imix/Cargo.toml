@@ -15,8 +15,8 @@ edition.workspace = true
 segger = { path = "../../chips/segger" }
 
 #cortexm4 = { path = "../../arch/cortex-m4" }
-cortexm = { path = "../../arch/cortex-m" }
-cortexv7m = { path = "../../arch/cortex-v7m" }
+#cortexm = { path = "../../arch/cortex-m" }
+#cortexv7m = { path = "../../arch/cortex-v7m" }
 
 #kernel = { path = "../../kernel" }
 tock-registers = { features = ["register_types"], workspace = true }
