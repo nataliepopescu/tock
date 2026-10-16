@@ -599,7 +599,7 @@ impl PowerManager {
         &self,
         clock_source: SystemClockSource,
         flash_controller: &flashcalw::FLASHCALW,
-    ) {
+    ) { unsafe {
         if !self.system_initial_configs.get() {
             // For now, always go to PS2 as it enables all core speeds
             // These features are not available in PS1: USB, DFLL, Flash programming/erasing
@@ -706,10 +706,10 @@ impl PowerManager {
         }
 
         self.system_clock_source.set(clock_source);
-    }
+    }}
 
     // Disables the clock passed in as clock_source
-    pub unsafe fn disable_system_clock(&self, clock_source: SystemClockSource) {
+    pub unsafe fn disable_system_clock(&self, clock_source: SystemClockSource) { unsafe {
         // Disable previous clock
 
         match clock_source {
@@ -818,7 +818,7 @@ impl PowerManager {
                     .set(clock_mask & !(ClockMask::RC1M as u32));
             }
         }
-    }
+    }}
 
     // Changes the system clock to the clock passed in as clock_source and disables
     // the previous system clock
@@ -826,7 +826,7 @@ impl PowerManager {
         &self,
         clock_source: SystemClockSource,
         flash_controller: &flashcalw::FLASHCALW,
-    ) {
+    ) { unsafe {
         // If the clock you want to switch to is the current system clock, do nothing
         let prev_clock_source = self.system_clock_source.get();
         if prev_clock_source == clock_source {
@@ -845,7 +845,7 @@ impl PowerManager {
         }
         // Disable the previous system clock
         self.disable_system_clock(prev_clock_source);
-    }
+    }}
 
     /// Configure the system clock to use the DFLL with the RC32K as the source.
     /// Run at 48 MHz.
@@ -863,7 +863,7 @@ impl PowerManager {
         &self,
         frequency: OscillatorFrequency,
         startup_mode: OscillatorStartup,
-    ) {
+    ) { unsafe {
         // Start the OSC0 if it isn't already in use by the PLL
         if (self.system_on_clocks.get() & ClockMask::PLL as u32) == 0 {
             match frequency {
@@ -877,14 +877,14 @@ impl PowerManager {
         let clock_mask = self.system_on_clocks.get();
         self.system_on_clocks
             .set(clock_mask | ClockMask::OSC0 as u32);
-    }
+    }}
 
     /// Configure the system clock to use the PLL with the 16 MHz external crystal
     unsafe fn configure_external_oscillator_pll(
         &self,
         frequency: OscillatorFrequency,
         startup_mode: OscillatorStartup,
-    ) {
+    ) { unsafe {
         // Start the OSC0 if it isn't already on
         if (self.system_on_clocks.get() & ClockMask::OSC0 as u32) == 0 {
             match frequency {
@@ -901,9 +901,9 @@ impl PowerManager {
         let clock_mask = self.system_on_clocks.get();
         self.system_on_clocks
             .set(clock_mask | ClockMask::PLL as u32);
-    }
+    }}
 
-    unsafe fn configure_80mhz_rc(&self) {
+    unsafe fn configure_80mhz_rc(&self) { unsafe {
         // Start the 80mhz RC oscillator
         scif::setup_rc_80mhz();
 
@@ -943,9 +943,9 @@ impl PowerManager {
         let clock_mask = self.system_on_clocks.get();
         self.system_on_clocks
             .set(clock_mask | ClockMask::RC80M as u32);
-    }
+    }}
 
-    unsafe fn configure_rcfast(&self, frequency: RcfastFrequency) {
+    unsafe fn configure_rcfast(&self, frequency: RcfastFrequency) { unsafe {
         // Start the RCFAST at the specified frequency
         match frequency {
             RcfastFrequency::Frequency4MHz => {
@@ -962,7 +962,7 @@ impl PowerManager {
         let clock_mask = self.system_on_clocks.get();
         self.system_on_clocks
             .set(clock_mask | ClockMask::RCFAST as u32);
-    }
+    }}
 
     unsafe fn configure_1mhz_rc(&self) {
         // Start the RC1M
@@ -1020,13 +1020,13 @@ fn select_main_clock(clock: MainClock) {
 /// pm_register is one of hsbmask, pbamask, pbbmask, pbcmask or pbdmask.
 ///
 macro_rules! mask_clock {
-    ($mask_offset:ident : $field:ident | $mask:expr) => {{
+    ($mask_offset:ident : $field:ident | $mask:expr_2021) => {{
         unlock($mask_offset);
         let val = PM_REGS.$field.get() | ($mask);
         PM_REGS.$field.set(val);
     }};
 
-    ($mask_offset:ident : $field:ident & $mask:expr) => {{
+    ($mask_offset:ident : $field:ident & $mask:expr_2021) => {{
         unlock($mask_offset);
         let val = PM_REGS.$field.get() & ($mask);
         PM_REGS.$field.set(val);
@@ -1036,7 +1036,7 @@ macro_rules! mask_clock {
 /// Utility macro to get value of clock register. Used to check if a specific
 /// clock is enabled or not. See above description of `make_clock!`.
 macro_rules! get_clock {
-    ($mask_offset:ident : $field:ident & $mask:expr) => {{
+    ($mask_offset:ident : $field:ident & $mask:expr_2021) => {{
         unlock($mask_offset);
         (PM_REGS.$field.get() & ($mask)) != 0
     }};

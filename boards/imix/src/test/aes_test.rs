@@ -31,19 +31,19 @@ use crate::kernel::hil::symmetric_encryption::{AES, AES_BLOCK_SIZE, AES128_KEY_S
 use crate::kernel::static_init;
 use crate::sam4l::aes::Aes;
 
-pub unsafe fn run_aes128_ctr(aes: &'static Aes) {
+pub unsafe fn run_aes128_ctr(aes: &'static Aes) { unsafe {
     let t = static_init_test_ctr(aes);
     aes.set_client(t);
 
     t.run();
-}
+}}
 
-pub unsafe fn run_aes128_cbc(aes: &'static Aes) {
+pub unsafe fn run_aes128_cbc(aes: &'static Aes) { unsafe {
     let t = static_init_test_cbc(aes);
     aes.set_client(t);
 
     t.run();
-}
+}}
 
 unsafe fn static_init_test_ctr(aes: &'static Aes) -> &'static TestAes128Ctr<'static, Aes<'static>> {
     let source = static_init!([u8; 4 * AES_BLOCK_SIZE], [0; 4 * AES_BLOCK_SIZE]);

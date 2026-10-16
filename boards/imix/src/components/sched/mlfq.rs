@@ -19,7 +19,7 @@ use crate::kernel::process::ProcessArray;
 
 #[macro_export]
 macro_rules! mlfq_component_static {
-    ($A:ty, $N:expr $(,)?) => {{
+    ($A:ty, $N:expr_2021 $(,)?) => {{
         let alarm = crate::kernel::static_buf!(
             crate::capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, $A>
         );

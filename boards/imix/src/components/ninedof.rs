@@ -19,7 +19,7 @@ use crate::kernel::component::Component;
 
 #[macro_export]
 macro_rules! ninedof_component_static {
-    ($($P:expr),+ $(,)?) => {{
+    ($($P:expr_2021),+ $(,)?) => {{
         use crate::kernel::count_expressions;
 
         const NUM_DRIVERS: usize = count_expressions!($($P),+);

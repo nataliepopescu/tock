@@ -10,7 +10,7 @@ use crate::kernel::deferred_call::DeferredCallClient;
 
 #[macro_export]
 macro_rules! signature_verify_in_memory_keys_component_static {
-    ($S:ty, $NUM_KEYS:expr, $KL:expr, $HL:expr, $SL:expr $(,)?) => {{
+    ($S:ty, $NUM_KEYS:expr_2021, $KL:expr_2021, $HL:expr_2021, $SL:expr_2021 $(,)?) => {{
         let verifier = crate::kernel::static_buf!(
             crate::capsules_extra::signature_verify_in_memory_keys::SignatureVerifyInMemoryKeys<
                 'static,

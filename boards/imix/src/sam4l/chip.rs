@@ -18,14 +18,14 @@ pub struct Sam4l<I: InterruptService + 'static> {
 }
 
 impl<I: InterruptService + 'static> Sam4l<I> {
-    pub unsafe fn new(pm: &'static crate::sam4l::pm::PowerManager, interrupt_service: &'static I) -> Self {
+    pub unsafe fn new(pm: &'static crate::sam4l::pm::PowerManager, interrupt_service: &'static I) -> Self { unsafe {
         Self {
             mpu: crate::cortexm4::mpu::new(),
             userspace_kernel_boundary: crate::cortexm4::syscall::SysCall::new(),
             pm,
             interrupt_service,
         }
-    }
+    }}
 }
 
 /// This struct, when initialized, instantiates all peripheral drivers for the apollo3.
@@ -293,7 +293,7 @@ impl<I: InterruptService + 'static> Chip for Sam4l<I> {
         crate::cortexm4::support::with_interrupts_disabled(f)
     }
 
-    unsafe fn print_state(_this: Option<&Self>, writer: &mut dyn Write) {
+    unsafe fn print_state(_this: Option<&Self>, writer: &mut dyn Write) { unsafe {
         CortexM4::print_cortexm_state(writer);
-    }
+    }}
 }

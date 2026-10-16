@@ -22,7 +22,7 @@ use crate::kernel::process::ProcessArray;
 
 #[macro_export]
 macro_rules! cooperative_component_static {
-    ($N:expr $(,)?) => {{
+    ($N:expr_2021 $(,)?) => {{
         let coop_sched =
             crate::kernel::static_buf!(crate::capsules_system::scheduler::cooperative::CooperativeSched<'static>);
         let coop_nodes = crate::kernel::static_buf!(

@@ -54,7 +54,7 @@ impl IoWrite for Writer {
 /// Panic handler.
 #[cfg(not(test))]
 #[panic_handler]
-pub unsafe fn panic_fmt(pi: &PanicInfo) -> ! {
+pub unsafe fn panic_fmt(pi: &PanicInfo) -> ! { unsafe {
     use core::ptr::addr_of_mut;
 
     let led_pin = crate::sam4l::gpio::GPIOPin::new(crate::sam4l::gpio::Pin::PC22);
@@ -67,4 +67,4 @@ pub unsafe fn panic_fmt(pi: &PanicInfo) -> ! {
         &crate::cortexm4::support::nop,
         crate::PANIC_RESOURCES.get(),
     )
-}
+}}

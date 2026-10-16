@@ -41,7 +41,7 @@ use crate::kernel::hil::gpio::InterruptWithValue;
 
 #[macro_export]
 macro_rules! button_component_helper_owned {
-    ($Pin:ty, $(($P:expr, $M:expr, $F:expr)),+ $(,)?) => {
+    ($Pin:ty, $(($P:expr_2021, $M:expr_2021, $F:expr_2021)),+ $(,)?) => {
         $crate::components::button_component_helper!(
             $Pin,
             $((
@@ -55,7 +55,7 @@ macro_rules! button_component_helper_owned {
 
 #[macro_export]
 macro_rules! button_component_helper {
-    ($Pin:ty, $(($P:expr, $M:expr, $F:expr)),+ $(,)?) => {{
+    ($Pin:ty, $(($P:expr_2021, $M:expr_2021, $F:expr_2021)),+ $(,)?) => {{
         use crate::kernel::static_init;
         use crate::kernel::count_expressions;
         use crate::kernel::hil::gpio::InterruptValueWrapper;

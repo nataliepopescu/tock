@@ -13,7 +13,7 @@ pub const ESP32C3_160MHZ_T0H: usize = 3;
 
 #[macro_export]
 macro_rules! sk68xx_component_static {
-    ($P:ty, $T0H:expr $(,)?) => {
+    ($P:ty, $T0H:expr_2021 $(,)?) => {
         crate::kernel::static_buf!(crate::capsules_extra::sk68xx::Sk68xx<'static, $P, $T0H>)
     };
 }
@@ -51,7 +51,7 @@ impl<P: 'static + hil::gpio::Pin, const T0H: usize> Component for Sk68xxComponen
 
 #[macro_export]
 macro_rules! sk68xx_led_component_static {
-    ($P:ty,  $T0H:expr $(,)?) => {
+    ($P:ty,  $T0H:expr_2021 $(,)?) => {
         crate::kernel::static_buf!(crate::capsules_extra::sk68xx::Sk68xxLed<'static, $P, $T0H>)
     };
 }

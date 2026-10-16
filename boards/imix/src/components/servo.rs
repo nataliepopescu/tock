@@ -17,7 +17,7 @@ use crate::kernel::component::Component;
 
 #[macro_export]
 macro_rules! servo_component_static {
-    ($($S:expr),+ $(,)?) => {{
+    ($($S:expr_2021),+ $(,)?) => {{
         use crate::kernel::count_expressions;
         use crate::kernel::static_init;
         const SERVO_COUNT: usize = count_expressions!($($S),+);

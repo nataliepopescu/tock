@@ -26,12 +26,12 @@ use crate::kernel::hil::crc::Crc;
 use crate::kernel::static_init;
 use crate::sam4l::crccu::Crccu;
 
-pub unsafe fn run_crc(crc: &'static Crccu) {
+pub unsafe fn run_crc(crc: &'static Crccu) { unsafe {
     let t = static_init_crc(crc);
     crc.set_client(t);
 
     t.run();
-}
+}}
 
 unsafe fn static_init_crc(crc: &'static Crccu) -> &'static TestCrc<'static, Crccu<'static>> {
     let data = static_init!([u8; 9], [0; 9]);

@@ -10,7 +10,7 @@ use crate::kernel::hil::{digest, public_key_crypto};
 
 #[macro_export]
 macro_rules! app_checker_signature_component_static {
-    ($S:ty, $H:ty, $HASH_LEN:expr, $SIGNATURE_LEN:expr $(,)?) => {{
+    ($S:ty, $H:ty, $HASH_LEN:expr_2021, $SIGNATURE_LEN:expr_2021 $(,)?) => {{
         let hash_buffer = crate::kernel::static_buf!([u8; $HASH_LEN]);
         let signature_buffer = crate::kernel::static_buf!([u8; $SIGNATURE_LEN]);
         let checker = crate::kernel::static_buf!(

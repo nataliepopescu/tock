@@ -57,7 +57,7 @@ use crate::kernel::hil::hasher::Hasher;
 // Setup static space for the objects.
 #[macro_export]
 macro_rules! tickv_component_static {
-    ($F:ty, $H:ty, $PAGE_SIZE:expr $(,)?) => {{
+    ($F:ty, $H:ty, $PAGE_SIZE:expr_2021 $(,)?) => {{
         let flash =
             crate::kernel::static_buf!(crate::capsules_core::virtualizers::virtual_flash::FlashUser<'static, $F>);
         let tickv = crate::kernel::static_buf!(
@@ -75,7 +75,7 @@ macro_rules! tickv_component_static {
 
 #[macro_export]
 macro_rules! tickv_dedicated_flash_component_static {
-    ($F:ty, $H:ty, $PAGE_SIZE:expr $(,)?) => {{
+    ($F:ty, $H:ty, $PAGE_SIZE:expr_2021 $(,)?) => {{
         let tickfs_read_buffer = crate::kernel::static_buf!([u8; $PAGE_SIZE]);
         let tickv =
             crate::kernel::static_buf!(crate::capsules_extra::tickv::TicKVSystem<'static, $F, $H, $PAGE_SIZE>);

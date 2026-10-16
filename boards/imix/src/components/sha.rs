@@ -31,7 +31,7 @@ use crate::kernel::hil::digest;
 // Setup static space for the objects.
 #[macro_export]
 macro_rules! sha_driver_component_static {
-    ($A:ty, $L:expr$(,)?) => {{
+    ($A:ty, $L:expr_2021$(,)?) => {{
         let sha_driver =
             crate::kernel::static_buf!(crate::capsules_extra::sha256_driver::ShaDriver<'static, $A, $L>);
 

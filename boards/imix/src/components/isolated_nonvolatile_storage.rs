@@ -40,7 +40,7 @@ pub const ISOLATED_NONVOLATILE_STORAGE_APP_REGION_SIZE_DEFAULT: usize = 2048;
 // Setup static space for the objects.
 #[macro_export]
 macro_rules! isolated_nonvolatile_storage_component_static {
-    ($F:ty, $APP_REGION_SIZE:expr $(,)?) => {{
+    ($F:ty, $APP_REGION_SIZE:expr_2021 $(,)?) => {{
         let page = crate::kernel::static_buf!(<$F as crate::kernel::hil::flash::Flash>::Page);
         let ntp = crate::kernel::static_buf!(
             crate::capsules_extra::nonvolatile_to_pages::NonvolatileToPages<'static, $F>

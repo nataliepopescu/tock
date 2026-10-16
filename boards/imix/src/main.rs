@@ -682,7 +682,7 @@ unsafe fn start() -> (
 
     // Kernel storage region, allocated with the storage_volume!
     // macro in common/utils.rs
-    extern "C" {
+    unsafe extern "C" {
         /// Beginning on the ROM region containing app images.
         static _sstorage: u8;
         static _estorage: u8;
@@ -793,7 +793,7 @@ unsafe fn start() -> (
     //--------------------------------------------------------------------------
 
     // These symbols are defined in the standard Tock linker script.
-    extern "C" {
+    unsafe extern "C" {
         /// Beginning of the ROM region containing app images.
         static _sapps: u8;
         /// End of the ROM region containing app images.
@@ -921,10 +921,10 @@ unsafe fn start() -> (
 }
 
 /// Main function called after RAM initialized.
-#[no_mangle]
-pub unsafe fn main() {
+#[unsafe(no_mangle)]
+pub unsafe fn main() { unsafe {
     let main_loop_capability = create_capability!(capabilities::MainLoopCapability);
 
     let (board_kernel, platform, chip) = start();
     board_kernel.kernel_loop(&platform, chip, Some(&platform.ipc), &main_loop_capability);
-}
+}}

@@ -22,11 +22,11 @@ use crate::kernel::hil::time::Alarm;
 use crate::kernel::static_init;
 use crate::sam4l::ast::Ast;
 
-pub unsafe fn run_alarm(ast: &'static Ast) {
+pub unsafe fn run_alarm(ast: &'static Ast) { unsafe {
     debug!("Starting alarm test.");
     let test = static_init_alarm_test(ast);
     test.run();
-}
+}}
 
 unsafe fn static_init_alarm_test(
     ast: &'static Ast,

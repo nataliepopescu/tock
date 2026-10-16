@@ -419,9 +419,9 @@ impl<'a, A: time::Alarm<'a>> LowpanTest<'a, A> {
         }
     }
 
-    unsafe fn send_ipv6_packet(&self, _: &[u8]) {
+    unsafe fn send_ipv6_packet(&self, _: &[u8]) { unsafe {
         self.send_next(&mut *addr_of_mut!(RF233_BUF));
-    }
+    }}
 
     fn send_next(&self, tx_buf: &'static mut [u8]) {
         unsafe {

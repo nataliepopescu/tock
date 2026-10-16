@@ -14,7 +14,7 @@ use crate::kernel::hil;
 
 #[macro_export]
 macro_rules! screen_on_led_component_static {
-    ($S:ty, $NUM_LEDS:expr, $SCREEN_WIDTH:expr, $SCREEN_HEIGHT:expr $(,)?) => {{
+    ($S:ty, $NUM_LEDS:expr_2021, $SCREEN_WIDTH:expr_2021, $SCREEN_HEIGHT:expr_2021 $(,)?) => {{
         let buffer = crate::kernel::static_buf!([u8; ($SCREEN_WIDTH * $SCREEN_HEIGHT) / 8]);
         let screen_on_led = crate::kernel::static_buf!(
             crate::capsules_extra::screen::screen_on_led::ScreenOnLed<

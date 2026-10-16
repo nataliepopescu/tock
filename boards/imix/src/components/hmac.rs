@@ -25,7 +25,7 @@ use crate::kernel::hil::digest;
 
 #[macro_export]
 macro_rules! hmac_component_static {
-    ($A:ty, $L:expr $(,)?) => {{
+    ($A:ty, $L:expr_2021 $(,)?) => {{
         let hmac = crate::kernel::static_buf!(crate::capsules_extra::hmac::HmacDriver<'static, $A, $L>);
 
         let data_buffer = crate::kernel::static_buf!([u8; 64]);

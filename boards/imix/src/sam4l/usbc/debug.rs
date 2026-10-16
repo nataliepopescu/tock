@@ -63,7 +63,7 @@ impl fmt::Debug for UdintFlags {
 }
 
 macro_rules! debug_flags {
-    ( $tyname:ident {$( $flag:ident = $offset:expr; )*} ) => {
+    ( $tyname:ident {$( $flag:ident = $offset:expr_2021; )*} ) => {
 
         pub struct $tyname(pub u32);
 

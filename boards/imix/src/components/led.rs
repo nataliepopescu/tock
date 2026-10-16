@@ -23,7 +23,7 @@ use crate::kernel::hil::led::Led;
 
 #[macro_export]
 macro_rules! led_component_static {
-    ($Led:ty, $($L:expr),+ $(,)?) => {{
+    ($Led:ty, $($L:expr_2021),+ $(,)?) => {{
         use crate::kernel::count_expressions;
         use crate::kernel::static_init;
         const NUM_LEDS: usize = count_expressions!($($L),+);

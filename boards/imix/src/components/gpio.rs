@@ -58,15 +58,15 @@ use crate::kernel::hil::gpio::InterruptWithValue;
 #[macro_export]
 macro_rules! gpio_component_helper_max_pin {
     () => { 0usize };
-    ($a:expr, $b:expr, $($tail:expr),* $(,)?) => { $crate::components::gpio_component_helper_max_pin! (max ($a, $b), $($tail,)*) };
-    ($a:expr $(,)?) => { $a };
+    ($a:expr_2021, $b:expr_2021, $($tail:expr_2021),* $(,)?) => { $crate::components::gpio_component_helper_max_pin! (max ($a, $b), $($tail,)*) };
+    ($a:expr_2021 $(,)?) => { $a };
 }
 
 #[macro_export]
 macro_rules! gpio_component_helper_owned {
     (
         $Pin:ty,
-        $($nr:literal => $pin:expr),* $(,)?
+        $($nr:literal => $pin:expr_2021),* $(,)?
     ) => {
         $crate::components::gpio_component_helper!(
             $Pin,
@@ -86,7 +86,7 @@ macro_rules! gpio_component_helper_owned {
 macro_rules! gpio_component_helper {
     (
         $Pin:ty,
-        $($nr:literal => $pin:expr),* $(,)?
+        $($nr:literal => $pin:expr_2021),* $(,)?
     ) => {{
         use crate::kernel::count_expressions;
         use crate::kernel::hil::gpio::InterruptValueWrapper;

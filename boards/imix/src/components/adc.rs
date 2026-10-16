@@ -24,7 +24,7 @@ macro_rules! adc_component_static {
 
 #[macro_export]
 macro_rules! adc_syscall_component_helper {
-    ($($P:expr),+ $(,)?) => {{
+    ($($P:expr_2021),+ $(,)?) => {{
         use crate::kernel::count_expressions;
         use crate::kernel::static_init;
         const NUM_DRIVERS: usize = count_expressions!($($P),+);

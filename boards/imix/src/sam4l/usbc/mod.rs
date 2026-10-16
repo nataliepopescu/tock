@@ -29,25 +29,25 @@ use crate::kernel::utilities::registers::{
 // replaced with better error handling.
 
 macro_rules! client_warn {
-    [ $( $arg:expr ),+ ] => {
+    [ $( $arg:expr_2021 ),+ ] => {
         debugln!($( $arg ),+)
     };
 }
 
 macro_rules! client_err {
-    [ $( $arg:expr ),+ ] => {
+    [ $( $arg:expr_2021 ),+ ] => {
         panic!($( $arg ),+)
     };
 }
 
 macro_rules! debug1 {
-    [ $( $arg:expr ),+ ] => {
+    [ $( $arg:expr_2021 ),+ ] => {
         {} // debugln!($( $arg ),+)
     };
 }
 
 macro_rules! internal_err {
-    [ $( $arg:expr ),+ ] => {
+    [ $( $arg:expr_2021 ),+ ] => {
         panic!($( $arg ),+)
     };
 }

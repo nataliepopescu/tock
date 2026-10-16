@@ -23,7 +23,7 @@ use crate::kernel::process::ProcessArray;
 
 #[macro_export]
 macro_rules! round_robin_component_static {
-    ($N:expr $(,)?) => {{
+    ($N:expr_2021 $(,)?) => {{
         let rr_sched =
             crate::kernel::static_buf!(crate::capsules_system::scheduler::round_robin::RoundRobinSched<'static>);
         let rr_nodes = crate::kernel::static_buf!(

@@ -56,13 +56,13 @@ use crate::kernel::debug;
 use crate::kernel::hil::uart::Receive;
 use crate::kernel::static_init;
 
-pub unsafe fn run_virtual_uart_receive(mux: &'static MuxUart<'static>) {
+pub unsafe fn run_virtual_uart_receive(mux: &'static MuxUart<'static>) { unsafe {
     debug!("Starting virtual reads.");
     let small = static_init_test_receive_small(mux);
     let large = static_init_test_receive_large(mux);
     small.run();
     large.run();
-}
+}}
 
 unsafe fn static_init_test_receive_small(
     mux: &'static MuxUart<'static>,

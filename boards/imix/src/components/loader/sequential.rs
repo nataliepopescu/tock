@@ -18,7 +18,7 @@ use crate::kernel::process::ProcessStandardDebug;
 
 #[macro_export]
 macro_rules! process_loader_sequential_component_static {
-    ($C:ty, $D:ty, $NUMPROCS:expr $(,)?) => {{
+    ($C:ty, $D:ty, $NUMPROCS:expr_2021 $(,)?) => {{
         let loader = crate::kernel::static_buf!(crate::kernel::process::SequentialProcessLoaderMachine<
             $C, $D
         >);

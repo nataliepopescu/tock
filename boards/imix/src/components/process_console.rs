@@ -41,7 +41,7 @@ use crate::kernel::process::ProcessPrinter;
 
 #[macro_export]
 macro_rules! process_console_component_static {
-    ($A: ty, $C: ty, $COMMAND_HISTORY_LEN: expr $(,)?) => {{
+    ($A: ty, $C: ty, $COMMAND_HISTORY_LEN: expr_2021 $(,)?) => {{
         let alarm = crate::kernel::static_buf!(crate::capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, $A>);
         let uart = crate::kernel::static_buf!(crate::capsules_core::virtualizers::virtual_uart::UartDevice);
         let pconsole = crate::kernel::static_buf!(
@@ -123,7 +123,7 @@ impl<
 
 // These constants are defined in the linker script for where the
 // kernel is placed in memory on chip.
-extern "C" {
+unsafe extern "C" {
     static _estack: u8;
     static _sstack: u8;
     static _stext: u8;

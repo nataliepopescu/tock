@@ -30,7 +30,7 @@ use crate::kernel::component::Component;
 
 #[macro_export]
 macro_rules! analog_comparator_component_helper {
-    ($Channel:ty, $($P:expr),+ $(,)?) => {{
+    ($Channel:ty, $($P:expr_2021),+ $(,)?) => {{
         use crate::kernel::count_expressions;
         use crate::kernel::static_init;
         const NUM_CHANNELS: usize = count_expressions!($($P),+);

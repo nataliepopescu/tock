@@ -455,9 +455,9 @@ impl<'a> SpiHw<'a> {
         ),
     > {
         let count = match (&write_buffer, &read_buffer) {
-            (Some(ref wb), Some(ref rb)) => cmp::min(wb.len(), rb.len()),
-            (Some(ref wb), None) => wb.len(),
-            (None, Some(ref rb)) => rb.len(),
+            (Some(wb), Some(rb)) => cmp::min(wb.len(), rb.len()),
+            (Some(wb), None) => wb.len(),
+            (None, Some(rb)) => rb.len(),
             (None, None) => return Err((ErrorCode::INVAL, write_buffer, read_buffer)),
         };
 

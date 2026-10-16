@@ -170,12 +170,12 @@ pub enum CK32Source {
 }
 
 #[inline(never)]
-pub unsafe fn set_ck32source(source: CK32Source) {
+pub unsafe fn set_ck32source(source: CK32Source) { unsafe {
     let control = BPM.pmcon.extract();
     unlock_register(0x1c); // Control
     BPM.pmcon
         .modify_no_read(control, PowerModeControl::CK32S.val(source as u32));
-}
+}}
 
 unsafe fn unlock_register(register_offset: u32) {
     BPM.unlock
@@ -187,7 +187,7 @@ unsafe fn power_scaling_ok() -> bool {
 }
 
 // This approach based on `bpm_power_scaling_cpu` from ASF
-pub unsafe fn set_power_scaling(ps_value: PowerScaling) {
+pub unsafe fn set_power_scaling(ps_value: PowerScaling) { unsafe {
     // The datasheet says to spin on this before doing anything, ASF
     // doesn't as far as I can tell, but it seems like a good idea
     while !power_scaling_ok() {}
@@ -204,4 +204,4 @@ pub unsafe fn set_power_scaling(ps_value: PowerScaling) {
             + PowerModeControl::PSCM::WithoutCpuHalt
             + PowerModeControl::PSCREQ::PowerScalingRequested,
     );
-}
+}}

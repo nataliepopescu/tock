@@ -52,7 +52,7 @@ use crate::capsules_core::console::DEFAULT_BUF_SIZE;
 #[macro_export]
 macro_rules! uart_mux_component_static {
     // Common logic for both branches
-    ($rx_buffer_len: expr) => {{
+    ($rx_buffer_len: expr_2021) => {{
         use crate::capsules_core::virtualizers::virtual_uart::MuxUart;
         use crate::kernel::static_buf;
         let uart_mux = static_buf!(MuxUart<'static>);
@@ -104,7 +104,7 @@ impl<const RX_BUF_LEN: usize> Component for UartMuxComponent<RX_BUF_LEN> {
 #[macro_export]
 macro_rules! console_component_static {
     // Common logic for both branches
-    ($rx_buffer_len: expr, $tx_buffer_len: expr) => {{
+    ($rx_buffer_len: expr_2021, $tx_buffer_len: expr_2021) => {{
         use crate::capsules_core::console::{Console, DEFAULT_BUF_SIZE};
         use crate::capsules_core::virtualizers::virtual_uart::UartDevice;
         use crate::kernel::static_buf;

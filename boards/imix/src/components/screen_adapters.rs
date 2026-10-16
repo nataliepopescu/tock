@@ -14,7 +14,7 @@ use crate::kernel::hil;
 
 #[macro_export]
 macro_rules! screen_adapter_argb8888_to_mono8bitpage_component_static {
-    ($S:ty, $SCREEN_WIDTH:expr, $SCREEN_HEIGHT:expr, $PIXEL_STRIDE:expr $(,)?) => {{
+    ($S:ty, $SCREEN_WIDTH:expr_2021, $SCREEN_HEIGHT:expr_2021, $PIXEL_STRIDE:expr_2021 $(,)?) => {{
         let adapter = crate::kernel::static_buf!(
             crate::capsules_extra::screen::screen_adapters::ScreenARGB8888ToMono8BitPage<'static, $S>
         );

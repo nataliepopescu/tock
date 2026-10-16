@@ -25,10 +25,10 @@ use crate::kernel::hil::rng::Rng;
 use crate::kernel::static_init;
 use crate::sam4l::trng::Trng;
 
-pub unsafe fn run_entropy32(trng: &'static Trng) {
+pub unsafe fn run_entropy32(trng: &'static Trng) { unsafe {
     let t = static_init_test_entropy32(trng);
     t.run();
-}
+}}
 
 unsafe fn static_init_test_entropy32(trng: &'static Trng) -> &'static TestRng<'static> {
     let e1 = static_init!(

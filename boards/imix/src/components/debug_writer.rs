@@ -54,7 +54,7 @@ const DEBUG_BUFFER_SPLIT: usize = 64;
 /// quick succession.
 #[macro_export]
 macro_rules! debug_writer_component_static {
-    ($BUF_SIZE_KB:expr) => {{
+    ($BUF_SIZE_KB:expr_2021) => {{
         let uart = crate::kernel::static_buf!(crate::capsules_core::virtualizers::virtual_uart::UartDevice);
         let ring = crate::kernel::static_buf!(crate::kernel::collections::ring_buffer::RingBuffer<'static, u8>);
         let buffer = crate::kernel::static_buf!([u8; 1024 * $BUF_SIZE_KB]);
@@ -73,7 +73,7 @@ macro_rules! debug_writer_component_static {
 /// quick succession.
 #[macro_export]
 macro_rules! debug_writer_no_mux_component_static {
-    ($BUF_SIZE_KB:expr) => {{
+    ($BUF_SIZE_KB:expr_2021) => {{
         let ring = crate::kernel::static_buf!(crate::kernel::collections::ring_buffer::RingBuffer<'static, u8>);
         let buffer = crate::kernel::static_buf!([u8; 1024 * $BUF_SIZE_KB]);
         let debug =

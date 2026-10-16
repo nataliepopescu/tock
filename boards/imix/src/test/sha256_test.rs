@@ -26,10 +26,10 @@ use crate::capsules_extra::sha256::Sha256Software;
 use crate::capsules_extra::test::sha256::TestSha256;
 use crate::kernel::static_init;
 
-pub unsafe fn run_sha256() {
+pub unsafe fn run_sha256() { unsafe {
     let t = static_init_test_sha256();
     t.run();
-}
+}}
 
 // HSTRING is "hello world" and HHASH is the SHA-256 hash of this string.
 pub static mut HSTRING: [u8; 11] = *b"hello world";

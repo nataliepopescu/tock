@@ -34,7 +34,7 @@ pub mod wdt;
 
 use crate::cortexm4::{CortexM4, CortexMVariant, initialize_ram_jump_to_main, unhandled_interrupt};
 
-extern "C" {
+unsafe extern "C" {
     // _estack is not really a function, but it makes the types work
     // You should never actually invoke it!!
     fn _estack();
@@ -42,7 +42,7 @@ extern "C" {
 
 #[cfg_attr(
     all(target_arch = "arm", target_os = "none"),
-    link_section = ".vectors"
+    unsafe(link_section = ".vectors")
 )]
 // used Ensures that the symbol is kept until the final binary
 #[cfg_attr(all(target_arch = "arm", target_os = "none"), used)]
@@ -67,7 +67,7 @@ pub static BASE_VECTORS: [unsafe extern "C" fn(); 16] = [
 
 #[cfg_attr(
     all(target_arch = "arm", target_os = "none"),
-    link_section = ".vectors"
+    unsafe(link_section = ".vectors")
 )]
 // used Ensures that the symbol is kept until the final binary
 #[cfg_attr(all(target_arch = "arm", target_os = "none"), used)]

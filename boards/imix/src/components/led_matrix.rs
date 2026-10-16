@@ -97,7 +97,7 @@ macro_rules! led_matrix_component_static {
 
 #[macro_export]
 macro_rules! led_line_component_static {
-    ($Pin:ty, $($L:expr),+ $(,)?) => {{
+    ($Pin:ty, $($L:expr_2021),+ $(,)?) => {{
         use crate::kernel::count_expressions;
         use crate::kernel::static_init;
         const NUM_LEDS: usize = count_expressions!($($L),+);
@@ -118,7 +118,7 @@ macro_rules! led_line_component_static {
 
 #[macro_export]
 macro_rules! led_matrix_led {
-    ($Pin:ty, $A: ty, $led_matrix: expr, $col: expr, $row: expr) => {{
+    ($Pin:ty, $A: ty, $led_matrix: expr_2021, $col: expr_2021, $row: expr_2021) => {{
         use crate::capsules_extra::led_matrix::LedMatrixLed;
         static_init!(
             LedMatrixLed<'static, $Pin, $A>,
@@ -129,7 +129,7 @@ macro_rules! led_matrix_led {
 
 #[macro_export]
 macro_rules! led_matrix_leds {
-    ($Pin:ty, $A: ty, $led_matrix: expr, $(($col: expr, $row: expr)),+) => {{
+    ($Pin:ty, $A: ty, $led_matrix: expr_2021, $(($col: expr_2021, $row: expr_2021)),+) => {{
         use crate::capsules_extra::led_matrix::LedMatrixLed;
         use crate::kernel::count_expressions;
 

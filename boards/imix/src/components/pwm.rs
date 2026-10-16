@@ -23,7 +23,7 @@ macro_rules! pwm_pin_user_component_static {
 
 #[macro_export]
 macro_rules! pwm_driver_component_helper {
-    ($($P:expr),+ $(,)?) => {{
+    ($($P:expr_2021),+ $(,)?) => {{
         use crate::kernel::count_expressions;
         use crate::kernel::static_init;
         const NUM_DRIVERS: usize = count_expressions!($($P),+);

@@ -20,14 +20,14 @@ use crate::capsules_core::test::random_timer::TestRandomTimer;
 use crate::capsules_core::virtualizers::virtual_timer::{MuxTimer, VirtualTimer};
 use crate::sam4l::ast::Ast;
 
-pub unsafe fn run_multi_timer(mux: &'static MuxTimer<'static, Ast<'static>>) {
+pub unsafe fn run_multi_timer(mux: &'static MuxTimer<'static, Ast<'static>>) { unsafe {
     debug!("Starting multi timer test.");
     let tests: [&'static TestRandomTimer<'static, VirtualTimer<'static, Ast<'static>>>; 3] =
         static_init_multi_timer_test(mux);
     tests[0].run();
     tests[1].run();
     tests[2].run();
-}
+}}
 
 unsafe fn static_init_multi_timer_test(
     mux: &'static MuxTimer<'static, Ast<'static>>,
