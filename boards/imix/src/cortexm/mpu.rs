@@ -12,12 +12,12 @@ use core::cmp;
 use core::fmt;
 use core::num::NonZeroUsize;
 
-use kernel::platform::mpu;
-use kernel::utilities::StaticRef;
-use kernel::utilities::cells::OptionalCell;
-use kernel::utilities::math;
-use kernel::utilities::registers::interfaces::{Readable, Writeable};
-use kernel::utilities::registers::{FieldValue, ReadOnly, ReadWrite, register_bitfields};
+use crate::kernel::platform::mpu;
+use crate::kernel::utilities::StaticRef;
+use crate::kernel::utilities::cells::OptionalCell;
+use crate::kernel::utilities::math;
+use crate::kernel::utilities::registers::interfaces::{Readable, Writeable};
+use crate::kernel::utilities::registers::{FieldValue, ReadOnly, ReadWrite, register_bitfields};
 
 /// Smallest allowable MPU region across all CortexM cores
 /// Individual cores may have bigger min sizes, but never lower than 32

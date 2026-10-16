@@ -9,12 +9,12 @@
 //! settings (e.g., brightness).
 
 use core::cell::Cell;
-use kernel::ErrorCode;
-use kernel::collections::list::{List, ListLink, ListNode};
-use kernel::deferred_call::{DeferredCall, DeferredCallClient};
-use kernel::hil;
-use kernel::utilities::cells::OptionalCell;
-use kernel::utilities::leasable_buffer::SubSliceMut;
+use crate::kernel::ErrorCode;
+use crate::kernel::collections::list::{List, ListLink, ListNode};
+use crate::kernel::deferred_call::{DeferredCall, DeferredCallClient};
+use crate::kernel::hil;
+use crate::kernel::utilities::cells::OptionalCell;
+use crate::kernel::utilities::leasable_buffer::SubSliceMut;
 
 /// Pending asynchronous screen operation from a user.
 enum ScreenSplitOperation {
@@ -50,7 +50,7 @@ enum ScreenSplitState {
     WriteBuffer,
 }
 
-/// An implementation of [`Screen`](kernel::hil::screen::Screen) for a subregion
+/// An implementation of [`Screen`](crate::kernel::hil::screen::Screen) for a subregion
 /// of the actual screen.
 pub struct ScreenSplitUser<'a, S: hil::screen::Screen<'a>> {
     /// The shared screen manager that serializes screen operations.

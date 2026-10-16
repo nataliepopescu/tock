@@ -19,18 +19,18 @@
 //!        lowrisc::flash_ctrl::LowRiscPage::default()
 //!    );
 //!
-//!    let mux_flash = components::tickv::FlashMuxComponent::new(&peripherals.flash_ctrl).finalize(
-//!        components::flash_user_component_static!(lowrisc::flash_ctrl::FlashCtrl),
+//!    let mux_flash = crate::components::tickv::FlashMuxComponent::new(&peripherals.flash_ctrl).finalize(
+//!        crate::components::flash_user_component_static!(lowrisc::flash_ctrl::FlashCtrl),
 //!    );
 //!
 //!    // SipHash
 //!    let sip_hash = static_init!(
-//!        capsules_extra::sip_hash::SipHasher24,
-//!        capsules_extra::sip_hash::SipHasher24::new()
+//!        crate::capsules_extra::sip_hash::SipHasher24,
+//!        crate::capsules_extra::sip_hash::SipHasher24::new()
 //!    );
 //!    sip_hash.register();
 //!
-//!    let tickv = components::tickv::TicKVComponent::new(
+//!    let tickv = crate::components::tickv::TicKVComponent::new(
 //!        sip_hash,
 //!        &mux_flash,
 //!        0x20040000 / lowrisc::flash_ctrl::PAGE_SIZE,
@@ -38,32 +38,32 @@
 //!        flash_ctrl_read_buf,
 //!        page_buffer,
 //!    )
-//!    .finalize(components::tickv_component_static!(
+//!    .finalize(crate::components::tickv_component_static!(
 //!        lowrisc::flash_ctrl::FlashCtrl,
-//!        capsules_extra::sip_hash::SipHasher24
+//!        crate::capsules_extra::sip_hash::SipHasher24
 //!    ));
 //!    hil::flash::HasClient::set_client(&peripherals.flash_ctrl, mux_flash);
 //! ```
 
-use capsules_core::virtualizers::virtual_flash::FlashUser;
-use capsules_core::virtualizers::virtual_flash::MuxFlash;
-use capsules_extra::tickv::TicKVSystem;
+use crate::capsules_core::virtualizers::virtual_flash::FlashUser;
+use crate::capsules_core::virtualizers::virtual_flash::MuxFlash;
+use crate::capsules_extra::tickv::TicKVSystem;
 use core::mem::MaybeUninit;
-use kernel::component::Component;
-use kernel::hil;
-use kernel::hil::flash::HasClient;
-use kernel::hil::hasher::Hasher;
+use crate::kernel::component::Component;
+use crate::kernel::hil;
+use crate::kernel::hil::flash::HasClient;
+use crate::kernel::hil::hasher::Hasher;
 
 // Setup static space for the objects.
 #[macro_export]
 macro_rules! tickv_component_static {
     ($F:ty, $H:ty, $PAGE_SIZE:expr $(,)?) => {{
         let flash =
-            kernel::static_buf!(capsules_core::virtualizers::virtual_flash::FlashUser<'static, $F>);
-        let tickv = kernel::static_buf!(
-            capsules_extra::tickv::TicKVSystem<
+            crate::kernel::static_buf!(crate::capsules_core::virtualizers::virtual_flash::FlashUser<'static, $F>);
+        let tickv = crate::kernel::static_buf!(
+            crate::capsules_extra::tickv::TicKVSystem<
                 'static,
-                capsules_core::virtualizers::virtual_flash::FlashUser<'static, $F>,
+                crate::capsules_core::virtualizers::virtual_flash::FlashUser<'static, $F>,
                 $H,
                 $PAGE_SIZE,
             >
@@ -76,9 +76,9 @@ macro_rules! tickv_component_static {
 #[macro_export]
 macro_rules! tickv_dedicated_flash_component_static {
     ($F:ty, $H:ty, $PAGE_SIZE:expr $(,)?) => {{
-        let tickfs_read_buffer = kernel::static_buf!([u8; $PAGE_SIZE]);
+        let tickfs_read_buffer = crate::kernel::static_buf!([u8; $PAGE_SIZE]);
         let tickv =
-            kernel::static_buf!(capsules_extra::tickv::TicKVSystem<'static, $F, $H, $PAGE_SIZE>);
+            crate::kernel::static_buf!(crate::capsules_extra::tickv::TicKVSystem<'static, $F, $H, $PAGE_SIZE>);
 
         (tickv, tickfs_read_buffer)
     }};
@@ -152,7 +152,7 @@ impl<
 }
 
 pub type TicKVDedicatedFlashComponentType<F, H, const PAGE: usize> =
-    capsules_extra::tickv::TicKVSystem<'static, F, H, PAGE>;
+    crate::capsules_extra::tickv::TicKVSystem<'static, F, H, PAGE>;
 
 pub struct TicKVDedicatedFlashComponent<
     F: 'static

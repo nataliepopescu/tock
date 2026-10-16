@@ -153,7 +153,7 @@ pub unsafe extern "C" fn svc_handler_arm_v7m() {
     // Return to the kernel.
     bx lr
         ",
-        syscall_fired = sym cortexm::syscall::SYSCALL_FIRED,
+        syscall_fired = sym crate::cortexm::syscall::SYSCALL_FIRED,
     );
 }
 
@@ -667,8 +667,8 @@ pub unsafe extern "C" fn hard_fault_handler_arm_v7m() {
         ",
         estack = sym _estack,
         kernel_hard_fault_handler = sym hard_fault_handler_arm_v7m_kernel,
-        app_hard_fault = sym cortexm::syscall::APP_HARD_FAULT,
-        scb_registers = sym cortexm::syscall::SCB_REGISTERS,
+        app_hard_fault = sym crate::cortexm::syscall::APP_HARD_FAULT,
+        scb_registers = sym crate::cortexm::syscall::SCB_REGISTERS,
     );
 }
 

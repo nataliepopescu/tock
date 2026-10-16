@@ -6,14 +6,14 @@
 //! Test the software implementation of HMAC-SHA256 by performing a hash and
 //! checking it against the expected hash value.
 
-use capsules_core::test::capsule_test::{CapsuleTest, CapsuleTestClient, CapsuleTestError};
-use kernel::ErrorCode;
-use kernel::hil::digest;
-use kernel::hil::digest::HmacSha256;
-use kernel::utilities::cells::OptionalCell;
-use kernel::utilities::cells::TakeCell;
-use kernel::utilities::leasable_buffer::SubSlice;
-use kernel::utilities::leasable_buffer::SubSliceMut;
+use crate::capsules_core::test::capsule_test::{CapsuleTest, CapsuleTestClient, CapsuleTestError};
+use crate::kernel::ErrorCode;
+use crate::kernel::hil::digest;
+use crate::kernel::hil::digest::HmacSha256;
+use crate::kernel::utilities::cells::OptionalCell;
+use crate::kernel::utilities::cells::TakeCell;
+use crate::kernel::utilities::leasable_buffer::SubSlice;
+use crate::kernel::utilities::leasable_buffer::SubSliceMut;
 
 const HMAC_SHA256_DIGEST_LEN: usize = 32;
 
@@ -45,7 +45,7 @@ impl<'a, H: digest::Digest<'a, HMAC_SHA256_DIGEST_LEN> + HmacSha256> TestHmacSha
     }
 
     pub fn run(&'static self) {
-        kernel::hil::digest::Digest::set_client(self.hmac, self);
+        crate::kernel::hil::digest::Digest::set_client(self.hmac, self);
         let key = self.key.take().unwrap();
         let r = self.hmac.set_mode_hmacsha256(key);
         if r.is_err() {
@@ -73,7 +73,7 @@ impl<'a, H: digest::Digest<'a, HMAC_SHA256_DIGEST_LEN> + HmacSha256>
         match result {
             Ok(()) => {}
             Err(e) => {
-                kernel::debug!("HmacSha256Test: failed to add data: {:?}", e);
+                crate::kernel::debug!("HmacSha256Test: failed to add data: {:?}", e);
                 self.client.map(|client| {
                     client.done(Err(CapsuleTestError::ErrorCode(e)));
                 });
@@ -85,7 +85,7 @@ impl<'a, H: digest::Digest<'a, HMAC_SHA256_DIGEST_LEN> + HmacSha256>
         match r {
             Ok(()) => {}
             Err((e, d)) => {
-                kernel::debug!("HmacSha256Test: failed to run HMAC: {:?}", e);
+                crate::kernel::debug!("HmacSha256Test: failed to run HMAC: {:?}", e);
 
                 self.digest.replace(d);
                 self.client.map(|client| {
@@ -112,12 +112,12 @@ impl<'a, H: digest::Digest<'a, HMAC_SHA256_DIGEST_LEN> + HmacSha256>
             }
         }
         if !error {
-            kernel::debug!("HMAC-SHA256 matches!");
+            crate::kernel::debug!("HMAC-SHA256 matches!");
             self.client.map(|client| {
                 client.done(Ok(()));
             });
         } else {
-            kernel::debug!("HmacSha256Test: incorrect HMAC output!");
+            crate::kernel::debug!("HmacSha256Test: incorrect HMAC output!");
             self.client.map(|client| {
                 client.done(Err(CapsuleTestError::IncorrectResult));
             });

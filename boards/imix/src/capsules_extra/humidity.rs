@@ -42,24 +42,24 @@
 //! You need a device that provides the `hil::sensors::HumidityDriver` trait.
 //!
 //! ```rust,ignore
-//! # use kernel::static_init;
+//! # use crate::kernel::static_init;
 //!
 //! let humidity = static_init!(
 //!        capsules::humidity::HumiditySensor<'static>,
 //!        capsules::humidity::HumiditySensor::new(si7021,
 //!                                                board_kernel.create_grant(&grant_cap)));
-//! kernel::hil::sensors::HumidityDriver::set_client(si7021, humidity);
+//! crate::kernel::hil::sensors::HumidityDriver::set_client(si7021, humidity);
 //! ```
 
 use core::cell::Cell;
 
-use kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
-use kernel::hil;
-use kernel::syscall::{CommandReturn, SyscallDriver};
-use kernel::{ErrorCode, ProcessId};
+use crate::kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
+use crate::kernel::hil;
+use crate::kernel::syscall::{CommandReturn, SyscallDriver};
+use crate::kernel::{ErrorCode, ProcessId};
 
 /// Syscall driver number.
-use capsules_core::driver;
+use crate::capsules_core::driver;
 pub const DRIVER_NUM: usize = driver::NUM::Humidity as usize;
 
 #[derive(Clone, Copy, PartialEq)]
@@ -155,7 +155,7 @@ impl<'a, H: hil::sensors::HumidityDriver<'a>> SyscallDriver for HumiditySensor<'
         }
     }
 
-    fn allocate_grant(&self, processid: ProcessId) -> Result<(), kernel::process::Error> {
+    fn allocate_grant(&self, processid: ProcessId) -> Result<(), crate::kernel::process::Error> {
         self.apps.enter(processid, |_, _| {})
     }
 }

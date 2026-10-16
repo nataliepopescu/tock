@@ -8,20 +8,20 @@
 //! -----
 //!
 //! ```ignore
-//! use kernel::static_init;
-//! let mux_pwm = components::pwm::PwmMuxComponent::new(&peripherals.pwm)
-//! .finalize(components::pwm_mux_component_static!(rp2040::pwm::Pwm));
+//! use crate::kernel::static_init;
+//! let mux_pwm = crate::components::pwm::PwmMuxComponent::new(&peripherals.pwm)
+//! .finalize(crate::components::pwm_mux_component_static!(rp2040::pwm::Pwm));
 //!
 //! let virtual_pwm_servo: &PwmPinUser<'static, rp2040::pwm::Pwm<'static>> =
-//! components::pwm::PwmPinUserComponent::new(mux_pwm, rp2040::gpio::RPGpio::GPIO4)
-//!     .finalize(components::pwm_pin_user_component_static!(rp2040::pwm::Pwm));
+//! crate::components::pwm::PwmPinUserComponent::new(mux_pwm, rp2040::gpio::RPGpio::GPIO4)
+//!     .finalize(crate::components::pwm_pin_user_component_static!(rp2040::pwm::Pwm));
 //!
 //! let sg90_servo = static_init!(
-//! capsules_extra::sg90::Sg90<
+//! crate::capsules_extra::sg90::Sg90<
 //!    'static,
-//!    capsules_core::virtualizers::virtual_pwm::PwmPinUser<'static, rp2040::pwm::Pwm>,
+//!    crate::capsules_core::virtualizers::virtual_pwm::PwmPinUser<'static, rp2040::pwm::Pwm>,
 //! >,
-//! capsules_extra::sg90::Sg90::new(virtual_pwm_servo)
+//! crate::capsules_extra::sg90::Sg90::new(virtual_pwm_servo)
 //! );
 //!
 //! // Here, we initialize an array of two SG90 servomotors as an example.
@@ -30,17 +30,17 @@
 //! [sg90_servo, sg90_servo]
 //! );
 //! let servo = static_init!(
-//! capsules_extra::servo::Servo<'static, 2>,
-//! capsules_extra::servo::Servo::new(multi_servo)
+//! crate::capsules_extra::servo::Servo<'static, 2>,
+//! crate::capsules_extra::servo::Servo::new(multi_servo)
 //! );
 //! ```
 
-use kernel::hil;
-use kernel::syscall::{CommandReturn, SyscallDriver};
-use kernel::{ErrorCode, ProcessId};
+use crate::kernel::hil;
+use crate::kernel::syscall::{CommandReturn, SyscallDriver};
+use crate::kernel::{ErrorCode, ProcessId};
 
 /// Syscall driver number.
-use capsules_core::driver;
+use crate::capsules_core::driver;
 pub const DRIVER_NUM: usize = driver::NUM::Servo as usize;
 
 pub struct Servo<'a, const SERVO_COUNT: usize> {
@@ -106,7 +106,7 @@ impl<const SERVO_COUNT: usize> SyscallDriver for Servo<'_, SERVO_COUNT> {
         }
     }
 
-    fn allocate_grant(&self, _process_id: ProcessId) -> Result<(), kernel::process::Error> {
+    fn allocate_grant(&self, _process_id: ProcessId) -> Result<(), crate::kernel::process::Error> {
         Ok(())
     }
 }

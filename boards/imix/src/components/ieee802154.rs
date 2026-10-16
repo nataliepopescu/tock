@@ -11,36 +11,36 @@
 //! Usage
 //! -----
 //! ```rust
-//! let aes_mux = components::ieee802154::MuxAes128ccmComponent::new(
+//! let aes_mux = crate::components::ieee802154::MuxAes128ccmComponent::new(
 //!     &base_peripherals.ecb,
 //! )
-//!  .finalize(components::mux_aes128ccm_component_static!(
+//!  .finalize(crate::components::mux_aes128ccm_component_static!(
 //!     nrf52840::aes::AesECB
 //! ));
 //!
-//! let (radio, mux_mac) = components::ieee802154::Ieee802154Component::new(
+//! let (radio, mux_mac) = crate::components::ieee802154::Ieee802154Component::new(
 //!     board_kernel,
-//!     capsules_extra::ieee802154::DRIVER_NUM,
+//!     crate::capsules_extra::ieee802154::DRIVER_NUM,
 //!     &nrf52::ieee802154_radio::RADIO,
 //!     aes_mux,
 //!     PAN_ID,
 //!     SRC_MAC,
 //!     deferred_caller,
 //! )
-//! .finalize(components::ieee802154_component_static!(
+//! .finalize(crate::components::ieee802154_component_static!(
 //!     nrf52::ieee802154_radio::Radio,
 //!     nrf52::aes::AesECB<'static>
 //! ));
 //! ```
 
-use capsules_core::virtualizers::virtual_aes_ccm::MuxAES128CCM;
-use capsules_extra::ieee802154::device::MacDevice;
-use capsules_extra::ieee802154::mac::{AwakeMac, Mac};
+use crate::capsules_core::virtualizers::virtual_aes_ccm::MuxAES128CCM;
+use crate::capsules_extra::ieee802154::device::MacDevice;
+use crate::capsules_extra::ieee802154::mac::{AwakeMac, Mac};
 use core::mem::MaybeUninit;
-use kernel::capabilities::MemoryAllocationCapability;
-use kernel::component::Component;
-use kernel::hil::radio::{self, MAX_BUF_SIZE};
-use kernel::hil::symmetric_encryption::{self, AES, AES128, AESCBC, AESCCM, AESCtr, AESECB};
+use crate::kernel::capabilities::MemoryAllocationCapability;
+use crate::kernel::component::Component;
+use crate::kernel::hil::radio::{self, MAX_BUF_SIZE};
+use crate::kernel::hil::symmetric_encryption::{self, AES, AES128, AESCBC, AESCCM, AESCtr, AESECB};
 
 // This buffer is used as an intermediate buffer for AES CCM encryption. An
 // upper bound on the required size is `3 * BLOCK_SIZE + radio::MAX_BUF_SIZE`.
@@ -48,7 +48,7 @@ pub const CRYPT_SIZE: usize = 3 * symmetric_encryption::AES_BLOCK_SIZE + radio::
 
 #[macro_export]
 macro_rules! mux_aes128ccm_component_static {
-    ($A:ty $(,)?) => {{ kernel::static_buf!(capsules_core::virtualizers::virtual_aes_ccm::MuxAES128CCM<'static, $A>) }};
+    ($A:ty $(,)?) => {{ crate::kernel::static_buf!(crate::capsules_core::virtualizers::virtual_aes_ccm::MuxAES128CCM<'static, $A>) }};
 }
 
 pub type MuxAes128ccmComponentType<A> = MuxAES128CCM<'static, A>;
@@ -71,7 +71,7 @@ impl<A: 'static + AES<'static, AES128> + AESCtr + AESCBC + AESECB> Component
 
     fn finalize(self, static_buffer: Self::StaticInput) -> Self::Output {
         let aes_mux = static_buffer.write(MuxAES128CCM::new(self.aes));
-        kernel::deferred_call::DeferredCallClient::register(aes_mux);
+        crate::kernel::deferred_call::DeferredCallClient::register(aes_mux);
         self.aes.set_client(aes_mux);
 
         aes_mux
@@ -82,56 +82,56 @@ impl<A: 'static + AES<'static, AES128> + AESCtr + AESCBC + AESECB> Component
 #[macro_export]
 macro_rules! ieee802154_component_static {
     ($R:ty, $A:ty $(,)?) => {{
-        let virtual_aes = kernel::static_buf!(
-            capsules_core::virtualizers::virtual_aes_ccm::VirtualAES128CCM<'static, $A>
+        let virtual_aes = crate::kernel::static_buf!(
+            crate::capsules_core::virtualizers::virtual_aes_ccm::VirtualAES128CCM<'static, $A>
         );
-        let awake_mac = kernel::static_buf!(capsules_extra::ieee802154::mac::AwakeMac<'static, $R>);
-        let framer = kernel::static_buf!(
-            capsules_extra::ieee802154::framer::Framer<
+        let awake_mac = crate::kernel::static_buf!(crate::capsules_extra::ieee802154::mac::AwakeMac<'static, $R>);
+        let framer = crate::kernel::static_buf!(
+            crate::capsules_extra::ieee802154::framer::Framer<
                 'static,
-                capsules_extra::ieee802154::mac::AwakeMac<'static, $R>,
-                capsules_core::virtualizers::virtual_aes_ccm::VirtualAES128CCM<'static, $A>,
+                crate::capsules_extra::ieee802154::mac::AwakeMac<'static, $R>,
+                crate::capsules_core::virtualizers::virtual_aes_ccm::VirtualAES128CCM<'static, $A>,
             >
         );
 
-        let mux_mac = kernel::static_buf!(
-            capsules_extra::ieee802154::virtual_mac::MuxMac<
+        let mux_mac = crate::kernel::static_buf!(
+            crate::capsules_extra::ieee802154::virtual_mac::MuxMac<
                 'static,
-                capsules_extra::ieee802154::framer::Framer<
+                crate::capsules_extra::ieee802154::framer::Framer<
                     'static,
-                    capsules_extra::ieee802154::mac::AwakeMac<'static, $R>,
-                    capsules_core::virtualizers::virtual_aes_ccm::VirtualAES128CCM<'static, $A>,
+                    crate::capsules_extra::ieee802154::mac::AwakeMac<'static, $R>,
+                    crate::capsules_core::virtualizers::virtual_aes_ccm::VirtualAES128CCM<'static, $A>,
                 >,
             >
         );
-        let mac_user = kernel::static_buf!(
-            capsules_extra::ieee802154::virtual_mac::MacUser<
+        let mac_user = crate::kernel::static_buf!(
+            crate::capsules_extra::ieee802154::virtual_mac::MacUser<
                 'static,
-                capsules_extra::ieee802154::framer::Framer<
+                crate::capsules_extra::ieee802154::framer::Framer<
                     'static,
-                    capsules_extra::ieee802154::mac::AwakeMac<'static, $R>,
-                    capsules_core::virtualizers::virtual_aes_ccm::VirtualAES128CCM<'static, $A>,
+                    crate::capsules_extra::ieee802154::mac::AwakeMac<'static, $R>,
+                    crate::capsules_core::virtualizers::virtual_aes_ccm::VirtualAES128CCM<'static, $A>,
                 >,
             >
         );
-        let radio_driver = kernel::static_buf!(
-            capsules_extra::ieee802154::RadioDriver<
+        let radio_driver = crate::kernel::static_buf!(
+            crate::capsules_extra::ieee802154::RadioDriver<
                 'static,
-                capsules_extra::ieee802154::virtual_mac::MacUser<
+                crate::capsules_extra::ieee802154::virtual_mac::MacUser<
                     'static,
-                    capsules_extra::ieee802154::framer::Framer<
+                    crate::capsules_extra::ieee802154::framer::Framer<
                         'static,
-                        capsules_extra::ieee802154::mac::AwakeMac<'static, $R>,
-                        capsules_core::virtualizers::virtual_aes_ccm::VirtualAES128CCM<'static, $A>,
+                        crate::capsules_extra::ieee802154::mac::AwakeMac<'static, $R>,
+                        crate::capsules_core::virtualizers::virtual_aes_ccm::VirtualAES128CCM<'static, $A>,
                     >,
                 >,
             >
         );
 
-        let radio_buf = kernel::static_buf!([u8; kernel::hil::radio::MAX_BUF_SIZE]);
-        let radio_rx_buf = kernel::static_buf!([u8; kernel::hil::radio::MAX_BUF_SIZE]);
-        let crypt_buf = kernel::static_buf!([u8; components::ieee802154::CRYPT_SIZE]);
-        let radio_rx_crypt_buf = kernel::static_buf!([u8; kernel::hil::radio::MAX_BUF_SIZE]);
+        let radio_buf = crate::kernel::static_buf!([u8; crate::kernel::hil::radio::MAX_BUF_SIZE]);
+        let radio_rx_buf = crate::kernel::static_buf!([u8; crate::kernel::hil::radio::MAX_BUF_SIZE]);
+        let crypt_buf = crate::kernel::static_buf!([u8; crate::components::ieee802154::CRYPT_SIZE]);
+        let radio_rx_crypt_buf = crate::kernel::static_buf!([u8; crate::kernel::hil::radio::MAX_BUF_SIZE]);
 
         (
             virtual_aes,
@@ -148,51 +148,51 @@ macro_rules! ieee802154_component_static {
     }};
 }
 
-pub type Ieee802154ComponentType<R, A> = capsules_extra::ieee802154::RadioDriver<
+pub type Ieee802154ComponentType<R, A> = crate::capsules_extra::ieee802154::RadioDriver<
     'static,
-    capsules_extra::ieee802154::virtual_mac::MacUser<
+    crate::capsules_extra::ieee802154::virtual_mac::MacUser<
         'static,
-        capsules_extra::ieee802154::framer::Framer<
+        crate::capsules_extra::ieee802154::framer::Framer<
             'static,
-            capsules_extra::ieee802154::mac::AwakeMac<'static, R>,
-            capsules_core::virtualizers::virtual_aes_ccm::VirtualAES128CCM<'static, A>,
+            crate::capsules_extra::ieee802154::mac::AwakeMac<'static, R>,
+            crate::capsules_core::virtualizers::virtual_aes_ccm::VirtualAES128CCM<'static, A>,
         >,
     >,
 >;
 
-pub type Ieee802154ComponentMacDeviceType<R, A> = capsules_extra::ieee802154::framer::Framer<
+pub type Ieee802154ComponentMacDeviceType<R, A> = crate::capsules_extra::ieee802154::framer::Framer<
     'static,
-    capsules_extra::ieee802154::mac::AwakeMac<'static, R>,
-    capsules_core::virtualizers::virtual_aes_ccm::VirtualAES128CCM<'static, A>,
+    crate::capsules_extra::ieee802154::mac::AwakeMac<'static, R>,
+    crate::capsules_core::virtualizers::virtual_aes_ccm::VirtualAES128CCM<'static, A>,
 >;
 
 pub struct Ieee802154Component<
-    R: 'static + kernel::hil::radio::Radio<'static>,
+    R: 'static + crate::kernel::hil::radio::Radio<'static>,
     A: 'static + AES<'static, AES128> + AESCtr + AESCBC + AESECB,
     CAP: MemoryAllocationCapability + 'static,
 > {
-    board_kernel: &'static kernel::Kernel,
+    board_kernel: &'static crate::kernel::Kernel,
     driver_num: usize,
     radio: &'static R,
     aes_mux: &'static MuxAES128CCM<'static, A>,
-    pan_id: capsules_extra::net::ieee802154::PanID,
+    pan_id: crate::capsules_extra::net::ieee802154::PanID,
     short_addr: u16,
     long_addr: [u8; 8],
     mem_cap: CAP,
 }
 
 impl<
-    R: 'static + kernel::hil::radio::Radio<'static>,
+    R: 'static + crate::kernel::hil::radio::Radio<'static>,
     A: 'static + AES<'static, AES128> + AESCtr + AESCBC + AESECB,
     CAP: MemoryAllocationCapability + 'static,
 > Ieee802154Component<R, A, CAP>
 {
     pub fn new(
-        board_kernel: &'static kernel::Kernel,
+        board_kernel: &'static crate::kernel::Kernel,
         driver_num: usize,
         radio: &'static R,
         aes_mux: &'static MuxAES128CCM<'static, A>,
-        pan_id: capsules_extra::net::ieee802154::PanID,
+        pan_id: crate::capsules_extra::net::ieee802154::PanID,
         short_addr: u16,
         long_addr: [u8; 8],
         mem_cap: CAP,
@@ -211,52 +211,52 @@ impl<
 }
 
 impl<
-    R: 'static + kernel::hil::radio::Radio<'static>,
+    R: 'static + crate::kernel::hil::radio::Radio<'static>,
     A: 'static + AES<'static, AES128> + AESCtr + AESCBC + AESECB,
     CAP: MemoryAllocationCapability + 'static,
 > Component for Ieee802154Component<R, A, CAP>
 {
     type StaticInput = (
         &'static mut MaybeUninit<
-            capsules_core::virtualizers::virtual_aes_ccm::VirtualAES128CCM<'static, A>,
+            crate::capsules_core::virtualizers::virtual_aes_ccm::VirtualAES128CCM<'static, A>,
         >,
-        &'static mut MaybeUninit<capsules_extra::ieee802154::mac::AwakeMac<'static, R>>,
+        &'static mut MaybeUninit<crate::capsules_extra::ieee802154::mac::AwakeMac<'static, R>>,
         &'static mut MaybeUninit<
-            capsules_extra::ieee802154::framer::Framer<
+            crate::capsules_extra::ieee802154::framer::Framer<
                 'static,
                 AwakeMac<'static, R>,
-                capsules_core::virtualizers::virtual_aes_ccm::VirtualAES128CCM<'static, A>,
+                crate::capsules_core::virtualizers::virtual_aes_ccm::VirtualAES128CCM<'static, A>,
             >,
         >,
         &'static mut MaybeUninit<
-            capsules_extra::ieee802154::virtual_mac::MuxMac<
+            crate::capsules_extra::ieee802154::virtual_mac::MuxMac<
                 'static,
-                capsules_extra::ieee802154::framer::Framer<
+                crate::capsules_extra::ieee802154::framer::Framer<
                     'static,
                     AwakeMac<'static, R>,
-                    capsules_core::virtualizers::virtual_aes_ccm::VirtualAES128CCM<'static, A>,
+                    crate::capsules_core::virtualizers::virtual_aes_ccm::VirtualAES128CCM<'static, A>,
                 >,
             >,
         >,
         &'static mut MaybeUninit<
-            capsules_extra::ieee802154::virtual_mac::MacUser<
+            crate::capsules_extra::ieee802154::virtual_mac::MacUser<
                 'static,
-                capsules_extra::ieee802154::framer::Framer<
+                crate::capsules_extra::ieee802154::framer::Framer<
                     'static,
                     AwakeMac<'static, R>,
-                    capsules_core::virtualizers::virtual_aes_ccm::VirtualAES128CCM<'static, A>,
+                    crate::capsules_core::virtualizers::virtual_aes_ccm::VirtualAES128CCM<'static, A>,
                 >,
             >,
         >,
         &'static mut MaybeUninit<
-            capsules_extra::ieee802154::RadioDriver<
+            crate::capsules_extra::ieee802154::RadioDriver<
                 'static,
-                capsules_extra::ieee802154::virtual_mac::MacUser<
+                crate::capsules_extra::ieee802154::virtual_mac::MacUser<
                     'static,
-                    capsules_extra::ieee802154::framer::Framer<
+                    crate::capsules_extra::ieee802154::framer::Framer<
                         'static,
                         AwakeMac<'static, R>,
-                        capsules_core::virtualizers::virtual_aes_ccm::VirtualAES128CCM<'static, A>,
+                        crate::capsules_core::virtualizers::virtual_aes_ccm::VirtualAES128CCM<'static, A>,
                     >,
                 >,
             >,
@@ -267,23 +267,23 @@ impl<
         &'static mut MaybeUninit<[u8; radio::MAX_BUF_SIZE]>,
     );
     type Output = (
-        &'static capsules_extra::ieee802154::RadioDriver<
+        &'static crate::capsules_extra::ieee802154::RadioDriver<
             'static,
-            capsules_extra::ieee802154::virtual_mac::MacUser<
+            crate::capsules_extra::ieee802154::virtual_mac::MacUser<
                 'static,
-                capsules_extra::ieee802154::framer::Framer<
+                crate::capsules_extra::ieee802154::framer::Framer<
                     'static,
                     AwakeMac<'static, R>,
-                    capsules_core::virtualizers::virtual_aes_ccm::VirtualAES128CCM<'static, A>,
+                    crate::capsules_core::virtualizers::virtual_aes_ccm::VirtualAES128CCM<'static, A>,
                 >,
             >,
         >,
-        &'static capsules_extra::ieee802154::virtual_mac::MuxMac<
+        &'static crate::capsules_extra::ieee802154::virtual_mac::MuxMac<
             'static,
-            capsules_extra::ieee802154::framer::Framer<
+            crate::capsules_extra::ieee802154::framer::Framer<
                 'static,
                 AwakeMac<'static, R>,
-                capsules_core::virtualizers::virtual_aes_ccm::VirtualAES128CCM<'static, A>,
+                crate::capsules_core::virtualizers::virtual_aes_ccm::VirtualAES128CCM<'static, A>,
             >,
         >,
     );
@@ -291,7 +291,7 @@ impl<
     fn finalize(self, static_buffer: Self::StaticInput) -> Self::Output {
         let crypt_buf = static_buffer.8.write([0; CRYPT_SIZE]);
         let aes_ccm = static_buffer.0.write(
-            capsules_core::virtualizers::virtual_aes_ccm::VirtualAES128CCM::new(
+            crate::capsules_core::virtualizers::virtual_aes_ccm::VirtualAES128CCM::new(
                 self.aes_mux,
                 crypt_buf,
             ),
@@ -309,10 +309,10 @@ impl<
 
         let mac_device = static_buffer
             .2
-            .write(capsules_extra::ieee802154::framer::Framer::new(
+            .write(crate::capsules_extra::ieee802154::framer::Framer::new(
                 awake_mac,
                 aes_ccm,
-                kernel::utilities::leasable_buffer::SubSliceMut::new(radio_rx_crypt_buf),
+                crate::kernel::utilities::leasable_buffer::SubSliceMut::new(radio_rx_crypt_buf),
             ));
         AESCCM::set_client(aes_ccm, mac_device);
         awake_mac.set_transmit_client(mac_device);
@@ -321,7 +321,7 @@ impl<
 
         let mux_mac = static_buffer
             .3
-            .write(capsules_extra::ieee802154::virtual_mac::MuxMac::new(
+            .write(crate::capsules_extra::ieee802154::virtual_mac::MuxMac::new(
                 mac_device,
             ));
         mac_device.set_transmit_client(mux_mac);
@@ -330,7 +330,7 @@ impl<
         let userspace_mac =
             static_buffer
                 .4
-                .write(capsules_extra::ieee802154::virtual_mac::MacUser::new(
+                .write(crate::capsules_extra::ieee802154::virtual_mac::MacUser::new(
                     mux_mac,
                 ));
         mux_mac.add_user(userspace_mac);
@@ -338,13 +338,13 @@ impl<
         let radio_buffer = static_buffer.6.write([0; radio::MAX_BUF_SIZE]);
         let radio_driver = static_buffer
             .5
-            .write(capsules_extra::ieee802154::RadioDriver::new(
+            .write(crate::capsules_extra::ieee802154::RadioDriver::new(
                 userspace_mac,
                 self.board_kernel
                     .create_grant(self.driver_num, &self.mem_cap),
                 radio_buffer,
             ));
-        kernel::deferred_call::DeferredCallClient::register(radio_driver);
+        crate::kernel::deferred_call::DeferredCallClient::register(radio_driver);
 
         mac_device.set_key_procedure(radio_driver);
         mac_device.set_device_procedure(radio_driver);
@@ -365,32 +365,32 @@ impl<
 macro_rules! ieee802154_raw_component_static {
     ($R:ty $(,)?) => {{
         let radio_driver =
-            kernel::static_buf!(capsules_extra::ieee802154::phy_driver::RadioDriver<$R>);
-        let tx_buffer = kernel::static_buf!([u8; kernel::hil::radio::MAX_BUF_SIZE]);
-        let rx_buffer = kernel::static_buf!([u8; kernel::hil::radio::MAX_BUF_SIZE]);
+            crate::kernel::static_buf!(crate::capsules_extra::ieee802154::phy_driver::RadioDriver<$R>);
+        let tx_buffer = crate::kernel::static_buf!([u8; crate::kernel::hil::radio::MAX_BUF_SIZE]);
+        let rx_buffer = crate::kernel::static_buf!([u8; crate::kernel::hil::radio::MAX_BUF_SIZE]);
 
         (radio_driver, tx_buffer, rx_buffer)
     }};
 }
 
 pub type Ieee802154RawComponentType<R> =
-    capsules_extra::ieee802154::phy_driver::RadioDriver<'static, R>;
+    crate::capsules_extra::ieee802154::phy_driver::RadioDriver<'static, R>;
 
 pub struct Ieee802154RawComponent<
-    R: 'static + kernel::hil::radio::Radio<'static>,
+    R: 'static + crate::kernel::hil::radio::Radio<'static>,
     CAP: MemoryAllocationCapability + 'static,
 > {
-    board_kernel: &'static kernel::Kernel,
+    board_kernel: &'static crate::kernel::Kernel,
     driver_num: usize,
     radio: &'static R,
     mem_cap: CAP,
 }
 
-impl<R: 'static + kernel::hil::radio::Radio<'static>, CAP: MemoryAllocationCapability + 'static>
+impl<R: 'static + crate::kernel::hil::radio::Radio<'static>, CAP: MemoryAllocationCapability + 'static>
     Ieee802154RawComponent<R, CAP>
 {
     pub fn new(
-        board_kernel: &'static kernel::Kernel,
+        board_kernel: &'static crate::kernel::Kernel,
         driver_num: usize,
         radio: &'static R,
         mem_cap: CAP,
@@ -404,15 +404,15 @@ impl<R: 'static + kernel::hil::radio::Radio<'static>, CAP: MemoryAllocationCapab
     }
 }
 
-impl<R: 'static + kernel::hil::radio::Radio<'static>, CAP: MemoryAllocationCapability + 'static>
+impl<R: 'static + crate::kernel::hil::radio::Radio<'static>, CAP: MemoryAllocationCapability + 'static>
     Component for Ieee802154RawComponent<R, CAP>
 {
     type StaticInput = (
-        &'static mut MaybeUninit<capsules_extra::ieee802154::phy_driver::RadioDriver<'static, R>>,
+        &'static mut MaybeUninit<crate::capsules_extra::ieee802154::phy_driver::RadioDriver<'static, R>>,
         &'static mut MaybeUninit<[u8; radio::MAX_BUF_SIZE]>,
         &'static mut MaybeUninit<[u8; radio::MAX_BUF_SIZE]>,
     );
-    type Output = &'static capsules_extra::ieee802154::phy_driver::RadioDriver<'static, R>;
+    type Output = &'static crate::capsules_extra::ieee802154::phy_driver::RadioDriver<'static, R>;
 
     fn finalize(self, static_buffer: Self::StaticInput) -> Self::Output {
         let tx_buffer = static_buffer.1.write([0; MAX_BUF_SIZE]);
@@ -421,7 +421,7 @@ impl<R: 'static + kernel::hil::radio::Radio<'static>, CAP: MemoryAllocationCapab
         let radio_driver =
             static_buffer
                 .0
-                .write(capsules_extra::ieee802154::phy_driver::RadioDriver::new(
+                .write(crate::capsules_extra::ieee802154::phy_driver::RadioDriver::new(
                     self.radio,
                     self.board_kernel
                         .create_grant(self.driver_num, &self.mem_cap),

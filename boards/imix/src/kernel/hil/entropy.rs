@@ -42,14 +42,14 @@
 //! once a second using the `Alarm` and `Entropy` traits.
 //!
 //! ```
-//! use kernel::hil;
-//! use kernel::hil::entropy::Entropy32;
-//! use kernel::hil::entropy::Client32;
-//! use kernel::hil::time::Alarm;
-//! use kernel::hil::time::ConvertTicks;
-//! use kernel::hil::time::Frequency;
-//! use kernel::hil::time::AlarmClient;
-//! use kernel::ErrorCode;
+//! use crate::kernel::hil;
+//! use crate::kernel::hil::entropy::Entropy32;
+//! use crate::kernel::hil::entropy::Client32;
+//! use crate::kernel::hil::time::Alarm;
+//! use crate::kernel::hil::time::ConvertTicks;
+//! use crate::kernel::hil::time::Frequency;
+//! use crate::kernel::hil::time::AlarmClient;
+//! use crate::kernel::ErrorCode;
 //!
 //! struct EntropyTest<'a, A: 'a + Alarm<'a>> {
 //!     entropy: &'a dyn Entropy32 <'a>,

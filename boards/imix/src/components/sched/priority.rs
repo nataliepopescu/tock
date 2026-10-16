@@ -10,29 +10,29 @@
 //! -----
 //! ```rust
 //! let scheduler =
-//!     components::priority::PriorityComponent::new(board_kernel)
-//!         .finalize(components::priority_component_static!());
+//!     crate::components::priority::PriorityComponent::new(board_kernel)
+//!         .finalize(crate::components::priority_component_static!());
 //! ```
 
-use capsules_system::scheduler::priority::PrioritySched;
+use crate::capsules_system::scheduler::priority::PrioritySched;
 use core::mem::MaybeUninit;
-use kernel::capabilities::ProcessManagementCapability;
-use kernel::component::Component;
+use crate::kernel::capabilities::ProcessManagementCapability;
+use crate::kernel::component::Component;
 
 #[macro_export]
 macro_rules! priority_component_static {
-    ($CAP:ty $(,)?) => {{ kernel::static_buf!(capsules_system::scheduler::priority::PrioritySched<$CAP>) }};
+    ($CAP:ty $(,)?) => {{ crate::kernel::static_buf!(crate::capsules_system::scheduler::priority::PrioritySched<$CAP>) }};
 }
 
-pub type PriorityComponentType<CAP> = capsules_system::scheduler::priority::PrioritySched<CAP>;
+pub type PriorityComponentType<CAP> = crate::capsules_system::scheduler::priority::PrioritySched<CAP>;
 
 pub struct PriorityComponent<CAP: ProcessManagementCapability> {
-    board_kernel: &'static kernel::Kernel,
+    board_kernel: &'static crate::kernel::Kernel,
     cap: CAP,
 }
 
 impl<CAP: ProcessManagementCapability> PriorityComponent<CAP> {
-    pub fn new(board_kernel: &'static kernel::Kernel, cap: CAP) -> Self {
+    pub fn new(board_kernel: &'static crate::kernel::Kernel, cap: CAP) -> Self {
         Self { board_kernel, cap }
     }
 }

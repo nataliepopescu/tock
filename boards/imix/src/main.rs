@@ -24,47 +24,47 @@ pub mod cortexm;
 pub mod cortexv7m;
 pub mod segger;
 
-use capsules_core::alarm::AlarmDriver;
-use capsules_core::console_ordered::ConsoleOrdered;
-use capsules_core::virtualizers::virtual_aes_ccm::MuxAES128CCM;
-use capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm;
-use capsules_core::virtualizers::virtual_i2c::MuxI2C;
-use capsules_core::virtualizers::virtual_spi::VirtualSpiMasterDevice;
-use capsules_extra::net::ieee802154::MacAddress;
-use capsules_extra::net::ipv6::ip_utils::IPAddr;
-use kernel::capabilities;
-use kernel::component::Component;
-use kernel::debug::PanicResources;
-use kernel::deferred_call::DeferredCallClient;
-use kernel::hil::i2c::I2CMaster;
-use kernel::hil::radio;
+use crate::capsules_core::alarm::AlarmDriver;
+use crate::capsules_core::console_ordered::ConsoleOrdered;
+use crate::capsules_core::virtualizers::virtual_aes_ccm::MuxAES128CCM;
+use crate::capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm;
+use crate::capsules_core::virtualizers::virtual_i2c::MuxI2C;
+use crate::capsules_core::virtualizers::virtual_spi::VirtualSpiMasterDevice;
+use crate::capsules_extra::net::ieee802154::MacAddress;
+use crate::capsules_extra::net::ipv6::ip_utils::IPAddr;
+use crate::kernel::capabilities;
+use crate::kernel::component::Component;
+use crate::kernel::debug::PanicResources;
+use crate::kernel::deferred_call::DeferredCallClient;
+use crate::kernel::hil::i2c::I2CMaster;
+use crate::kernel::hil::radio;
 #[allow(unused_imports)]
-use kernel::hil::radio::{RadioConfig, RadioData};
-use kernel::hil::symmetric_encryption::AES;
-use kernel::platform::chip::Chip;
-use kernel::platform::{KernelResources, SyscallDriverLookup};
-use kernel::utilities::single_thread_value::SingleThreadValue;
+use crate::kernel::hil::radio::{RadioConfig, RadioData};
+use crate::kernel::hil::symmetric_encryption::AES;
+use crate::kernel::platform::chip::Chip;
+use crate::kernel::platform::{KernelResources, SyscallDriverLookup};
+use crate::kernel::utilities::single_thread_value::SingleThreadValue;
 
-//use kernel::hil::time::Alarm;
-use kernel::hil::Controller;
-use kernel::hil::led::LedHigh;
+//use crate::kernel::hil::time::Alarm;
+use crate::kernel::hil::Controller;
+use crate::kernel::hil::led::LedHigh;
 #[allow(unused_imports)]
-use kernel::{create_capability, debug, debug_gpio, static_buf, static_init};
-use sam4l::chip::Sam4lDefaultPeripherals;
+use crate::kernel::{create_capability, debug, debug_gpio, static_buf, static_init};
+use crate::sam4l::chip::Sam4lDefaultPeripherals;
 
-use components::alarm::{AlarmDriverComponent, AlarmMuxComponent};
-use components::console::{ConsoleOrderedComponent, UartMuxComponent};
-use components::crc::CrcComponent;
-use components::debug_writer::DebugWriterComponent;
-use components::gpio::GpioComponent;
-use components::isl29035::AmbientLightComponent;
-use components::isl29035::Isl29035Component;
-use components::led::LedsComponent;
-use components::nrf51822::Nrf51822Component;
-use components::process_console::ProcessConsoleComponent;
-use components::rng::RngComponent;
-use components::si7021::SI7021Component;
-use components::spi::{SpiComponent, SpiSyscallComponent};
+use crate::components::alarm::{AlarmDriverComponent, AlarmMuxComponent};
+use crate::components::console::{ConsoleOrderedComponent, UartMuxComponent};
+use crate::components::crc::CrcComponent;
+use crate::components::debug_writer::DebugWriterComponent;
+use crate::components::gpio::GpioComponent;
+use crate::components::isl29035::AmbientLightComponent;
+use crate::components::isl29035::Isl29035Component;
+use crate::components::led::LedsComponent;
+use crate::components::nrf51822::Nrf51822Component;
+use crate::components::process_console::ProcessConsoleComponent;
+use crate::components::rng::RngComponent;
+use crate::components::si7021::SI7021Component;
+use crate::components::spi::{SpiComponent, SpiSyscallComponent};
 
 /// Support routines for debugging I/O.
 ///
@@ -103,131 +103,131 @@ const DEFAULT_CTX_PREFIX: [u8; 16] = [0x0_u8; 16]; //Context for 6LoWPAN Compres
 const PAN_ID: u16 = 0xABCD;
 
 // how should the kernel respond when a process faults
-const FAULT_RESPONSE: capsules_system::process_policies::StopFaultPolicy =
-    capsules_system::process_policies::StopFaultPolicy {};
+const FAULT_RESPONSE: crate::capsules_system::process_policies::StopFaultPolicy =
+    crate::capsules_system::process_policies::StopFaultPolicy {};
 
-type ChipHw = sam4l::chip::Sam4l<Sam4lDefaultPeripherals>;
-type ProcessPrinterInUse = capsules_system::process_printer::ProcessPrinterText;
+type ChipHw = crate::sam4l::chip::Sam4l<Sam4lDefaultPeripherals>;
+type ProcessPrinterInUse = crate::capsules_system::process_printer::ProcessPrinterText;
 
 // TODO: remove once panic UART doesn't require an existing instance any more
-static mut CHIP: Option<&'static sam4l::chip::Sam4l<Sam4lDefaultPeripherals>> = None;
+static mut CHIP: Option<&'static crate::sam4l::chip::Sam4l<Sam4lDefaultPeripherals>> = None;
 
 /// Resources for when a board panics used by io.rs.
 static PANIC_RESOURCES: SingleThreadValue<PanicResources<ChipHw, ProcessPrinterInUse>> =
     SingleThreadValue::new();
 
-kernel::stack_size! {0x2000}
+crate::kernel::stack_size! {0x2000}
 
-type SI7021Sensor = components::si7021::SI7021ComponentType<
-    capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, sam4l::ast::Ast<'static>>,
-    capsules_core::virtualizers::virtual_i2c::I2CDevice<'static, sam4l::i2c::I2CHw<'static>>,
+type SI7021Sensor = crate::components::si7021::SI7021ComponentType<
+    crate::capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, crate::sam4l::ast::Ast<'static>>,
+    crate::capsules_core::virtualizers::virtual_i2c::I2CDevice<'static, crate::sam4l::i2c::I2CHw<'static>>,
 >;
-type TemperatureDriver = components::temperature::TemperatureComponentType<SI7021Sensor>;
-type HumidityDriver = components::humidity::HumidityComponentType<SI7021Sensor>;
-type RngDriver = components::rng::RngComponentType<sam4l::trng::Trng<'static>>;
+type TemperatureDriver = crate::components::temperature::TemperatureComponentType<SI7021Sensor>;
+type HumidityDriver = crate::components::humidity::HumidityComponentType<SI7021Sensor>;
+type RngDriver = crate::components::rng::RngComponentType<crate::sam4l::trng::Trng<'static>>;
 
-type Rf233 = capsules_extra::rf233::RF233<
+type Rf233 = crate::capsules_extra::rf233::RF233<
     'static,
-    VirtualSpiMasterDevice<'static, sam4l::spi::SpiHw<'static>>,
+    VirtualSpiMasterDevice<'static, crate::sam4l::spi::SpiHw<'static>>,
 >;
 type Ieee802154MacDevice =
-    components::ieee802154::Ieee802154ComponentMacDeviceType<Rf233, sam4l::aes::Aes<'static>>;
+    crate::components::ieee802154::Ieee802154ComponentMacDeviceType<Rf233, crate::sam4l::aes::Aes<'static>>;
 
-type SchedulerInUse = components::sched::round_robin::RoundRobinComponentType;
+type SchedulerInUse = crate::components::sched::round_robin::RoundRobinComponentType;
 
-kernel::define_capability_type!(ProcessConsoleCap:
-    kernel::capabilities::ProcessManagementCapability,
-    kernel::capabilities::ProcessStartCapability
+crate::kernel::define_capability_type!(ProcessConsoleCap:
+    crate::kernel::capabilities::ProcessManagementCapability,
+    crate::kernel::capabilities::ProcessStartCapability
 );
 
 struct Imix {
-    pconsole: &'static capsules_core::process_console::ProcessConsole<
+    pconsole: &'static crate::capsules_core::process_console::ProcessConsole<
         'static,
-        { capsules_core::process_console::DEFAULT_COMMAND_HISTORY_LEN },
-        capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<
+        { crate::capsules_core::process_console::DEFAULT_COMMAND_HISTORY_LEN },
+        crate::capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<
             'static,
-            sam4l::ast::Ast<'static>,
+            crate::sam4l::ast::Ast<'static>,
         >,
         ProcessConsoleCap,
     >,
-    console: &'static capsules_core::console_ordered::ConsoleOrdered<
+    console: &'static crate::capsules_core::console_ordered::ConsoleOrdered<
         'static,
-        VirtualMuxAlarm<'static, sam4l::ast::Ast<'static>>,
+        VirtualMuxAlarm<'static, crate::sam4l::ast::Ast<'static>>,
     >,
-    gpio: &'static capsules_core::gpio::GPIO<'static, sam4l::gpio::GPIOPin<'static>>,
-    alarm: &'static AlarmDriver<'static, VirtualMuxAlarm<'static, sam4l::ast::Ast<'static>>>,
+    gpio: &'static crate::capsules_core::gpio::GPIO<'static, crate::sam4l::gpio::GPIOPin<'static>>,
+    alarm: &'static AlarmDriver<'static, VirtualMuxAlarm<'static, crate::sam4l::ast::Ast<'static>>>,
     temp: &'static TemperatureDriver,
     humidity: &'static HumidityDriver,
-    ambient_light: &'static capsules_extra::ambient_light::AmbientLight<'static>,
-    adc: &'static capsules_core::adc::AdcDedicated<'static, sam4l::adc::Adc<'static>>,
-    led: &'static capsules_core::led::LedDriver<
+    ambient_light: &'static crate::capsules_extra::ambient_light::AmbientLight<'static>,
+    adc: &'static crate::capsules_core::adc::AdcDedicated<'static, crate::sam4l::adc::Adc<'static>>,
+    led: &'static crate::capsules_core::led::LedDriver<
         'static,
-        LedHigh<'static, sam4l::gpio::GPIOPin<'static>>,
+        LedHigh<'static, crate::sam4l::gpio::GPIOPin<'static>>,
         1,
     >,
-    button: &'static capsules_core::button::Button<'static, sam4l::gpio::GPIOPin<'static>>,
+    button: &'static crate::capsules_core::button::Button<'static, crate::sam4l::gpio::GPIOPin<'static>>,
     rng: &'static RngDriver,
-    analog_comparator: &'static capsules_extra::analog_comparator::AnalogComparator<
+    analog_comparator: &'static crate::capsules_extra::analog_comparator::AnalogComparator<
         'static,
-        sam4l::acifc::Acifc<'static>,
+        crate::sam4l::acifc::Acifc<'static>,
     >,
-    spi: &'static capsules_core::spi_controller::Spi<
+    spi: &'static crate::capsules_core::spi_controller::Spi<
         'static,
-        VirtualSpiMasterDevice<'static, sam4l::spi::SpiHw<'static>>,
+        VirtualSpiMasterDevice<'static, crate::sam4l::spi::SpiHw<'static>>,
     >,
-    ipc: kernel::ipc::IPC<{ NUM_PROCS as u8 }>,
-    ninedof: &'static capsules_extra::ninedof::NineDof<'static>,
-    udp_driver: &'static capsules_extra::net::udp::UDPDriver<'static>,
-    crc: &'static capsules_extra::crc::CrcDriver<'static, sam4l::crccu::Crccu<'static>>,
-    usb_driver: &'static capsules_extra::usb::usb_user::UsbSyscallDriver<
+    ipc: crate::kernel::ipc::IPC<{ NUM_PROCS as u8 }>,
+    ninedof: &'static crate::capsules_extra::ninedof::NineDof<'static>,
+    udp_driver: &'static crate::capsules_extra::net::udp::UDPDriver<'static>,
+    crc: &'static crate::capsules_extra::crc::CrcDriver<'static, crate::sam4l::crccu::Crccu<'static>>,
+    usb_driver: &'static crate::capsules_extra::usb::usb_user::UsbSyscallDriver<
         'static,
-        capsules_extra::usb::usbc_client::Client<'static, sam4l::usbc::Usbc<'static>>,
+        crate::capsules_extra::usb::usbc_client::Client<'static, crate::sam4l::usbc::Usbc<'static>>,
     >,
-    nrf51822: &'static capsules_extra::nrf51822_serialization::Nrf51822Serialization<'static>,
+    nrf51822: &'static crate::capsules_extra::nrf51822_serialization::Nrf51822Serialization<'static>,
     nonvolatile_storage:
-        &'static capsules_extra::nonvolatile_storage_driver::NonvolatileStorage<'static>,
+        &'static crate::capsules_extra::nonvolatile_storage_driver::NonvolatileStorage<'static>,
     scheduler: &'static SchedulerInUse,
-    systick: cortexm4::systick::SysTick,
+    systick: crate::cortexm4::systick::SysTick,
 }
 
 impl SyscallDriverLookup for Imix {
     fn with_driver<F, R>(&self, driver_num: usize, f: F) -> R
     where
-        F: FnOnce(Option<&dyn kernel::syscall::SyscallDriver>) -> R,
+        F: FnOnce(Option<&dyn crate::kernel::syscall::SyscallDriver>) -> R,
     {
         match driver_num {
-            capsules_core::console_ordered::DRIVER_NUM => f(Some(self.console)),
-            capsules_core::gpio::DRIVER_NUM => f(Some(self.gpio)),
-            capsules_core::alarm::DRIVER_NUM => f(Some(self.alarm)),
-            capsules_core::spi_controller::DRIVER_NUM => f(Some(self.spi)),
-            capsules_core::adc::DRIVER_NUM => f(Some(self.adc)),
-            capsules_core::led::DRIVER_NUM => f(Some(self.led)),
-            capsules_core::button::DRIVER_NUM => f(Some(self.button)),
-            capsules_extra::analog_comparator::DRIVER_NUM => f(Some(self.analog_comparator)),
-            capsules_extra::ambient_light::DRIVER_NUM => f(Some(self.ambient_light)),
-            capsules_extra::temperature::DRIVER_NUM => f(Some(self.temp)),
-            capsules_extra::humidity::DRIVER_NUM => f(Some(self.humidity)),
-            capsules_extra::ninedof::DRIVER_NUM => f(Some(self.ninedof)),
-            capsules_extra::crc::DRIVER_NUM => f(Some(self.crc)),
-            capsules_extra::usb::usb_user::DRIVER_NUM => f(Some(self.usb_driver)),
-            capsules_extra::net::udp::DRIVER_NUM => f(Some(self.udp_driver)),
-            capsules_extra::nrf51822_serialization::DRIVER_NUM => f(Some(self.nrf51822)),
-            capsules_extra::nonvolatile_storage_driver::DRIVER_NUM => {
+            crate::capsules_core::console_ordered::DRIVER_NUM => f(Some(self.console)),
+            crate::capsules_core::gpio::DRIVER_NUM => f(Some(self.gpio)),
+            crate::capsules_core::alarm::DRIVER_NUM => f(Some(self.alarm)),
+            crate::capsules_core::spi_controller::DRIVER_NUM => f(Some(self.spi)),
+            crate::capsules_core::adc::DRIVER_NUM => f(Some(self.adc)),
+            crate::capsules_core::led::DRIVER_NUM => f(Some(self.led)),
+            crate::capsules_core::button::DRIVER_NUM => f(Some(self.button)),
+            crate::capsules_extra::analog_comparator::DRIVER_NUM => f(Some(self.analog_comparator)),
+            crate::capsules_extra::ambient_light::DRIVER_NUM => f(Some(self.ambient_light)),
+            crate::capsules_extra::temperature::DRIVER_NUM => f(Some(self.temp)),
+            crate::capsules_extra::humidity::DRIVER_NUM => f(Some(self.humidity)),
+            crate::capsules_extra::ninedof::DRIVER_NUM => f(Some(self.ninedof)),
+            crate::capsules_extra::crc::DRIVER_NUM => f(Some(self.crc)),
+            crate::capsules_extra::usb::usb_user::DRIVER_NUM => f(Some(self.usb_driver)),
+            crate::capsules_extra::net::udp::DRIVER_NUM => f(Some(self.udp_driver)),
+            crate::capsules_extra::nrf51822_serialization::DRIVER_NUM => f(Some(self.nrf51822)),
+            crate::capsules_extra::nonvolatile_storage_driver::DRIVER_NUM => {
                 f(Some(self.nonvolatile_storage))
             }
-            capsules_core::rng::DRIVER_NUM => f(Some(self.rng)),
-            kernel::ipc::DRIVER_NUM => f(Some(&self.ipc)),
+            crate::capsules_core::rng::DRIVER_NUM => f(Some(self.rng)),
+            crate::kernel::ipc::DRIVER_NUM => f(Some(&self.ipc)),
             _ => f(None),
         }
     }
 }
 
-impl KernelResources<sam4l::chip::Sam4l<Sam4lDefaultPeripherals>> for Imix {
+impl KernelResources<crate::sam4l::chip::Sam4l<Sam4lDefaultPeripherals>> for Imix {
     type SyscallDriverLookup = Self;
     type SyscallFilter = ();
     type ProcessFault = ();
     type Scheduler = SchedulerInUse;
-    type SchedulerTimer = cortexm4::systick::SysTick;
+    type SchedulerTimer = crate::cortexm4::systick::SysTick;
     type WatchDog = ();
     type ContextSwitchCallback = ();
 
@@ -255,7 +255,7 @@ impl KernelResources<sam4l::chip::Sam4l<Sam4lDefaultPeripherals>> for Imix {
 }
 
 unsafe fn set_pin_primary_functions(peripherals: &Sam4lDefaultPeripherals) {
-    use sam4l::gpio::PeripheralFunction::{A, B, C, E};
+    use crate::sam4l::gpio::PeripheralFunction::{A, B, C, E};
 
     // Right column: Imix pin name
     // Left  column: SAM4L peripheral function
@@ -329,43 +329,43 @@ unsafe fn set_pin_primary_functions(peripherals: &Sam4lDefaultPeripherals) {
 /// these static_inits is wasted.
 #[inline(never)]
 unsafe fn start() -> (
-    &'static kernel::Kernel,
+    &'static crate::kernel::Kernel,
     Imix,
-    &'static sam4l::chip::Sam4l<Sam4lDefaultPeripherals>,
+    &'static crate::sam4l::chip::Sam4l<Sam4lDefaultPeripherals>,
 ) {
     ChipHw::init();
 
     // Initialize deferred calls very early.
-    kernel::deferred_call::initialize_deferred_call_state::<
-        <ChipHw as kernel::platform::chip::Chip>::ThreadIdProvider,
+    crate::kernel::deferred_call::initialize_deferred_call_state::<
+        <ChipHw as crate::kernel::platform::chip::Chip>::ThreadIdProvider,
     >();
 
     // Bind global variables to this thread.
     let _ = PANIC_RESOURCES
-        .bind_to_thread::<<ChipHw as kernel::platform::chip::Chip>::ThreadIdProvider>(
+        .bind_to_thread::<<ChipHw as crate::kernel::platform::chip::Chip>::ThreadIdProvider>(
             PanicResources::new(),
         );
 
-    let pm = static_init!(sam4l::pm::PowerManager, sam4l::pm::PowerManager::new());
+    let pm = static_init!(crate::sam4l::pm::PowerManager, crate::sam4l::pm::PowerManager::new());
     let peripherals = static_init!(Sam4lDefaultPeripherals, Sam4lDefaultPeripherals::new(pm));
 
     pm.setup_system_clock(
-        sam4l::pm::SystemClockSource::PllExternalOscillatorAt48MHz {
-            frequency: sam4l::pm::OscillatorFrequency::Frequency16MHz,
-            startup_mode: sam4l::pm::OscillatorStartup::FastStart,
+        crate::sam4l::pm::SystemClockSource::PllExternalOscillatorAt48MHz {
+            frequency: crate::sam4l::pm::OscillatorFrequency::Frequency16MHz,
+            startup_mode: crate::sam4l::pm::OscillatorStartup::FastStart,
         },
         &peripherals.flash_controller,
     );
 
     // Source 32Khz and 1Khz clocks from RC23K (SAM4L Datasheet 11.6.8)
-    sam4l::bpm::set_ck32source(sam4l::bpm::CK32Source::RC32K);
+    crate::sam4l::bpm::set_ck32source(crate::sam4l::bpm::CK32Source::RC32K);
 
     set_pin_primary_functions(peripherals);
 
     peripherals.setup_circular_deps();
     let chip = static_init!(
-        sam4l::chip::Sam4l<Sam4lDefaultPeripherals>,
-        sam4l::chip::Sam4l::new(pm, peripherals)
+        crate::sam4l::chip::Sam4l<Sam4lDefaultPeripherals>,
+        crate::sam4l::chip::Sam4l::new(pm, peripherals)
     );
     CHIP = Some(chip);
     PANIC_RESOURCES.get().map(|resources| {
@@ -389,57 +389,57 @@ unsafe fn start() -> (
     );
 
     // Create an array to hold process references.
-    let processes = components::process_array::ProcessArrayComponent::new()
-        .finalize(components::process_array_component_static!(NUM_PROCS));
+    let processes = crate::components::process_array::ProcessArrayComponent::new()
+        .finalize(crate::components::process_array_component_static!(NUM_PROCS));
     PANIC_RESOURCES.get().map(|resources| {
         resources.processes.put(processes.as_slice());
     });
 
     // Setup space to store the core kernel data structure.
-    let board_kernel = static_init!(kernel::Kernel, kernel::Kernel::new(processes.as_slice()));
+    let board_kernel = static_init!(crate::kernel::Kernel, crate::kernel::Kernel::new(processes.as_slice()));
 
-    let process_printer = components::process_printer::ProcessPrinterTextComponent::new()
-        .finalize(components::process_printer_text_component_static!());
+    let process_printer = crate::components::process_printer::ProcessPrinterTextComponent::new()
+        .finalize(crate::components::process_printer_text_component_static!());
     PANIC_RESOURCES.get().map(|resources| {
         resources.printer.put(process_printer);
     });
 
     // # CONSOLE
     // Create a shared UART channel for the consoles and for kernel debug.
-    peripherals.usart3.set_mode(sam4l::usart::UsartMode::Uart);
+    peripherals.usart3.set_mode(crate::sam4l::usart::UsartMode::Uart);
     let uart_mux = UartMuxComponent::new(&peripherals.usart3, 115200)
-        .finalize(components::uart_mux_component_static!());
+        .finalize(crate::components::uart_mux_component_static!());
 
     // # TIMER
     let mux_alarm = AlarmMuxComponent::new(&peripherals.ast)
-        .finalize(components::alarm_mux_component_static!(sam4l::ast::Ast));
+        .finalize(crate::components::alarm_mux_component_static!(crate::sam4l::ast::Ast));
     peripherals.ast.configure(mux_alarm);
 
     let alarm = AlarmDriverComponent::new(
         board_kernel,
-        capsules_core::alarm::DRIVER_NUM,
+        crate::capsules_core::alarm::DRIVER_NUM,
         mux_alarm,
         create_capability!(capabilities::MemoryAllocationCapability),
     )
-    .finalize(components::alarm_component_static!(sam4l::ast::Ast));
+    .finalize(crate::components::alarm_component_static!(crate::sam4l::ast::Ast));
 
-    let process_console_cap = unsafe { kernel::mint_defined_capability!(ProcessConsoleCap) };
+    let process_console_cap = unsafe { crate::kernel::mint_defined_capability!(ProcessConsoleCap) };
     let pconsole = ProcessConsoleComponent::new(
         board_kernel,
         uart_mux,
         mux_alarm,
         process_printer,
-        Some(cortexm4::support::reset),
+        Some(crate::cortexm4::support::reset),
         process_console_cap,
     )
-    .finalize(components::process_console_component_static!(
-        sam4l::ast::Ast,
+    .finalize(crate::components::process_console_component_static!(
+        crate::sam4l::ast::Ast,
         ProcessConsoleCap
     ));
 
     let console = ConsoleOrderedComponent::new(
         board_kernel,
-        capsules_core::console_ordered::DRIVER_NUM,
+        crate::capsules_core::console_ordered::DRIVER_NUM,
         uart_mux,
         mux_alarm,
         200,
@@ -447,94 +447,94 @@ unsafe fn start() -> (
         5,
         create_capability!(capabilities::MemoryAllocationCapability),
     )
-    .finalize(components::console_ordered_component_static!(
-        sam4l::ast::Ast
+    .finalize(crate::components::console_ordered_component_static!(
+        crate::sam4l::ast::Ast
     ));
-    DebugWriterComponent::new::<<ChipHw as kernel::platform::chip::Chip>::ThreadIdProvider>(
+    DebugWriterComponent::new::<<ChipHw as crate::kernel::platform::chip::Chip>::ThreadIdProvider>(
         uart_mux,
         create_capability!(capabilities::SetDebugWriterCapability),
     )
-    .finalize(components::debug_writer_component_static!());
+    .finalize(crate::components::debug_writer_component_static!());
 
     // Allow processes to communicate over BLE through the nRF51822
-    peripherals.usart2.set_mode(sam4l::usart::UsartMode::Uart);
+    peripherals.usart2.set_mode(crate::sam4l::usart::UsartMode::Uart);
     let nrf_serialization = Nrf51822Component::new(
         board_kernel,
-        capsules_extra::nrf51822_serialization::DRIVER_NUM,
+        crate::capsules_extra::nrf51822_serialization::DRIVER_NUM,
         &peripherals.usart2,
         &peripherals.pb[07],
         create_capability!(capabilities::MemoryAllocationCapability),
     )
-    .finalize(components::nrf51822_component_static!());
+    .finalize(crate::components::nrf51822_component_static!());
 
     // # I2C and I2C Sensors
     let mux_i2c = static_init!(
-        MuxI2C<'static, sam4l::i2c::I2CHw<'static>>,
+        MuxI2C<'static, crate::sam4l::i2c::I2CHw<'static>>,
         MuxI2C::new(&peripherals.i2c2, None)
     );
-    kernel::deferred_call::DeferredCallClient::register(mux_i2c);
+    crate::kernel::deferred_call::DeferredCallClient::register(mux_i2c);
     peripherals.i2c2.set_master_client(mux_i2c);
 
     let isl29035 = Isl29035Component::new(mux_i2c, mux_alarm).finalize(
-        components::isl29035_component_static!(sam4l::ast::Ast, sam4l::i2c::I2CHw<'static>),
+        crate::components::isl29035_component_static!(crate::sam4l::ast::Ast, crate::sam4l::i2c::I2CHw<'static>),
     );
     let ambient_light = AmbientLightComponent::new(
         board_kernel,
-        capsules_extra::ambient_light::DRIVER_NUM,
+        crate::capsules_extra::ambient_light::DRIVER_NUM,
         isl29035,
         create_capability!(capabilities::MemoryAllocationCapability),
     )
-    .finalize(components::ambient_light_component_static!());
+    .finalize(crate::components::ambient_light_component_static!());
 
     let si7021 = SI7021Component::new(mux_i2c, mux_alarm, 0x40).finalize(
-        components::si7021_component_static!(sam4l::ast::Ast, sam4l::i2c::I2CHw<'static>),
+        crate::components::si7021_component_static!(crate::sam4l::ast::Ast, crate::sam4l::i2c::I2CHw<'static>),
     );
-    let temp = components::temperature::TemperatureComponent::new(
+    let temp = crate::components::temperature::TemperatureComponent::new(
         board_kernel,
-        capsules_extra::temperature::DRIVER_NUM,
+        crate::capsules_extra::temperature::DRIVER_NUM,
         si7021,
         create_capability!(capabilities::MemoryAllocationCapability),
     )
-    .finalize(components::temperature_component_static!(SI7021Sensor));
-    let humidity = components::humidity::HumidityComponent::new(
+    .finalize(crate::components::temperature_component_static!(SI7021Sensor));
+    let humidity = crate::components::humidity::HumidityComponent::new(
         board_kernel,
-        capsules_extra::humidity::DRIVER_NUM,
+        crate::capsules_extra::humidity::DRIVER_NUM,
         si7021,
         create_capability!(capabilities::MemoryAllocationCapability),
     )
-    .finalize(components::humidity_component_static!(SI7021Sensor));
+    .finalize(crate::components::humidity_component_static!(SI7021Sensor));
 
-    let fxos8700 = components::fxos8700::Fxos8700Component::new(mux_i2c, 0x1e, &peripherals.pc[13])
-        .finalize(components::fxos8700_component_static!(
-            sam4l::i2c::I2CHw<'static>
+    let fxos8700 = crate::components::fxos8700::Fxos8700Component::new(mux_i2c, 0x1e, &peripherals.pc[13])
+        .finalize(crate::components::fxos8700_component_static!(
+            crate::sam4l::i2c::I2CHw<'static>
         ));
 
-    let ninedof = components::ninedof::NineDofComponent::new(
+    let ninedof = crate::components::ninedof::NineDofComponent::new(
         board_kernel,
-        capsules_extra::ninedof::DRIVER_NUM,
+        crate::capsules_extra::ninedof::DRIVER_NUM,
         create_capability!(capabilities::MemoryAllocationCapability),
     )
-    .finalize(components::ninedof_component_static!(fxos8700));
+    .finalize(crate::components::ninedof_component_static!(fxos8700));
 
     // SPI MUX, SPI syscall driver and RF233 radio
-    let mux_spi = components::spi::SpiMuxComponent::new(&peripherals.spi).finalize(
-        components::spi_mux_component_static!(sam4l::spi::SpiHw<'static>),
+    let mux_spi = crate::components::spi::SpiMuxComponent::new(&peripherals.spi).finalize(
+        crate::components::spi_mux_component_static!(crate::sam4l::spi::SpiHw<'static>),
     );
 
     let spi_syscalls = SpiSyscallComponent::new(
         board_kernel,
         mux_spi,
-        sam4l::spi::Peripheral::Peripheral2,
-        capsules_core::spi_controller::DRIVER_NUM,
+        crate::sam4l::spi::Peripheral::Peripheral2,
+        crate::capsules_core::spi_controller::DRIVER_NUM,
         create_capability!(capabilities::MemoryAllocationCapability),
     )
-    .finalize(components::spi_syscall_component_static!(
-        sam4l::spi::SpiHw<'static>
+    .finalize(crate::components::spi_syscall_component_static!(
+        crate::sam4l::spi::SpiHw<'static>
     ));
-    let rf233_spi = SpiComponent::new(mux_spi, sam4l::spi::Peripheral::Peripheral3).finalize(
-        components::spi_component_static!(sam4l::spi::SpiHw<'static>),
+    let rf233_spi = SpiComponent::new(mux_spi, crate::sam4l::spi::Peripheral::Peripheral3).finalize(
+        crate::components::spi_component_static!(crate::sam4l::spi::SpiHw<'static>),
     );
-    let rf233 = components::rf233::RF233Component::new(
+    let rf233 = crate::components::rf233::RF233Component::new(
         rf233_spi,
         &peripherals.pa[09], // reset
         &peripherals.pa[10], // sleep
@@ -542,36 +542,36 @@ unsafe fn start() -> (
         &peripherals.pa[08],
         RADIO_CHANNEL,
     )
-    .finalize(components::rf233_component_static!(
-        sam4l::spi::SpiHw<'static>
+    .finalize(crate::components::rf233_component_static!(
+        crate::sam4l::spi::SpiHw<'static>
     ));
 
     // Setup ADC
     let adc_channels = static_init!(
-        [sam4l::adc::AdcChannel; 6],
+        [crate::sam4l::adc::AdcChannel; 6],
         [
-            sam4l::adc::AdcChannel::new(sam4l::adc::Channel::AD1), // AD0
-            sam4l::adc::AdcChannel::new(sam4l::adc::Channel::AD2), // AD1
-            sam4l::adc::AdcChannel::new(sam4l::adc::Channel::AD3), // AD2
-            sam4l::adc::AdcChannel::new(sam4l::adc::Channel::AD4), // AD3
-            sam4l::adc::AdcChannel::new(sam4l::adc::Channel::AD5), // AD4
-            sam4l::adc::AdcChannel::new(sam4l::adc::Channel::AD6), // AD5
+            crate::sam4l::adc::AdcChannel::new(crate::sam4l::adc::Channel::AD1), // AD0
+            crate::sam4l::adc::AdcChannel::new(crate::sam4l::adc::Channel::AD2), // AD1
+            crate::sam4l::adc::AdcChannel::new(crate::sam4l::adc::Channel::AD3), // AD2
+            crate::sam4l::adc::AdcChannel::new(crate::sam4l::adc::Channel::AD4), // AD3
+            crate::sam4l::adc::AdcChannel::new(crate::sam4l::adc::Channel::AD5), // AD4
+            crate::sam4l::adc::AdcChannel::new(crate::sam4l::adc::Channel::AD6), // AD5
         ]
     );
-    let adc = components::adc::AdcDedicatedComponent::new(
+    let adc = crate::components::adc::AdcDedicatedComponent::new(
         &peripherals.adc,
         adc_channels,
         board_kernel,
-        capsules_core::adc::DRIVER_NUM,
+        crate::capsules_core::adc::DRIVER_NUM,
         create_capability!(capabilities::MemoryAllocationCapability),
     )
-    .finalize(components::adc_dedicated_component_static!(sam4l::adc::Adc));
+    .finalize(crate::components::adc_dedicated_component_static!(crate::sam4l::adc::Adc));
 
     let gpio = GpioComponent::new(
         board_kernel,
-        capsules_core::gpio::DRIVER_NUM,
-        components::gpio_component_helper!(
-            sam4l::gpio::GPIOPin,
+        crate::capsules_core::gpio::DRIVER_NUM,
+        crate::components::gpio_component_helper!(
+            crate::sam4l::gpio::GPIOPin,
             0 => &peripherals.pc[31],
             1 => &peripherals.pc[30],
             2 => &peripherals.pc[29],
@@ -582,80 +582,80 @@ unsafe fn start() -> (
         ),
         create_capability!(capabilities::MemoryAllocationCapability),
     )
-    .finalize(components::gpio_component_static!(sam4l::gpio::GPIOPin));
+    .finalize(crate::components::gpio_component_static!(crate::sam4l::gpio::GPIOPin));
 
-    let led = LedsComponent::new().finalize(components::led_component_static!(
-        LedHigh<'static, sam4l::gpio::GPIOPin>,
+    let led = LedsComponent::new().finalize(crate::components::led_component_static!(
+        LedHigh<'static, crate::sam4l::gpio::GPIOPin>,
         LedHigh::new(&peripherals.pc[10]),
     ));
 
-    let button = components::button::ButtonComponent::new(
+    let button = crate::components::button::ButtonComponent::new(
         board_kernel,
-        capsules_core::button::DRIVER_NUM,
-        components::button_component_helper!(
-            sam4l::gpio::GPIOPin,
+        crate::capsules_core::button::DRIVER_NUM,
+        crate::components::button_component_helper!(
+            crate::sam4l::gpio::GPIOPin,
             (
                 &peripherals.pc[24],
-                kernel::hil::gpio::ActivationMode::ActiveLow,
-                kernel::hil::gpio::FloatingState::PullNone
+                crate::kernel::hil::gpio::ActivationMode::ActiveLow,
+                crate::kernel::hil::gpio::FloatingState::PullNone
             )
         ),
         create_capability!(capabilities::MemoryAllocationCapability),
     )
-    .finalize(components::button_component_static!(sam4l::gpio::GPIOPin));
+    .finalize(crate::components::button_component_static!(crate::sam4l::gpio::GPIOPin));
 
     let crc = CrcComponent::new(
         board_kernel,
-        capsules_extra::crc::DRIVER_NUM,
+        crate::capsules_extra::crc::DRIVER_NUM,
         &peripherals.crccu,
         create_capability!(capabilities::MemoryAllocationCapability),
     )
-    .finalize(components::crc_component_static!(sam4l::crccu::Crccu));
+    .finalize(crate::components::crc_component_static!(crate::sam4l::crccu::Crccu));
 
-    let analog_comparator = components::analog_comparator::AnalogComparatorComponent::new(
+    let analog_comparator = crate::components::analog_comparator::AnalogComparatorComponent::new(
         &peripherals.acifc,
-        components::analog_comparator_component_helper!(
-            <sam4l::acifc::Acifc as kernel::hil::analog_comparator::AnalogComparator>::Channel,
-            sam4l::acifc::AcChannel::new(sam4l::acifc::Channel::AC0),
-            sam4l::acifc::AcChannel::new(sam4l::acifc::Channel::AC0),
-            sam4l::acifc::AcChannel::new(sam4l::acifc::Channel::AC0),
-            sam4l::acifc::AcChannel::new(sam4l::acifc::Channel::AC0),
+        crate::components::analog_comparator_component_helper!(
+            <crate::sam4l::acifc::Acifc as crate::kernel::hil::analog_comparator::AnalogComparator>::Channel,
+            crate::sam4l::acifc::AcChannel::new(crate::sam4l::acifc::Channel::AC0),
+            crate::sam4l::acifc::AcChannel::new(crate::sam4l::acifc::Channel::AC0),
+            crate::sam4l::acifc::AcChannel::new(crate::sam4l::acifc::Channel::AC0),
+            crate::sam4l::acifc::AcChannel::new(crate::sam4l::acifc::Channel::AC0),
         ),
         board_kernel,
-        capsules_extra::analog_comparator::DRIVER_NUM,
+        crate::capsules_extra::analog_comparator::DRIVER_NUM,
         create_capability!(capabilities::MemoryAllocationCapability),
     )
-    .finalize(components::analog_comparator_component_static!(
-        sam4l::acifc::Acifc
+    .finalize(crate::components::analog_comparator_component_static!(
+        crate::sam4l::acifc::Acifc
     ));
     let rng = RngComponent::new(
         board_kernel,
-        capsules_core::rng::DRIVER_NUM,
+        crate::capsules_core::rng::DRIVER_NUM,
         &peripherals.trng,
         create_capability!(capabilities::MemoryAllocationCapability),
     )
-    .finalize(components::rng_component_static!(sam4l::trng::Trng));
+    .finalize(crate::components::rng_component_static!(crate::sam4l::trng::Trng));
 
     // For now, assign the 802.15.4 MAC address on the device as
     // simply a 16-bit short address which represents the last 16 bits
     // of the serial number of the sam4l for this device.  In the
     // future, we could generate the DEFAULT_EXT_SRC_MAC address by hashing the full
     // 120-bit serial number
-    let serial_num: sam4l::serial_num::SerialNum = sam4l::serial_num::SerialNum::new();
+    let serial_num: crate::sam4l::serial_num::SerialNum = crate::sam4l::serial_num::SerialNum::new();
     let serial_num_bottom_16 = (serial_num.get_lower_64() & 0x0000_0000_0000_ffff) as u16;
     let src_mac_from_serial_num: MacAddress = MacAddress::Short(serial_num_bottom_16);
     const DEFAULT_EXT_SRC_MAC: [u8; 8] = [0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77];
 
     let aes_mux = static_init!(
-        MuxAES128CCM<'static, sam4l::aes::Aes>,
+        MuxAES128CCM<'static, crate::sam4l::aes::Aes>,
         MuxAES128CCM::new(&peripherals.aes)
     );
     aes_mux.register();
     peripherals.aes.set_client(aes_mux);
 
-    let (_, mux_mac) = components::ieee802154::Ieee802154Component::new(
+    let (_, mux_mac) = crate::components::ieee802154::Ieee802154Component::new(
         board_kernel,
-        capsules_extra::ieee802154::DRIVER_NUM,
+        crate::capsules_extra::ieee802154::DRIVER_NUM,
         rf233,
         aes_mux,
         PAN_ID,
@@ -663,21 +663,21 @@ unsafe fn start() -> (
         DEFAULT_EXT_SRC_MAC,
         create_capability!(capabilities::MemoryAllocationCapability),
     )
-    .finalize(components::ieee802154_component_static!(
-        capsules_extra::rf233::RF233<
+    .finalize(crate::components::ieee802154_component_static!(
+        crate::capsules_extra::rf233::RF233<
             'static,
-            VirtualSpiMasterDevice<'static, sam4l::spi::SpiHw<'static>>,
+            VirtualSpiMasterDevice<'static, crate::sam4l::spi::SpiHw<'static>>,
         >,
-        sam4l::aes::Aes<'static>
+        crate::sam4l::aes::Aes<'static>
     ));
 
-    let usb_driver = components::usb::UsbComponent::new(
+    let usb_driver = crate::components::usb::UsbComponent::new(
         board_kernel,
-        capsules_extra::usb::usb_user::DRIVER_NUM,
+        crate::capsules_extra::usb::usb_user::DRIVER_NUM,
         &peripherals.usbc,
         create_capability!(capabilities::MemoryAllocationCapability),
     )
-    .finalize(components::usb_component_static!(sam4l::usbc::Usbc));
+    .finalize(crate::components::usb_component_static!(crate::sam4l::usbc::Usbc));
 
     // Kernel storage region, allocated with the storage_volume!
     // macro in common/utils.rs
@@ -687,9 +687,9 @@ unsafe fn start() -> (
         static _estorage: u8;
     }
 
-    let nonvolatile_storage = components::nonvolatile_storage::NonvolatileStorageComponent::new(
+    let nonvolatile_storage = crate::components::nonvolatile_storage::NonvolatileStorageComponent::new(
         board_kernel,
-        capsules_extra::nonvolatile_storage_driver::DRIVER_NUM,
+        crate::capsules_extra::nonvolatile_storage_driver::DRIVER_NUM,
         &peripherals.flash_controller,
         0x60000, // Start address for userspace accessible region
         0x20000, // Length of userspace accessible region
@@ -697,8 +697,8 @@ unsafe fn start() -> (
         core::ptr::addr_of!(_estorage) as usize - core::ptr::addr_of!(_sstorage) as usize, // length of kernel region
         create_capability!(capabilities::MemoryAllocationCapability),
     )
-    .finalize(components::nonvolatile_storage_component_static!(
-        sam4l::flashcalw::FLASHCALW
+    .finalize(crate::components::nonvolatile_storage_component_static!(
+        crate::sam4l::flashcalw::FLASHCALW
     ));
 
     let local_ip_ifaces = static_init!(
@@ -716,7 +716,7 @@ unsafe fn start() -> (
         ]
     );
 
-    let (udp_send_mux, udp_recv_mux, udp_port_table) = components::udp_mux::UDPMuxComponent::new(
+    let (udp_send_mux, udp_recv_mux, udp_port_table) = crate::components::udp_mux::UDPMuxComponent::new(
         mux_mac,
         DEFAULT_CTX_PREFIX_LEN,
         DEFAULT_CTX_PREFIX,
@@ -728,16 +728,16 @@ unsafe fn start() -> (
         create_capability!(capabilities::NetworkCapabilityCreationCapability),
         create_capability!(capabilities::CreatePortTableCapability),
     )
-    .finalize(components::udp_mux_component_static!(
-        sam4l::ast::Ast,
+    .finalize(crate::components::udp_mux_component_static!(
+        crate::sam4l::ast::Ast,
         Ieee802154MacDevice
     ));
 
     // UDP driver initialization happens here
-    kernel::create_typed_capability!(udp_driver_cap, UdpDriverCap: kernel::capabilities::UdpDriverCapability);
-    let udp_driver = components::udp_driver::UDPDriverComponent::new(
+    crate::kernel::create_typed_capability!(udp_driver_cap, UdpDriverCap: crate::kernel::capabilities::UdpDriverCapability);
+    let udp_driver = crate::components::udp_driver::UDPDriverComponent::new(
         board_kernel,
-        capsules_extra::net::udp::driver::DRIVER_NUM,
+        crate::capsules_extra::net::udp::driver::DRIVER_NUM,
         udp_send_mux,
         udp_recv_mux,
         udp_port_table,
@@ -746,43 +746,43 @@ unsafe fn start() -> (
         create_capability!(capabilities::MemoryAllocationCapability),
         create_capability!(capabilities::NetworkCapabilityCreationCapability),
     )
-    .finalize(components::udp_driver_component_static!(
-        sam4l::ast::Ast,
+    .finalize(crate::components::udp_driver_component_static!(
+        crate::sam4l::ast::Ast,
         UdpDriverCap
     ));
 
-    let scheduler = components::sched::round_robin::RoundRobinComponent::new(processes)
-        .finalize(components::round_robin_component_static!(NUM_PROCS));
+    let scheduler = crate::components::sched::round_robin::RoundRobinComponent::new(processes)
+        .finalize(crate::components::round_robin_component_static!(NUM_PROCS));
 
     // Create the software-based SHA engine.
-    let sha = components::sha::ShaSoftware256Component::new()
-        .finalize(components::sha_software_256_component_static!());
+    let sha = crate::components::sha::ShaSoftware256Component::new()
+        .finalize(crate::components::sha_software_256_component_static!());
 
     // Create the credential checker.
-    let checking_policy = components::appid::checker_sha::AppCheckerSha256Component::new(sha)
-        .finalize(components::app_checker_sha256_component_static!());
+    let checking_policy = crate::components::appid::checker_sha::AppCheckerSha256Component::new(sha)
+        .finalize(crate::components::app_checker_sha256_component_static!());
 
     // Create the AppID assigner.
-    let assigner = components::appid::assigner_name::AppIdAssignerNamesComponent::new()
-        .finalize(components::appid_assigner_names_component_static!());
+    let assigner = crate::components::appid::assigner_name::AppIdAssignerNamesComponent::new()
+        .finalize(crate::components::appid_assigner_names_component_static!());
 
     // Create the process checking machine.
-    let checker = components::appid::checker::ProcessCheckerMachineComponent::new(checking_policy)
-        .finalize(components::process_checker_machine_component_static!());
+    let checker = crate::components::appid::checker::ProcessCheckerMachineComponent::new(checking_policy)
+        .finalize(crate::components::process_checker_machine_component_static!());
 
     //--------------------------------------------------------------------------
     // STORAGE PERMISSIONS
     //--------------------------------------------------------------------------
 
-    kernel::create_typed_capability!(app_store_cap, AppStoreCap: kernel::capabilities::ApplicationStorageCapability);
+    crate::kernel::create_typed_capability!(app_store_cap, AppStoreCap: crate::kernel::capabilities::ApplicationStorageCapability);
     let storage_permissions_policy =
-        components::storage_permissions::individual::StoragePermissionsIndividualComponent::new(
+        crate::components::storage_permissions::individual::StoragePermissionsIndividualComponent::new(
             app_store_cap,
         )
         .finalize(
-            components::storage_permissions_individual_component_static!(
-                sam4l::chip::Sam4l<Sam4lDefaultPeripherals>,
-                kernel::process::ProcessStandardDebugFull,
+            crate::components::storage_permissions_individual_component_static!(
+                crate::sam4l::chip::Sam4l<Sam4lDefaultPeripherals>,
+                crate::kernel::process::ProcessStandardDebugFull,
                 AppStoreCap,
             ),
         );
@@ -813,7 +813,7 @@ unsafe fn start() -> (
     );
 
     // Create and start the asynchronous process loader.
-    let _loader = components::loader::sequential::ProcessLoaderSequentialComponent::new(
+    let _loader = crate::components::loader::sequential::ProcessLoaderSequentialComponent::new(
         checker,
         board_kernel,
         chip,
@@ -824,9 +824,9 @@ unsafe fn start() -> (
         app_memory,
         create_capability!(capabilities::ProcessManagementCapability),
     )
-    .finalize(components::process_loader_sequential_component_static!(
-        sam4l::chip::Sam4l<Sam4lDefaultPeripherals>,
-        kernel::process::ProcessStandardDebugFull,
+    .finalize(crate::components::process_loader_sequential_component_static!(
+        crate::sam4l::chip::Sam4l<Sam4lDefaultPeripherals>,
+        crate::kernel::process::ProcessStandardDebugFull,
         NUM_PROCS
     ));
 
@@ -845,14 +845,14 @@ unsafe fn start() -> (
         analog_comparator,
         crc,
         spi: spi_syscalls,
-        ipc: kernel::ipc::IPC::new(board_kernel, kernel::ipc::DRIVER_NUM, &grant_cap),
+        ipc: crate::kernel::ipc::IPC::new(board_kernel, crate::kernel::ipc::DRIVER_NUM, &grant_cap),
         ninedof,
         udp_driver,
         usb_driver,
         nrf51822: nrf_serialization,
         nonvolatile_storage,
         scheduler,
-        systick: cortexm4::systick::SysTick::new(),
+        systick: crate::cortexm4::systick::SysTick::new(),
     };
 
     // Need to initialize the UART for the nRF51 serialization.
@@ -897,21 +897,21 @@ unsafe fn start() -> (
 
     // alarm_test::run_alarm(&peripherals.ast);
     /*let virtual_alarm_timer = static_init!(
-        VirtualMuxAlarm<'static, sam4l::ast::Ast>,
+        VirtualMuxAlarm<'static, crate::sam4l::ast::Ast>,
         VirtualMuxAlarm::new(mux_alarm)
     );
     virtual_alarm_timer.setup();
 
     let mux_timer = static_init!(
-        MuxTimer<'static, sam4l::ast::Ast>,
+        MuxTimer<'static, crate::sam4l::ast::Ast>,
         MuxTimer::new(virtual_alarm_timer)
     );*/
     //virtual_alarm_timer.set_alarm_client(mux_timer);
 
     //test::sha256_test::run_sha256();
 
-    /*components::test::multi_alarm_test::MultiAlarmTestComponent::new(mux_alarm)
-    .finalize(components::multi_alarm_test_component_buf!(sam4l::ast::Ast))
+    /*crate::components::test::multi_alarm_test::MultiAlarmTestComponent::new(mux_alarm)
+    .finalize(crate::components::multi_alarm_test_component_buf!(crate::sam4l::ast::Ast))
     .run();*/
 
     debug!("Initialization complete. Entering main loop");

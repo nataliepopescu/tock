@@ -28,8 +28,8 @@
 //! Usage
 //! -----
 //! ```rust,ignore
-//! let lcd = components::hd44780::HD44780Component::new(mux_alarm).finalize(
-//!     components::hd44780_component_helper!(
+//! let lcd = crate::components::hd44780::HD44780Component::new(mux_alarm).finalize(
+//!     crate::components::hd44780_component_helper!(
 //!         stm32f429zi::tim2::Tim2,
 //!         // rs pin
 //!         gpio_ports.pins[5][13].as_ref().unwrap(),
@@ -46,18 +46,18 @@
 //!     )
 //! );
 //!
-//! let text_screen = components::text_screen::TextScreenComponent::new(board_kernel, lcd)
-//!                 .finalize(components::screen_buffer_size!(64));
+//! let text_screen = crate::components::text_screen::TextScreenComponent::new(board_kernel, lcd)
+//!                 .finalize(crate::components::screen_buffer_size!(64));
 //! ```
 //!
 //! Author: Teona Severin <teona.severin9@gmail.com>
 
 use core::cell::Cell;
-use kernel::ErrorCode;
-use kernel::hil::gpio;
-use kernel::hil::text_screen::{TextScreen, TextScreenClient};
-use kernel::hil::time::{self, Alarm, Frequency};
-use kernel::utilities::cells::{OptionalCell, TakeCell};
+use crate::kernel::ErrorCode;
+use crate::kernel::hil::gpio;
+use crate::kernel::hil::text_screen::{TextScreen, TextScreenClient};
+use crate::kernel::hil::time::{self, Alarm, Frequency};
+use crate::kernel::utilities::cells::{OptionalCell, TakeCell};
 
 /// commands
 static LCD_CLEARDISPLAY: u8 = 0x01;

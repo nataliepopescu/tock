@@ -4,8 +4,8 @@
 
 //! AppID mechanisms based on TBF headers.
 
-use kernel::process::{Process, ProcessBinary, ShortId};
-use kernel::process_checker::{AppUniqueness, Compress};
+use crate::kernel::process::{Process, ProcessBinary, ShortId};
+use crate::kernel::process_checker::{AppUniqueness, Compress};
 
 /// Assign AppIDs based on fields in the app's TBF header.
 ///

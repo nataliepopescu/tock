@@ -9,10 +9,10 @@
 //!
 
 use core::cell::Cell;
-use kernel::ErrorCode;
-use kernel::hil::i2c::{self, I2CClient, I2CDevice};
-use kernel::hil::sensors::{MoistureClient, MoistureDriver};
-use kernel::utilities::cells::{OptionalCell, TakeCell};
+use crate::kernel::ErrorCode;
+use crate::kernel::hil::i2c::{self, I2CClient, I2CDevice};
+use crate::kernel::hil::sensors::{MoistureClient, MoistureDriver};
+use crate::kernel::utilities::cells::{OptionalCell, TakeCell};
 
 pub const BUFFER_SIZE: usize = 2;
 

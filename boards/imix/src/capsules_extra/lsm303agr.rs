@@ -17,11 +17,11 @@
 //! -----
 //!
 //! ```rust,ignore
-//! let mux_i2c = components::i2c::I2CMuxComponent::new(&stm32f3xx::i2c::I2C1)
-//!     .finalize(components::i2c_mux_component_helper!());
+//! let mux_i2c = crate::components::i2c::I2CMuxComponent::new(&stm32f3xx::i2c::I2C1)
+//!     .finalize(crate::components::i2c_mux_component_helper!());
 //!
-//! let lsm303dlhc = components::lsm303dlhc::Lsm303agrI2CComponent::new()
-//!    .finalize(components::lsm303dlhc_i2c_component_helper!(mux_i2c));
+//! let lsm303dlhc = crate::components::lsm303dlhc::Lsm303agrI2CComponent::new()
+//!    .finalize(crate::components::lsm303dlhc_i2c_component_helper!(mux_i2c));
 //!
 //! lsm303dlhc.configure(
 //!    lsm303dlhc::Lsm303AccelDataRate::DataRate25Hz,
@@ -73,7 +73,7 @@
 //! let temp = static_init!(
 //! capsules::temperature::TemperatureSensor<'static>,
 //!     capsules::temperature::TemperatureSensor::new(lsm303dlhc, grant_temperature));
-//! kernel::hil::sensors::TemperatureDriver::set_client(lsm303dlhc, temp);
+//! crate::kernel::hil::sensors::TemperatureDriver::set_client(lsm303dlhc, temp);
 //! ```
 //!
 //! Author: Alexandru Radovici <msg4alex@gmail.com>
@@ -86,18 +86,18 @@ use core::cell::Cell;
 use enum_primitive::cast::FromPrimitive;
 use enum_primitive::enum_from_primitive;
 
-use kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
-use kernel::hil::i2c;
-use kernel::hil::sensors;
-use kernel::syscall::{CommandReturn, SyscallDriver};
-use kernel::utilities::cells::{OptionalCell, TakeCell};
-use kernel::{ErrorCode, ProcessId};
+use crate::kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
+use crate::kernel::hil::i2c;
+use crate::kernel::hil::sensors;
+use crate::kernel::syscall::{CommandReturn, SyscallDriver};
+use crate::kernel::utilities::cells::{OptionalCell, TakeCell};
+use crate::kernel::{ErrorCode, ProcessId};
 
 use crate::capsules_extra::lsm303xx::{
     AccelerometerRegisters, CTRL_REG1, CTRL_REG4, Lsm303AccelDataRate, Lsm303MagnetoDataRate,
     Lsm303Range, Lsm303Scale, RANGE_FACTOR_X_Y, RANGE_FACTOR_Z, SCALE_FACTOR,
 };
-use capsules_core::driver;
+use crate::capsules_core::driver;
 
 /// Syscall driver number.
 pub const DRIVER_NUM: usize = driver::NUM::Lsm303dlch as usize;
@@ -909,7 +909,7 @@ impl<I: i2c::I2CDevice> SyscallDriver for Lsm303agrI2C<'_, I> {
         }
     }
 
-    fn allocate_grant(&self, processid: ProcessId) -> Result<(), kernel::process::Error> {
+    fn allocate_grant(&self, processid: ProcessId) -> Result<(), crate::kernel::process::Error> {
         self.apps.enter(processid, |_, _| {})
     }
 }

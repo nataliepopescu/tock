@@ -40,14 +40,14 @@
 //!    capsules::proximity::ProximitySensor<'static>,
 //!    capsules::proximity::ProximitySensor::new(apds9960 , board_kernel.create_grant(&grant_cap)));
 //!
-//! kernel::hil::sensors::ProximityDriver::set_client(apds9960, proximity);
+//! crate::kernel::hil::sensors::ProximityDriver::set_client(apds9960, proximity);
 //! ```
 
 use core::cell::Cell;
-use kernel::ErrorCode;
-use kernel::hil::gpio;
-use kernel::hil::i2c;
-use kernel::utilities::cells::{OptionalCell, TakeCell};
+use crate::kernel::ErrorCode;
+use crate::kernel::hil::gpio;
+use crate::kernel::hil::i2c;
+use crate::kernel::utilities::cells::{OptionalCell, TakeCell};
 
 // I2C Buffer of 16 bytes
 pub const BUF_LEN: usize = 16;
@@ -113,7 +113,7 @@ enum State {
 pub struct APDS9960<'a, I: i2c::I2CDevice> {
     i2c: &'a I,
     interrupt_pin: &'a dyn gpio::InterruptPin<'a>,
-    prox_callback: OptionalCell<&'a dyn kernel::hil::sensors::ProximityClient>,
+    prox_callback: OptionalCell<&'a dyn crate::kernel::hil::sensors::ProximityClient>,
     state: Cell<State>,
     buffer: TakeCell<'static, [u8]>,
 }
@@ -554,7 +554,7 @@ impl<I: i2c::I2CDevice> gpio::Client for APDS9960<'_, I> {
 }
 
 /// Proximity Driver Trait Implementation
-impl<'a, I: i2c::I2CDevice> kernel::hil::sensors::ProximityDriver<'a> for APDS9960<'a, I> {
+impl<'a, I: i2c::I2CDevice> crate::kernel::hil::sensors::ProximityDriver<'a> for APDS9960<'a, I> {
     fn read_proximity(&self) -> Result<(), ErrorCode> {
         self.take_measurement()
     }
@@ -563,7 +563,7 @@ impl<'a, I: i2c::I2CDevice> kernel::hil::sensors::ProximityDriver<'a> for APDS99
         self.take_measurement_on_interrupt(low, high)
     }
 
-    fn set_client(&self, client: &'a dyn kernel::hil::sensors::ProximityClient) {
+    fn set_client(&self, client: &'a dyn crate::kernel::hil::sensors::ProximityClient) {
         self.prox_callback.set(client);
     }
 }

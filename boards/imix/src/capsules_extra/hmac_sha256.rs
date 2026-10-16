@@ -6,13 +6,13 @@
 
 use core::cell::Cell;
 
-use kernel::ErrorCode;
-use kernel::hil;
-use kernel::hil::digest::DigestData;
-use kernel::utilities::cells::{MapCell, OptionalCell, TakeCell};
-use kernel::utilities::leasable_buffer::SubSlice;
-use kernel::utilities::leasable_buffer::SubSliceMut;
-use kernel::utilities::leasable_buffer::SubSliceMutImmut;
+use crate::kernel::ErrorCode;
+use crate::kernel::hil;
+use crate::kernel::hil::digest::DigestData;
+use crate::kernel::utilities::cells::{MapCell, OptionalCell, TakeCell};
+use crate::kernel::utilities::leasable_buffer::SubSlice;
+use crate::kernel::utilities::leasable_buffer::SubSliceMut;
+use crate::kernel::utilities::leasable_buffer::SubSliceMutImmut;
 
 #[derive(Clone, Copy, PartialEq)]
 pub enum State {
@@ -46,8 +46,8 @@ pub struct HmacSha256Software<'a, S: hil::digest::Sha256 + hil::digest::DigestDa
     /// The current operation for the internal state machine in this capsule.
     state: Cell<State>,
     /// The current mode of operation as requested by a call to either
-    /// [`DigestHash::run`](kernel::hil::digest::DigestHash::run) or
-    /// [`DigestVerify::verify`](kernel::hil::digest::DigestVerify::verify).
+    /// [`DigestHash::run`](crate::kernel::hil::digest::DigestHash::run) or
+    /// [`DigestVerify::verify`](crate::kernel::hil::digest::DigestVerify::verify).
     mode: Cell<RunMode>,
     /// Location to store incoming temporarily before we are able to pass it to
     /// the hasher.
@@ -67,7 +67,7 @@ pub struct HmacSha256Software<'a, S: hil::digest::Sha256 + hil::digest::DigestDa
     /// swap them back and compare:
     verify_buffer: MapCell<&'static mut [u8; 32]>,
     /// Clients for callbacks.
-    // error[E0658]: cannot cast `dyn kernel::hil::digest::Client<32>` to `dyn ClientData<32>`, trait upcasting coercion is experimental
+    // error[E0658]: cannot cast `dyn crate::kernel::hil::digest::Client<32>` to `dyn ClientData<32>`, trait upcasting coercion is experimental
     // data_client: OptionalCell<&'a dyn hil::digest::ClientData<SHA_256_OUTPUT_LEN_BYTES>>,
     // hash_client: OptionalCell<&'a dyn hil::digest::ClientHash<SHA_256_OUTPUT_LEN_BYTES>>,
     // verify_client: OptionalCell<&'a dyn hil::digest::ClientVerify<SHA_256_OUTPUT_LEN_BYTES>>,

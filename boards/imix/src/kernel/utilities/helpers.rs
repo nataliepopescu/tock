@@ -12,8 +12,8 @@
 /// Create an object with the given capabilities.
 ///
 /// ```
-/// # use kernel::capabilities::{ProcessManagementCapability, MemoryAllocationCapability};
-/// # use kernel::create_capability;
+/// # use crate::kernel::capabilities::{ProcessManagementCapability, MemoryAllocationCapability};
+/// # use crate::kernel::create_capability;
 /// let process_mgmt_cap = create_capability!(ProcessManagementCapability);
 /// let unified_cap = create_capability!(ProcessManagementCapability, MemoryAllocationCapability);
 /// ```
@@ -30,8 +30,8 @@
 /// level.
 ///
 /// ```compile_fail
-/// # use kernel::capabilities::ProcessManagementCapability;
-/// # use kernel::create_capability;
+/// # use crate::kernel::capabilities::ProcessManagementCapability;
+/// # use crate::kernel::create_capability;
 /// #[forbid(unsafe_code)]
 /// fn untrusted_fn() {
 ///     let process_mgmt_cap = create_capability!(ProcessManagementCapability);
@@ -63,17 +63,17 @@ macro_rules! create_capability {
 /// # Usage Example
 ///
 /// ```ignore
-/// # use kernel::capabilities::ProcessManagementCapability;
-/// # use kernel::create_typed_capability;
+/// # use crate::kernel::capabilities::ProcessManagementCapability;
+/// # use crate::kernel::create_typed_capability;
 ///
 /// create_typed_capability!(proc_cap, ProcCapForManager: ProcessManagementCapability);
 ///
-/// let manager = components::manager::ManagerComponent::new(
+/// let manager = crate::components::manager::ManagerComponent::new(
 ///     board_kernel,
 ///     mux_alarm,
 ///     proc_cap,
 /// )
-/// .finalize(components::manager_component_static!(
+/// .finalize(crate::components::manager_component_static!(
 ///     AlarmHw,
 ///     ProcCapForManager,
 /// ));
@@ -93,9 +93,9 @@ macro_rules! create_capability {
 /// declaring multiple capabilities. For example:
 ///
 /// ```
-/// kernel::create_typed_capability!(process_console_cap, ProcessConsoleCap:
-///     kernel::capabilities::ProcessManagementCapability,
-///     kernel::capabilities::ProcessStartCapability
+/// crate::kernel::create_typed_capability!(process_console_cap, ProcessConsoleCap:
+///     crate::kernel::capabilities::ProcessManagementCapability,
+///     crate::kernel::capabilities::ProcessStartCapability
 /// );
 /// ```
 ///
@@ -182,8 +182,8 @@ macro_rules! create_typed_capability {
 /// # Usage Example
 ///
 /// ```
-/// # use kernel::capabilities::ProcessManagementCapability;
-/// # use kernel::define_capability_type;
+/// # use crate::kernel::capabilities::ProcessManagementCapability;
+/// # use crate::kernel::define_capability_type;
 ///
 /// define_capability_type!(ProcCapForManager: ProcessManagementCapability);
 /// ```
@@ -243,7 +243,7 @@ macro_rules! define_capability_type {
 /// # Usage Example
 ///
 /// ```ignore
-/// # use kernel::mint_defined_capability;
+/// # use crate::kernel::mint_defined_capability;
 ///
 /// let proc_cap = unsafe { mint_defined_capability!(ProcCapForManager) };
 /// ```
@@ -285,7 +285,7 @@ macro_rules! count_expressions {
 ///
 /// It takes a single argument, the desired stack size in bytes. Example:
 /// ```
-/// kernel::stack_size!{0x1000}
+/// crate::kernel::stack_size!{0x1000}
 /// ```
 // stack_size works by putting a symbol equal to the size of the stack in the
 // .stack_buffer section. The linker script uses the .stack_buffer section to

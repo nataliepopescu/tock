@@ -21,34 +21,34 @@
 //!        mux_alarm,
 //!        MAX_PAYLOAD_LEN,
 //!    )
-//!    .finalize(components::udp_mux_component_static!());
+//!    .finalize(crate::components::udp_mux_component_static!());
 //! ```
 
 // Author: Hudson Ayers <hayers@stanford.edu>
 // Last Modified: 5/21/2019
 
-use capsules_core::virtualizers::virtual_alarm::{MuxAlarm, VirtualMuxAlarm};
-use capsules_extra::ieee802154::device::MacDevice;
-use capsules_extra::net::ieee802154::MacAddress;
-use capsules_extra::net::ipv6::ip_utils::IPAddr;
-use capsules_extra::net::ipv6::ipv6_recv::IP6Receiver;
-use capsules_extra::net::ipv6::ipv6_recv::IP6RecvStruct;
-use capsules_extra::net::ipv6::ipv6_send::IP6SendStruct;
-use capsules_extra::net::ipv6::ipv6_send::IP6Sender;
-use capsules_extra::net::ipv6::{IP6Packet, IPPayload, TransportHeader};
-use capsules_extra::net::network_capabilities::{IpVisibilityCapability, UdpVisibilityCapability};
-use capsules_extra::net::sixlowpan::{sixlowpan_compression, sixlowpan_state};
-use capsules_extra::net::udp::UDPHeader;
-use capsules_extra::net::udp::udp_port_table::{
+use crate::capsules_core::virtualizers::virtual_alarm::{MuxAlarm, VirtualMuxAlarm};
+use crate::capsules_extra::ieee802154::device::MacDevice;
+use crate::capsules_extra::net::ieee802154::MacAddress;
+use crate::capsules_extra::net::ipv6::ip_utils::IPAddr;
+use crate::capsules_extra::net::ipv6::ipv6_recv::IP6Receiver;
+use crate::capsules_extra::net::ipv6::ipv6_recv::IP6RecvStruct;
+use crate::capsules_extra::net::ipv6::ipv6_send::IP6SendStruct;
+use crate::capsules_extra::net::ipv6::ipv6_send::IP6Sender;
+use crate::capsules_extra::net::ipv6::{IP6Packet, IPPayload, TransportHeader};
+use crate::capsules_extra::net::network_capabilities::{IpVisibilityCapability, UdpVisibilityCapability};
+use crate::capsules_extra::net::sixlowpan::{sixlowpan_compression, sixlowpan_state};
+use crate::capsules_extra::net::udp::UDPHeader;
+use crate::capsules_extra::net::udp::udp_port_table::{
     MAX_NUM_BOUND_PORTS, SocketBindingEntry, UdpPortManager,
 };
-use capsules_extra::net::udp::udp_recv::MuxUdpReceiver;
-use capsules_extra::net::udp::udp_send::MuxUdpSender;
+use crate::capsules_extra::net::udp::udp_recv::MuxUdpReceiver;
+use crate::capsules_extra::net::udp::udp_send::MuxUdpSender;
 use core::mem::MaybeUninit;
-use kernel::capabilities::{CreatePortTableCapability, NetworkCapabilityCreationCapability};
-use kernel::component::Component;
-use kernel::hil::radio;
-use kernel::hil::time::Alarm;
+use crate::kernel::capabilities::{CreatePortTableCapability, NetworkCapabilityCreationCapability};
+use crate::kernel::component::Component;
+use crate::kernel::hil::radio;
+use crate::kernel::hil::time::Alarm;
 
 // The UDP stack requires several packet buffers:
 //
@@ -65,47 +65,47 @@ pub const MAX_PAYLOAD_LEN: usize = 200; //The max size UDP message that can be s
 #[macro_export]
 macro_rules! udp_mux_component_static {
     ($A:ty, $M:ty $(,)?) => {{
-        use capsules_core;
-        use capsules_core::virtualizers::virtual_alarm::{MuxAlarm, VirtualMuxAlarm};
-        use capsules_extra::net::sixlowpan::{sixlowpan_compression, sixlowpan_state};
-        use capsules_extra::net::udp::udp_send::MuxUdpSender;
-        use components::udp_mux::MAX_PAYLOAD_LEN;
+
+        use crate::capsules_core::virtualizers::virtual_alarm::{MuxAlarm, VirtualMuxAlarm};
+        use crate::capsules_extra::net::sixlowpan::{sixlowpan_compression, sixlowpan_state};
+        use crate::capsules_extra::net::udp::udp_send::MuxUdpSender;
+        use crate::components::udp_mux::MAX_PAYLOAD_LEN;
         use core::mem::MaybeUninit;
 
-        let alarm = kernel::static_buf!(VirtualMuxAlarm<'static, $A>);
+        let alarm = crate::kernel::static_buf!(VirtualMuxAlarm<'static, $A>);
         let mac_user =
-            kernel::static_buf!(capsules_extra::ieee802154::virtual_mac::MacUser<'static, $M>);
-        let sixlowpan = kernel::static_buf!(
+            crate::kernel::static_buf!(crate::capsules_extra::ieee802154::virtual_mac::MacUser<'static, $M>);
+        let sixlowpan = crate::kernel::static_buf!(
             sixlowpan_state::Sixlowpan<
                 'static,
                 VirtualMuxAlarm<'static, $A>,
                 sixlowpan_compression::Context,
             >
         );
-        let rx_state = kernel::static_buf!(sixlowpan_state::RxState<'static>);
-        let ip6_send = kernel::static_buf!(
-            capsules_extra::net::ipv6::ipv6_send::IP6SendStruct<
+        let rx_state = crate::kernel::static_buf!(sixlowpan_state::RxState<'static>);
+        let ip6_send = crate::kernel::static_buf!(
+            crate::capsules_extra::net::ipv6::ipv6_send::IP6SendStruct<
                 'static,
                 VirtualMuxAlarm<'static, $A>,
             >
         );
-        let mux_udp_send = kernel::static_buf!(
+        let mux_udp_send = crate::kernel::static_buf!(
             MuxUdpSender<
                 'static,
-                capsules_extra::net::ipv6::ipv6_send::IP6SendStruct<
+                crate::capsules_extra::net::ipv6::ipv6_send::IP6SendStruct<
                     'static,
                     VirtualMuxAlarm<'static, $A>,
                 >,
             >
         );
         let mux_udp_recv =
-            kernel::static_buf!(capsules_extra::net::udp::udp_recv::MuxUdpReceiver<'static>);
+            crate::kernel::static_buf!(crate::capsules_extra::net::udp::udp_recv::MuxUdpReceiver<'static>);
         let udp_port_manager =
-            kernel::static_buf!(capsules_extra::net::udp::udp_port_table::UdpPortManager);
+            crate::kernel::static_buf!(crate::capsules_extra::net::udp::udp_port_table::UdpPortManager);
 
-        let ip6_packet = kernel::static_buf!(capsules_extra::net::ipv6::IP6Packet<'static>);
+        let ip6_packet = crate::kernel::static_buf!(crate::capsules_extra::net::ipv6::IP6Packet<'static>);
         let ip6_receive =
-            kernel::static_buf!(capsules_extra::net::ipv6::ipv6_recv::IP6RecvStruct<'static>);
+            crate::kernel::static_buf!(crate::capsules_extra::net::ipv6::ipv6_recv::IP6RecvStruct<'static>);
 
         // Rather than require a data structure with 65535 slots (number of UDP ports),
         // we use a structure that can hold up to 16 port bindings. Any given capsule
@@ -118,19 +118,19 @@ macro_rules! udp_mux_component_static {
         // no slots in the table are free, no slots remain to be given out. If a socket
         // is used to bind to a port, the port that is bound is saved in the slot to
         // ensure that subsequent bindings do not also attempt to bind that port number.
-        let used_ports = kernel::static_buf!(
-            [Option<capsules_extra::net::udp::udp_port_table::SocketBindingEntry>;
-                capsules_extra::net::udp::udp_port_table::MAX_NUM_BOUND_PORTS]
+        let used_ports = crate::kernel::static_buf!(
+            [Option<crate::capsules_extra::net::udp::udp_port_table::SocketBindingEntry>;
+                crate::capsules_extra::net::udp::udp_port_table::MAX_NUM_BOUND_PORTS]
         );
 
-        let radio_buf = kernel::static_buf!([u8; kernel::hil::radio::MAX_BUF_SIZE]);
-        let sixlowpan_rx = kernel::static_buf!([u8; 1280]);
-        let udp_dgram = kernel::static_buf!([u8; MAX_PAYLOAD_LEN]);
+        let radio_buf = crate::kernel::static_buf!([u8; crate::kernel::hil::radio::MAX_BUF_SIZE]);
+        let sixlowpan_rx = crate::kernel::static_buf!([u8; 1280]);
+        let udp_dgram = crate::kernel::static_buf!([u8; MAX_PAYLOAD_LEN]);
 
         let udp_vis_cap =
-            kernel::static_buf!(capsules_extra::net::network_capabilities::UdpVisibilityCapability);
+            crate::kernel::static_buf!(crate::capsules_extra::net::network_capabilities::UdpVisibilityCapability);
         let ip_vis_cap =
-            kernel::static_buf!(capsules_extra::net::network_capabilities::IpVisibilityCapability);
+            crate::kernel::static_buf!(crate::capsules_extra::net::network_capabilities::IpVisibilityCapability);
 
         (
             alarm,
@@ -159,7 +159,7 @@ pub struct UDPMuxComponent<
     NET: NetworkCapabilityCreationCapability + 'static,
     TABLE: CreatePortTableCapability + 'static,
 > {
-    mux_mac: &'static capsules_extra::ieee802154::virtual_mac::MuxMac<'static, M>,
+    mux_mac: &'static crate::capsules_extra::ieee802154::virtual_mac::MuxMac<'static, M>,
     ctx_pfix_len: u8,
     ctx_pfix: [u8; 16],
     dst_mac_addr: MacAddress,
@@ -178,7 +178,7 @@ impl<
 > UDPMuxComponent<A, M, NET, TABLE>
 {
     pub fn new(
-        mux_mac: &'static capsules_extra::ieee802154::virtual_mac::MuxMac<'static, M>,
+        mux_mac: &'static crate::capsules_extra::ieee802154::virtual_mac::MuxMac<'static, M>,
         ctx_pfix_len: u8,
         ctx_pfix: [u8; 16],
         dst_mac_addr: MacAddress,
@@ -211,7 +211,7 @@ impl<
 {
     type StaticInput = (
         &'static mut MaybeUninit<VirtualMuxAlarm<'static, A>>,
-        &'static mut MaybeUninit<capsules_extra::ieee802154::virtual_mac::MacUser<'static, M>>,
+        &'static mut MaybeUninit<crate::capsules_extra::ieee802154::virtual_mac::MacUser<'static, M>>,
         &'static mut MaybeUninit<
             sixlowpan_state::Sixlowpan<
                 'static,
@@ -221,7 +221,7 @@ impl<
         >,
         &'static mut MaybeUninit<sixlowpan_state::RxState<'static>>,
         &'static mut MaybeUninit<
-            capsules_extra::net::ipv6::ipv6_send::IP6SendStruct<
+            crate::capsules_extra::net::ipv6::ipv6_send::IP6SendStruct<
                 'static,
                 VirtualMuxAlarm<'static, A>,
             >,
@@ -229,7 +229,7 @@ impl<
         &'static mut MaybeUninit<
             MuxUdpSender<
                 'static,
-                capsules_extra::net::ipv6::ipv6_send::IP6SendStruct<
+                crate::capsules_extra::net::ipv6::ipv6_send::IP6SendStruct<
                     'static,
                     VirtualMuxAlarm<'static, A>,
                 >,
@@ -257,7 +257,7 @@ impl<
         ipsender_virtual_alarm.setup();
 
         let udp_mac =
-            s.1.write(capsules_extra::ieee802154::virtual_mac::MacUser::new(
+            s.1.write(crate::capsules_extra::ieee802154::virtual_mac::MacUser::new(
                 self.mux_mac,
             ));
         self.mux_mac.add_user(udp_mac);
@@ -300,7 +300,7 @@ impl<
         // addresses on a local network. This will be fixed once we have an
         // ipv6_nd cache mapping IP addresses to dst macs
         let ip_send =
-            s.4.write(capsules_extra::net::ipv6::ipv6_send::IP6SendStruct::new(
+            s.4.write(crate::capsules_extra::net::ipv6::ipv6_send::IP6SendStruct::new(
                 ip6_dg,
                 ipsender_virtual_alarm,
                 radio_buf,
@@ -320,7 +320,7 @@ impl<
         udp_mac.set_transmit_client(ip_send);
 
         let ip_receive =
-            s.9.write(capsules_extra::net::ipv6::ipv6_recv::IP6RecvStruct::new());
+            s.9.write(crate::capsules_extra::net::ipv6::ipv6_recv::IP6RecvStruct::new());
         sixlowpan_state.set_rx_client(ip_receive);
         let udp_recv_mux = s.6.write(MuxUdpReceiver::new());
         ip_receive.set_client(udp_recv_mux);

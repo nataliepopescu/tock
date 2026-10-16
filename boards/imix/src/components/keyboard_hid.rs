@@ -17,15 +17,15 @@
 //!     ]
 //! );
 //!
-//! let (keyboard_hid, keyboard_hid_driver) = components::keyboard_hid::KeyboardHidComponent::new(
+//! let (keyboard_hid, keyboard_hid_driver) = crate::components::keyboard_hid::KeyboardHidComponent::new(
 //!     board_kernel,
-//!     capsules_core::driver::KeyboardHid,
+//!     crate::capsules_core::driver::KeyboardHid,
 //!     &nrf52840_peripherals.usbd,
 //!     0x1915, // Nordic Semiconductor
 //!     0x503a,
 //!     strings,
 //! )
-//! .finalize(components::keyboard_hid_component_static!(
+//! .finalize(crate::components::keyboard_hid_component_static!(
 //!     nrf52840::usbd::Usbd
 //! ));
 //!
@@ -34,38 +34,38 @@
 //! ```
 
 use core::mem::MaybeUninit;
-use kernel::capabilities::MemoryAllocationCapability;
-use kernel::component::Component;
-use kernel::hil;
+use crate::kernel::capabilities::MemoryAllocationCapability;
+use crate::kernel::component::Component;
+use crate::kernel::hil;
 
 // Setup static space for the objects.
 #[macro_export]
 macro_rules! keyboard_hid_component_static {
     ($U:ty $(,)?) => {{
-        let hid = kernel::static_buf!(capsules_extra::usb::keyboard_hid::KeyboardHid<'static, $U>);
-        let driver = kernel::static_buf!(
-            capsules_extra::usb_hid_driver::UsbHidDriver<
+        let hid = crate::kernel::static_buf!(crate::capsules_extra::usb::keyboard_hid::KeyboardHid<'static, $U>);
+        let driver = crate::kernel::static_buf!(
+            crate::capsules_extra::usb_hid_driver::UsbHidDriver<
                 'static,
-                capsules_extra::usb::keyboard_hid::KeyboardHid<'static, $U>,
+                crate::capsules_extra::usb::keyboard_hid::KeyboardHid<'static, $U>,
             >
         );
-        let send_buffer = kernel::static_buf!([u8; 64]);
-        let recv_buffer = kernel::static_buf!([u8; 64]);
+        let send_buffer = crate::kernel::static_buf!([u8; 64]);
+        let recv_buffer = crate::kernel::static_buf!([u8; 64]);
 
         (hid, driver, send_buffer, recv_buffer)
     }};
 }
 
-pub type KeyboardHidComponentType<U> = capsules_extra::usb_hid_driver::UsbHidDriver<
+pub type KeyboardHidComponentType<U> = crate::capsules_extra::usb_hid_driver::UsbHidDriver<
     'static,
-    capsules_extra::usb::keyboard_hid::KeyboardHid<'static, U>,
+    crate::capsules_extra::usb::keyboard_hid::KeyboardHid<'static, U>,
 >;
 
 pub struct KeyboardHidComponent<
     U: 'static + hil::usb::UsbController<'static>,
     CAP: MemoryAllocationCapability + 'static,
 > {
-    board_kernel: &'static kernel::Kernel,
+    board_kernel: &'static crate::kernel::Kernel,
     driver_num: usize,
     usb: &'static U,
     vendor_id: u16,
@@ -78,7 +78,7 @@ impl<U: 'static + hil::usb::UsbController<'static>, CAP: MemoryAllocationCapabil
     KeyboardHidComponent<U, CAP>
 {
     pub fn new(
-        board_kernel: &'static kernel::Kernel,
+        board_kernel: &'static crate::kernel::Kernel,
         driver_num: usize,
         usb: &'static U,
         vendor_id: u16,
@@ -102,27 +102,27 @@ impl<U: 'static + hil::usb::UsbController<'static>, CAP: MemoryAllocationCapabil
     Component for KeyboardHidComponent<U, CAP>
 {
     type StaticInput = (
-        &'static mut MaybeUninit<capsules_extra::usb::keyboard_hid::KeyboardHid<'static, U>>,
+        &'static mut MaybeUninit<crate::capsules_extra::usb::keyboard_hid::KeyboardHid<'static, U>>,
         &'static mut MaybeUninit<
-            capsules_extra::usb_hid_driver::UsbHidDriver<
+            crate::capsules_extra::usb_hid_driver::UsbHidDriver<
                 'static,
-                capsules_extra::usb::keyboard_hid::KeyboardHid<'static, U>,
+                crate::capsules_extra::usb::keyboard_hid::KeyboardHid<'static, U>,
             >,
         >,
         &'static mut MaybeUninit<[u8; 64]>,
         &'static mut MaybeUninit<[u8; 64]>,
     );
     type Output = (
-        &'static capsules_extra::usb::keyboard_hid::KeyboardHid<'static, U>,
-        &'static capsules_extra::usb_hid_driver::UsbHidDriver<
+        &'static crate::capsules_extra::usb::keyboard_hid::KeyboardHid<'static, U>,
+        &'static crate::capsules_extra::usb_hid_driver::UsbHidDriver<
             'static,
-            capsules_extra::usb::keyboard_hid::KeyboardHid<'static, U>,
+            crate::capsules_extra::usb::keyboard_hid::KeyboardHid<'static, U>,
         >,
     );
 
     fn finalize(self, s: Self::StaticInput) -> Self::Output {
         let keyboard_hid =
-            s.0.write(capsules_extra::usb::keyboard_hid::KeyboardHid::new(
+            s.0.write(crate::capsules_extra::usb::keyboard_hid::KeyboardHid::new(
                 self.usb,
                 self.vendor_id,
                 self.product_id,
@@ -133,7 +133,7 @@ impl<U: 'static + hil::usb::UsbController<'static>, CAP: MemoryAllocationCapabil
         let send_buffer = s.2.write([0; 64]);
         let recv_buffer = s.3.write([0; 64]);
 
-        let usb_hid_driver = s.1.write(capsules_extra::usb_hid_driver::UsbHidDriver::new(
+        let usb_hid_driver = s.1.write(crate::capsules_extra::usb_hid_driver::UsbHidDriver::new(
             keyboard_hid,
             send_buffer,
             recv_buffer,

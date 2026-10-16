@@ -40,20 +40,20 @@
 //!    hil::flash
 //! ```
 
-use capsules_core::driver;
+use crate::capsules_core::driver;
 /// Syscall driver number.
 pub const DRIVER_NUM: usize = driver::NUM::Kv as usize;
 
 use core::cmp;
-use kernel::errorcode;
-use kernel::grant::Grant;
-use kernel::grant::{AllowRoCount, AllowRwCount, UpcallCount};
-use kernel::hil::kv;
-use kernel::processbuffer::{ReadableProcessBuffer, WriteableProcessBuffer};
-use kernel::syscall::{CommandReturn, SyscallDriver};
-use kernel::utilities::cells::{OptionalCell, TakeCell};
-use kernel::utilities::leasable_buffer::SubSliceMut;
-use kernel::{ErrorCode, ProcessId};
+use crate::kernel::errorcode;
+use crate::kernel::grant::Grant;
+use crate::kernel::grant::{AllowRoCount, AllowRwCount, UpcallCount};
+use crate::kernel::hil::kv;
+use crate::kernel::processbuffer::{ReadableProcessBuffer, WriteableProcessBuffer};
+use crate::kernel::syscall::{CommandReturn, SyscallDriver};
+use crate::kernel::utilities::cells::{OptionalCell, TakeCell};
+use crate::kernel::utilities::leasable_buffer::SubSliceMut;
+use crate::kernel::{ErrorCode, ProcessId};
 
 /// IDs for read-only allow buffers.
 mod ro_allow {
@@ -561,7 +561,7 @@ impl<'a, V: kv::KVPermissions<'a>> SyscallDriver for KVStoreDriver<'a, V> {
         }
     }
 
-    fn allocate_grant(&self, processid: ProcessId) -> Result<(), kernel::process::Error> {
+    fn allocate_grant(&self, processid: ProcessId) -> Result<(), crate::kernel::process::Error> {
         self.apps.enter(processid, |_, _| {})
     }
 }

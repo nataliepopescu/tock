@@ -12,19 +12,19 @@
 //! driver:
 //!
 //! ```rust,ignore
-//! # use kernel::static_init;
+//! # use crate::kernel::static_init;
 //!
 //! let crc_buffer = static_init!([u8; 64], [0; 64]);
 //!
 //! let crc = static_init!(
-//!     capsules::crc::CrcDriver<'static, sam4l::crccu::Crccu<'static>>,
+//!     capsules::crc::CrcDriver<'static, crate::sam4l::crccu::Crccu<'static>>,
 //!     capsules::crc::CrcDriver::new(
-//!         &mut sam4l::crccu::CRCCU,
+//!         &mut crate::sam4l::crccu::CRCCU,
 //!         crc_buffer,
 //!         board_kernel.create_grant(&grant_cap)
 //!      )
 //! );
-//! sam4l::crccu::CRCCU.set_client(crc);
+//! crate::sam4l::crccu::CRCCU.set_client(crc);
 //!
 //! ```
 //!
@@ -81,17 +81,17 @@
 use core::cell::Cell;
 use core::cmp;
 
-use kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
-use kernel::hil::crc::{Client, Crc, CrcAlgorithm, CrcOutput};
-use kernel::processbuffer::{ReadableProcessBuffer, ReadableProcessSlice};
-use kernel::syscall::{CommandReturn, SyscallDriver};
-use kernel::utilities::cells::NumericCellExt;
-use kernel::utilities::cells::{OptionalCell, TakeCell};
-use kernel::utilities::leasable_buffer::SubSliceMut;
-use kernel::{ErrorCode, ProcessId};
+use crate::kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
+use crate::kernel::hil::crc::{Client, Crc, CrcAlgorithm, CrcOutput};
+use crate::kernel::processbuffer::{ReadableProcessBuffer, ReadableProcessSlice};
+use crate::kernel::syscall::{CommandReturn, SyscallDriver};
+use crate::kernel::utilities::cells::NumericCellExt;
+use crate::kernel::utilities::cells::{OptionalCell, TakeCell};
+use crate::kernel::utilities::leasable_buffer::SubSliceMut;
+use crate::kernel::{ErrorCode, ProcessId};
 
 /// Syscall driver number.
-use capsules_core::driver;
+use crate::capsules_core::driver;
 pub const DRIVER_NUM: usize = driver::NUM::Crc as usize;
 pub const DEFAULT_CRC_BUF_LENGTH: usize = 256;
 
@@ -132,7 +132,7 @@ impl<'a, C: Crc<'a>> CrcDriver<'a, C> {
     /// ## Example
     ///
     /// ```rust,ignore
-    /// capsules::crc::Crc::new(&sam4l::crccu::CrcCU, board_kernel.create_grant(&grant_cap));
+    /// capsules::crc::Crc::new(&crate::sam4l::crccu::CrcCU, board_kernel.create_grant(&grant_cap));
     /// ```
     ///
     pub fn new(
@@ -224,7 +224,7 @@ impl<'a, C: Crc<'a>> CrcDriver<'a, C> {
                         if grant.request.is_some() {
                             let _ = kernel_data.schedule_upcall(
                                 0,
-                                (kernel::errorcode::into_statuscode(Err(e)), 0, 0),
+                                (crate::kernel::errorcode::into_statuscode(Err(e)), 0, 0),
                             );
                             grant.request = None;
                         }
@@ -375,7 +375,7 @@ impl<'a, C: Crc<'a>> SyscallDriver for CrcDriver<'a, C> {
         }
     }
 
-    fn allocate_grant(&self, processid: ProcessId) -> Result<(), kernel::process::Error> {
+    fn allocate_grant(&self, processid: ProcessId) -> Result<(), crate::kernel::process::Error> {
         self.grant.enter(processid, |_, _| {})
     }
 }
@@ -408,7 +408,7 @@ impl<'a, C: Crc<'a>> Client for CrcDriver<'a, C> {
                                 let _ = kernel_data.schedule_upcall(
                                     0,
                                     (
-                                        kernel::errorcode::into_statuscode(Err(ErrorCode::FAIL)),
+                                        crate::kernel::errorcode::into_statuscode(Err(ErrorCode::FAIL)),
                                         0,
                                         0,
                                     ),
@@ -439,7 +439,7 @@ impl<'a, C: Crc<'a>> Client for CrcDriver<'a, C> {
                                         let _ = kernel_data.schedule_upcall(
                                             0,
                                             (
-                                                kernel::errorcode::into_statuscode(Err(
+                                                crate::kernel::errorcode::into_statuscode(Err(
                                                     ErrorCode::FAIL,
                                                 )),
                                                 0,
@@ -466,7 +466,7 @@ impl<'a, C: Crc<'a>> Client for CrcDriver<'a, C> {
                                     let _ = kernel_data.schedule_upcall(
                                         0,
                                         (
-                                            kernel::errorcode::into_statuscode(Err(
+                                            crate::kernel::errorcode::into_statuscode(Err(
                                                 ErrorCode::NOMEM,
                                             )),
                                             0,
@@ -491,7 +491,7 @@ impl<'a, C: Crc<'a>> Client for CrcDriver<'a, C> {
                                     grant.request = None;
                                     let _ = kernel_data.schedule_upcall(
                                         0,
-                                        (kernel::errorcode::into_statuscode(Err(e)), 0, 0),
+                                        (crate::kernel::errorcode::into_statuscode(Err(e)), 0, 0),
                                     );
                                 });
                             });
@@ -506,7 +506,7 @@ impl<'a, C: Crc<'a>> Client for CrcDriver<'a, C> {
                     let _res = self.grant.enter(pid, |grant, kernel_data| {
                         grant.request = None;
                         let _ = kernel_data
-                            .schedule_upcall(0, (kernel::errorcode::into_statuscode(Err(e)), 0, 0));
+                            .schedule_upcall(0, (crate::kernel::errorcode::into_statuscode(Err(e)), 0, 0));
                     });
                 });
             }
@@ -530,7 +530,7 @@ impl<'a, C: Crc<'a>> Client for CrcDriver<'a, C> {
                         let _ = kernel_data.schedule_upcall(
                             0,
                             (
-                                kernel::errorcode::into_statuscode(Ok(())),
+                                crate::kernel::errorcode::into_statuscode(Ok(())),
                                 val as usize,
                                 user_int as usize,
                             ),
@@ -538,7 +538,7 @@ impl<'a, C: Crc<'a>> Client for CrcDriver<'a, C> {
                     }
                     Err(e) => {
                         let _ = kernel_data
-                            .schedule_upcall(0, (kernel::errorcode::into_statuscode(Err(e)), 0, 0));
+                            .schedule_upcall(0, (crate::kernel::errorcode::into_statuscode(Err(e)), 0, 0));
                     }
                 }
             });

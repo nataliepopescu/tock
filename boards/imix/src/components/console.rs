@@ -26,41 +26,41 @@
 //! Usage
 //! -----
 //! ```rust
-//! let uart_mux = UartMuxComponent::new(&sam4l::usart::USART3,
+//! let uart_mux = UartMuxComponent::new(&crate::sam4l::usart::USART3,
 //!                                      115200,
-//!                                      deferred_caller).finalize(components::uart_mux_component_static!());
+//!                                      deferred_caller).finalize(crate::components::uart_mux_component_static!());
 //! let console = ConsoleComponent::new(board_kernel, uart_mux)
 //!    .finalize(console_component_static!());
 //! ```
 // Author: Philip Levis <pal@cs.stanford.edu>
 // Last modified: 1/08/2023
 
-use capsules_core::console;
-use capsules_core::console_ordered::ConsoleOrdered;
+use crate::capsules_core::console;
+use crate::capsules_core::console_ordered::ConsoleOrdered;
 
-use capsules_core::virtualizers::virtual_alarm::{MuxAlarm, VirtualMuxAlarm};
-use capsules_core::virtualizers::virtual_uart::{MuxUart, UartDevice};
+use crate::capsules_core::virtualizers::virtual_alarm::{MuxAlarm, VirtualMuxAlarm};
+use crate::capsules_core::virtualizers::virtual_uart::{MuxUart, UartDevice};
 use core::mem::MaybeUninit;
-use kernel::capabilities::MemoryAllocationCapability;
-use kernel::component::Component;
-use kernel::hil;
-use kernel::hil::time::{self, Alarm};
-use kernel::hil::uart;
+use crate::kernel::capabilities::MemoryAllocationCapability;
+use crate::kernel::component::Component;
+use crate::kernel::hil;
+use crate::kernel::hil::time::{self, Alarm};
+use crate::kernel::hil::uart;
 
-use capsules_core::console::DEFAULT_BUF_SIZE;
+use crate::capsules_core::console::DEFAULT_BUF_SIZE;
 
 #[macro_export]
 macro_rules! uart_mux_component_static {
     // Common logic for both branches
     ($rx_buffer_len: expr) => {{
-        use capsules_core::virtualizers::virtual_uart::MuxUart;
-        use kernel::static_buf;
+        use crate::capsules_core::virtualizers::virtual_uart::MuxUart;
+        use crate::kernel::static_buf;
         let uart_mux = static_buf!(MuxUart<'static>);
         let rx_buf = static_buf!([u8; $rx_buffer_len]);
         (uart_mux, rx_buf)
     }};
     () => {
-        $crate::components::uart_mux_component_static!(capsules_core::virtualizers::virtual_uart::RX_BUF_LEN)
+        $crate::components::uart_mux_component_static!(crate::capsules_core::virtualizers::virtual_uart::RX_BUF_LEN)
     };
     ($rx_buffer_len: literal) => {
         $crate::components::uart_mux_component_static!($rx_buffer_len)
@@ -91,7 +91,7 @@ impl<const RX_BUF_LEN: usize> Component for UartMuxComponent<RX_BUF_LEN> {
     fn finalize(self, s: Self::StaticInput) -> Self::Output {
         let rx_buf = s.1.write([0; RX_BUF_LEN]);
         let uart_mux = s.0.write(MuxUart::new(self.uart, rx_buf, self.baud_rate));
-        kernel::deferred_call::DeferredCallClient::register(uart_mux);
+        crate::kernel::deferred_call::DeferredCallClient::register(uart_mux);
 
         uart_mux.initialize();
         hil::uart::Transmit::set_transmit_client(self.uart, uart_mux);
@@ -105,9 +105,9 @@ impl<const RX_BUF_LEN: usize> Component for UartMuxComponent<RX_BUF_LEN> {
 macro_rules! console_component_static {
     // Common logic for both branches
     ($rx_buffer_len: expr, $tx_buffer_len: expr) => {{
-        use capsules_core::console::{Console, DEFAULT_BUF_SIZE};
-        use capsules_core::virtualizers::virtual_uart::UartDevice;
-        use kernel::static_buf;
+        use crate::capsules_core::console::{Console, DEFAULT_BUF_SIZE};
+        use crate::capsules_core::virtualizers::virtual_uart::UartDevice;
+        use crate::kernel::static_buf;
         let read_buf = static_buf!([u8; $rx_buffer_len]);
         let write_buf = static_buf!([u8; $tx_buffer_len]);
         // Create virtual device for console.
@@ -130,7 +130,7 @@ pub struct ConsoleComponent<
     const TX_BUF_LEN: usize,
     CAP: MemoryAllocationCapability + 'static,
 > {
-    board_kernel: &'static kernel::Kernel,
+    board_kernel: &'static crate::kernel::Kernel,
     driver_num: usize,
     uart_mux: &'static MuxUart<'static>,
     mem_cap: CAP,
@@ -140,7 +140,7 @@ impl<const RX_BUF_LEN: usize, const TX_BUF_LEN: usize, CAP: MemoryAllocationCapa
     ConsoleComponent<RX_BUF_LEN, TX_BUF_LEN, CAP>
 {
     pub fn new(
-        board_kernel: &'static kernel::Kernel,
+        board_kernel: &'static crate::kernel::Kernel,
         driver_num: usize,
         uart_mux: &'static MuxUart,
         mem_cap: CAP,
@@ -189,11 +189,11 @@ impl<const RX_BUF_LEN: usize, const TX_BUF_LEN: usize, CAP: MemoryAllocationCapa
 #[macro_export]
 macro_rules! console_ordered_component_static {
     ($A:ty $(,)?) => {{
-        let mux_alarm = kernel::static_buf!(VirtualMuxAlarm<'static, $A>);
-        let read_buf = static_buf!([u8; capsules_core::console::DEFAULT_BUF_SIZE]);
+        let mux_alarm = crate::kernel::static_buf!(VirtualMuxAlarm<'static, $A>);
+        let read_buf = static_buf!([u8; crate::capsules_core::console::DEFAULT_BUF_SIZE]);
         let console_uart =
-            kernel::static_buf!(capsules_core::virtualizers::virtual_uart::UartDevice);
-        let console = kernel::static_buf!(ConsoleOrdered<'static, VirtualMuxAlarm<'static, $A>>);
+            crate::kernel::static_buf!(crate::capsules_core::virtualizers::virtual_uart::UartDevice);
+        let console = crate::kernel::static_buf!(ConsoleOrdered<'static, VirtualMuxAlarm<'static, $A>>);
         (mux_alarm, read_buf, console_uart, console)
     }};
 }
@@ -202,7 +202,7 @@ pub struct ConsoleOrderedComponent<
     A: 'static + time::Alarm<'static>,
     CAP: MemoryAllocationCapability + 'static,
 > {
-    board_kernel: &'static kernel::Kernel,
+    board_kernel: &'static crate::kernel::Kernel,
     driver_num: usize,
     uart_mux: &'static MuxUart<'static>,
     alarm_mux: &'static MuxAlarm<'static, A>,
@@ -216,7 +216,7 @@ impl<A: 'static + time::Alarm<'static>, CAP: MemoryAllocationCapability + 'stati
     ConsoleOrderedComponent<A, CAP>
 {
     pub fn new(
-        board_kernel: &'static kernel::Kernel,
+        board_kernel: &'static crate::kernel::Kernel,
         driver_num: usize,
         uart_mux: &'static MuxUart<'static>,
         alarm_mux: &'static MuxAlarm<'static, A>,

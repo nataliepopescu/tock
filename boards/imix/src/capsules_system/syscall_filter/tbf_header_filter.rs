@@ -4,10 +4,10 @@
 
 //! Implementations of [`SyscallFilter`] using TBF headers.
 
-use kernel::errorcode;
-use kernel::platform::SyscallFilter;
-use kernel::process;
-use kernel::syscall;
+use crate::kernel::errorcode;
+use crate::kernel::platform::SyscallFilter;
+use crate::kernel::process;
+use crate::kernel::syscall;
 use tock_tbf::types::CommandPermissions;
 
 /// An allow list system call filter based on the TBF header, with a default

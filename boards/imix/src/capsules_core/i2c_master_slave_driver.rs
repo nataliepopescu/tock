@@ -18,13 +18,13 @@
 use core::cell::Cell;
 use core::cmp;
 
-use kernel::hil;
-use kernel::processbuffer::{ReadableProcessBuffer, WriteableProcessBuffer};
-use kernel::syscall::{CommandReturn, SyscallDriver};
-use kernel::utilities::cells::{OptionalCell, TakeCell};
-use kernel::{ErrorCode, ProcessId};
+use crate::kernel::hil;
+use crate::kernel::processbuffer::{ReadableProcessBuffer, WriteableProcessBuffer};
+use crate::kernel::syscall::{CommandReturn, SyscallDriver};
+use crate::kernel::utilities::cells::{OptionalCell, TakeCell};
+use crate::kernel::{ErrorCode, ProcessId};
 
-use kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
+use crate::kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
 
 pub const BUFFER_LENGTH: usize = 256;
 
@@ -105,7 +105,7 @@ impl<'a, I: hil::i2c::I2CMasterSlave<'a>> hil::i2c::I2CHwMasterClient
 {
     fn command_complete(&self, buffer: &'static mut [u8], status: Result<(), hil::i2c::Error>) {
         // Map I2C error to a number we can pass back to the application
-        let status = kernel::errorcode::into_statuscode(match status {
+        let status = crate::kernel::errorcode::into_statuscode(match status {
             Ok(()) => Ok(()),
             Err(e) => Err(e.into()),
         });
@@ -511,7 +511,7 @@ impl<'a, I: hil::i2c::I2CMasterSlave<'a>> SyscallDriver for I2CMasterSlaveDriver
         }
     }
 
-    fn allocate_grant(&self, processid: ProcessId) -> Result<(), kernel::process::Error> {
+    fn allocate_grant(&self, processid: ProcessId) -> Result<(), crate::kernel::process::Error> {
         self.apps.enter(processid, |_, _| {})
     }
 }

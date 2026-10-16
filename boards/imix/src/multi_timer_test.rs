@@ -8,17 +8,17 @@
 //!    multi_timer_test::run_multi_timer(alarm);
 //! ```
 //! to the imix boot sequence, where `alarm` is a
-//! `kernel::hil::Alarm`. The test sets up a series of
+//! `crate::kernel::hil::Alarm`. The test sets up a series of
 //! timer of different durations and prints out when
 //! they fire.
 
-use kernel::debug;
-use kernel::hil::time::Timer;
-use kernel::static_init;
+use crate::kernel::debug;
+use crate::kernel::hil::time::Timer;
+use crate::kernel::static_init;
 
-use capsules_core::test::random_timer::TestRandomTimer;
-use capsules_core::virtualizers::virtual_timer::{MuxTimer, VirtualTimer};
-use sam4l::ast::Ast;
+use crate::capsules_core::test::random_timer::TestRandomTimer;
+use crate::capsules_core::virtualizers::virtual_timer::{MuxTimer, VirtualTimer};
+use crate::sam4l::ast::Ast;
 
 pub unsafe fn run_multi_timer(mux: &'static MuxTimer<'static, Ast<'static>>) {
     debug!("Starting multi timer test.");

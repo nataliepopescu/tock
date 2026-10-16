@@ -5,12 +5,12 @@
 //! Test the AES CCM implementation on top of AES hardware.
 
 use core::cell::Cell;
-use kernel::ErrorCode;
-use kernel::debug;
-use kernel::hil::symmetric_encryption::{
+use crate::kernel::ErrorCode;
+use crate::kernel::debug;
+use crate::kernel::hil::symmetric_encryption::{
     AES128, AES128_KEY_SIZE, AESCCM, CCM_NONCE_LENGTH, CCMClient,
 };
-use kernel::utilities::cells::TakeCell;
+use crate::kernel::utilities::cells::TakeCell;
 
 pub struct Test<'a, A: AESCCM<'a, AES128>> {
     aes_ccm: &'a A,

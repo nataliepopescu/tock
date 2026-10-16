@@ -13,39 +13,39 @@
 //! Usage
 //! -----
 //! ```rust
-//! let can = components::can::CanComponent::new(
+//! let can = crate::components::can::CanComponent::new(
 //!     board_kernel,
-//!     capsules_extra::can::DRIVER_NUM,
+//!     crate::capsules_extra::can::DRIVER_NUM,
 //!     &peripherals.can1
-//! ).finalize(components::can_component_static!(
+//! ).finalize(crate::components::can_component_static!(
 //!     stm32f429zi::can::Can<'static>
 //! ));
 //! ```
 //!
 
-use capsules_extra::can::CanCapsule;
+use crate::capsules_extra::can::CanCapsule;
 use core::mem::MaybeUninit;
-use kernel::capabilities::MemoryAllocationCapability;
-use kernel::component::Component;
-use kernel::hil::can;
+use crate::kernel::capabilities::MemoryAllocationCapability;
+use crate::kernel::component::Component;
+use crate::kernel::hil::can;
 
 #[macro_export]
 macro_rules! can_component_static {
     ($C:ty $(,)?) => {{
-        use capsules_extra::can::CanCapsule;
+        use crate::capsules_extra::can::CanCapsule;
         use core::mem::MaybeUninit;
-        use kernel::hil::can;
-        use kernel::static_buf;
+        use crate::kernel::hil::can;
+        use crate::kernel::static_buf;
 
         let CAN_TX_BUF = static_buf!([u8; can::STANDARD_CAN_PACKET_SIZE]);
         let CAN_RX_BUF = static_buf!([u8; can::STANDARD_CAN_PACKET_SIZE]);
-        let can = static_buf!(capsules_extra::can::CanCapsule<'static, $C>);
+        let can = static_buf!(crate::capsules_extra::can::CanCapsule<'static, $C>);
         (can, CAN_TX_BUF, CAN_RX_BUF)
     }};
 }
 
 pub struct CanComponent<A: 'static + can::Can, CAP: MemoryAllocationCapability + 'static> {
-    board_kernel: &'static kernel::Kernel,
+    board_kernel: &'static crate::kernel::Kernel,
     driver_num: usize,
     can: &'static A,
     mem_cap: CAP,
@@ -53,7 +53,7 @@ pub struct CanComponent<A: 'static + can::Can, CAP: MemoryAllocationCapability +
 
 impl<A: 'static + can::Can, CAP: MemoryAllocationCapability + 'static> CanComponent<A, CAP> {
     pub fn new(
-        board_kernel: &'static kernel::Kernel,
+        board_kernel: &'static crate::kernel::Kernel,
         driver_num: usize,
         can: &'static A,
         mem_cap: CAP,
@@ -82,7 +82,7 @@ impl<A: 'static + can::Can, CAP: MemoryAllocationCapability + 'static> Component
             .board_kernel
             .create_grant(self.driver_num, &self.mem_cap);
 
-        let can = static_buffer.0.write(capsules_extra::can::CanCapsule::new(
+        let can = static_buffer.0.write(crate::capsules_extra::can::CanCapsule::new(
             self.can,
             grant_can,
             static_buffer.1.write([0; can::STANDARD_CAN_PACKET_SIZE]),

@@ -11,7 +11,7 @@
 
 use core::cell::Cell;
 
-use kernel::hil::time::{Alarm, AlarmClient, ConvertTicks, Ticks};
+use crate::kernel::hil::time::{Alarm, AlarmClient, ConvertTicks, Ticks};
 
 pub struct TestRandomAlarm<'a, A: Alarm<'a>> {
     alarm: &'a A,
@@ -53,7 +53,7 @@ impl<'a, A: Alarm<'a>> TestRandomAlarm<'a, A> {
         self.alarm.set_alarm(start, delay);
         if self.print_output {
             let diff = now.wrapping_sub(self.expected.get());
-            kernel::debug!(
+            crate::kernel::debug!(
                 "Test{}@{:?}: Expected at {:?} (diff = {:?}), setting alarm to {:?} (delay = {:?})",
                 self._id,
                 now,
@@ -74,7 +74,7 @@ impl<'a, A: Alarm<'a>> TestRandomAlarm<'a, A> {
 impl<'a, A: Alarm<'a>> AlarmClient for TestRandomAlarm<'a, A> {
     fn alarm(&self) {
         if self.print_output {
-            kernel::debug!("Test{}: Alarm fired.", self._id);
+            crate::kernel::debug!("Test{}: Alarm fired.", self._id);
         }
         self.first.set(false);
         self.set_next_alarm();

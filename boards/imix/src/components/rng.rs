@@ -12,7 +12,7 @@
 //!
 //! ### Usage
 //! ```rust
-//! let rng = components::rng::RngComponent::new(board_kernel, capsules_core::rng::DRIVER_NUM, rng)
+//! let rng = crate::components::rng::RngComponent::new(board_kernel, crate::capsules_core::rng::DRIVER_NUM, rng)
 //!     .finalize(rng_component_static!(nrf52840::trng::Trng));
 //! ```
 //!
@@ -23,28 +23,28 @@
 //!
 //! ### Usage
 //! ```rust
-//! let rng = components::rng::RngRandomComponent::new(board_kernel, capsules_core::rng::DRIVER_NUM, rng)
+//! let rng = crate::components::rng::RngRandomComponent::new(board_kernel, crate::capsules_core::rng::DRIVER_NUM, rng)
 //!     .finalize(rng_random_component_static!(qemu_rv32_virt_chip::virtio::devices::virtio_rng::VirtIORng));
 //! ```
 
 // Author: Hudson Ayers <hayers@cs.stanford.edu>
 // Last modified: 07/12/2019
 
-use capsules_core::rng;
+use crate::capsules_core::rng;
 use core::mem::MaybeUninit;
-use kernel::capabilities::MemoryAllocationCapability;
-use kernel::component::Component;
-use kernel::hil::entropy::Entropy32;
-use kernel::hil::rng::Rng;
+use crate::kernel::capabilities::MemoryAllocationCapability;
+use crate::kernel::component::Component;
+use crate::kernel::hil::entropy::Entropy32;
+use crate::kernel::hil::rng::Rng;
 
 #[macro_export]
 macro_rules! rng_component_static {
     ($E: ty $(,)?) => {{
-        let etr = kernel::static_buf!(capsules_core::rng::Entropy32ToRandom<'static, $E>);
-        let rng = kernel::static_buf!(
-            capsules_core::rng::RngDriver<
+        let etr = crate::kernel::static_buf!(crate::capsules_core::rng::Entropy32ToRandom<'static, $E>);
+        let rng = crate::kernel::static_buf!(
+            crate::capsules_core::rng::RngDriver<
                 'static,
-                capsules_core::rng::Entropy32ToRandom<'static, $E>,
+                crate::capsules_core::rng::Entropy32ToRandom<'static, $E>,
             >
         );
 
@@ -53,11 +53,11 @@ macro_rules! rng_component_static {
 }
 
 pub type RngComponentType<E> =
-    rng::RngDriver<'static, capsules_core::rng::Entropy32ToRandom<'static, E>>;
+    rng::RngDriver<'static, crate::capsules_core::rng::Entropy32ToRandom<'static, E>>;
 
 pub struct RngComponent<E: Entropy32<'static> + 'static, CAP: MemoryAllocationCapability + 'static>
 {
-    board_kernel: &'static kernel::Kernel,
+    board_kernel: &'static crate::kernel::Kernel,
     driver_num: usize,
     trng: &'static E,
     mem_cap: CAP,
@@ -65,7 +65,7 @@ pub struct RngComponent<E: Entropy32<'static> + 'static, CAP: MemoryAllocationCa
 
 impl<E: Entropy32<'static>, CAP: MemoryAllocationCapability + 'static> RngComponent<E, CAP> {
     pub fn new(
-        board_kernel: &'static kernel::Kernel,
+        board_kernel: &'static crate::kernel::Kernel,
         driver_num: usize,
         trng: &'static E,
         mem_cap: CAP,
@@ -83,16 +83,16 @@ impl<E: Entropy32<'static>, CAP: MemoryAllocationCapability + 'static> Component
     for RngComponent<E, CAP>
 {
     type StaticInput = (
-        &'static mut MaybeUninit<capsules_core::rng::Entropy32ToRandom<'static, E>>,
+        &'static mut MaybeUninit<crate::capsules_core::rng::Entropy32ToRandom<'static, E>>,
         &'static mut MaybeUninit<
-            capsules_core::rng::RngDriver<
+            crate::capsules_core::rng::RngDriver<
                 'static,
-                capsules_core::rng::Entropy32ToRandom<'static, E>,
+                crate::capsules_core::rng::Entropy32ToRandom<'static, E>,
             >,
         >,
     );
     type Output =
-        &'static rng::RngDriver<'static, capsules_core::rng::Entropy32ToRandom<'static, E>>;
+        &'static rng::RngDriver<'static, crate::capsules_core::rng::Entropy32ToRandom<'static, E>>;
 
     fn finalize(self, static_buffer: Self::StaticInput) -> Self::Output {
         let entropy_to_random = static_buffer
@@ -113,7 +113,7 @@ impl<E: Entropy32<'static>, CAP: MemoryAllocationCapability + 'static> Component
 #[macro_export]
 macro_rules! rng_random_component_static {
     ($R: ty $(,)?) => {{
-        let rng = kernel::static_buf!(capsules_core::rng::RngDriver<'static, $R>);
+        let rng = crate::kernel::static_buf!(crate::capsules_core::rng::RngDriver<'static, $R>);
 
         rng
     }};
@@ -123,7 +123,7 @@ pub type RngRandomComponentType<R> = rng::RngDriver<'static, R>;
 
 pub struct RngRandomComponent<R: Rng<'static> + 'static, CAP: MemoryAllocationCapability + 'static>
 {
-    board_kernel: &'static kernel::Kernel,
+    board_kernel: &'static crate::kernel::Kernel,
     driver_num: usize,
     rng: &'static R,
     mem_cap: CAP,
@@ -131,7 +131,7 @@ pub struct RngRandomComponent<R: Rng<'static> + 'static, CAP: MemoryAllocationCa
 
 impl<R: Rng<'static>, CAP: MemoryAllocationCapability + 'static> RngRandomComponent<R, CAP> {
     pub fn new(
-        board_kernel: &'static kernel::Kernel,
+        board_kernel: &'static crate::kernel::Kernel,
         driver_num: usize,
         rng: &'static R,
         mem_cap: CAP,
@@ -148,7 +148,7 @@ impl<R: Rng<'static>, CAP: MemoryAllocationCapability + 'static> RngRandomCompon
 impl<R: Rng<'static>, CAP: MemoryAllocationCapability + 'static> Component
     for RngRandomComponent<R, CAP>
 {
-    type StaticInput = &'static mut MaybeUninit<capsules_core::rng::RngDriver<'static, R>>;
+    type StaticInput = &'static mut MaybeUninit<crate::capsules_core::rng::RngDriver<'static, R>>;
     type Output = &'static rng::RngDriver<'static, R>;
 
     fn finalize(self, static_buffer: Self::StaticInput) -> Self::Output {

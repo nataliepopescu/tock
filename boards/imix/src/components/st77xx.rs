@@ -8,8 +8,8 @@
 //! -----
 //! ```rust
 //!
-//! let bus = components::bus::SpiMasterBusComponent::new().finalize(
-//!     components::spi_bus_component_static!(
+//! let bus = crate::components::bus::SpiMasterBusComponent::new().finalize(
+//!     crate::components::spi_bus_component_static!(
 //!         // spi type
 //!         nrf52840::spi::SPIM,
 //!         // chip select
@@ -19,14 +19,14 @@
 //!     ),
 //! );
 //!
-//! let tft = components::st77xx::ST77XXComponent::new(mux_alarm,
+//! let tft = crate::components::st77xx::ST77XXComponent::new(mux_alarm,
 //!                                                    bus,
 //!                                                    Some(&nrf52840::gpio::PORT[GPIO_D3]),
 //!                                                    Some(&nrf52840::gpio::PORT[GPIO_D2]),
-//!                                                    &capsules_extra::st77xx::ST7735).finalize(
-//!     components::st77xx_component_static!(
+//!                                                    &crate::capsules_extra::st77xx::ST7735).finalize(
+//!     crate::components::st77xx_component_static!(
 //!         // bus type
-//!         capsules_extra::bus::SpiMasterBus<
+//!         crate::capsules_extra::bus::SpiMasterBus<
 //!             'static,
 //!             VirtualSpiMasterDevice<'static, nrf52840::spi::SPIM>,
 //!         >,
@@ -38,29 +38,29 @@
 //! );
 //! ```
 
-use capsules_core::virtualizers::virtual_alarm::{MuxAlarm, VirtualMuxAlarm};
-use capsules_extra::bus::{self, BusAddr8};
-use capsules_extra::st77xx::{ST77XX, ST77XXScreen};
+use crate::capsules_core::virtualizers::virtual_alarm::{MuxAlarm, VirtualMuxAlarm};
+use crate::capsules_extra::bus::{self, BusAddr8};
+use crate::capsules_extra::st77xx::{ST77XX, ST77XXScreen};
 use core::mem::MaybeUninit;
-use kernel::component::Component;
-use kernel::hil::gpio;
-use kernel::hil::time::{self, Alarm};
+use crate::kernel::component::Component;
+use crate::kernel::hil::gpio;
+use crate::kernel::hil::time::{self, Alarm};
 
 // Setup static space for the objects.
 #[macro_export]
 macro_rules! st77xx_component_static {
     ($B: ty, $A:ty, $P:ty $(,)?) => {{
-        let buffer = kernel::static_buf!([u8; capsules_extra::st77xx::BUFFER_SIZE]);
-        let sequence_buffer = kernel::static_buf!(
-            [capsules_extra::st77xx::SendCommand; capsules_extra::st77xx::SEQUENCE_BUFFER_SIZE]
+        let buffer = crate::kernel::static_buf!([u8; crate::capsules_extra::st77xx::BUFFER_SIZE]);
+        let sequence_buffer = crate::kernel::static_buf!(
+            [crate::capsules_extra::st77xx::SendCommand; crate::capsules_extra::st77xx::SEQUENCE_BUFFER_SIZE]
         );
-        let st77xx_alarm = kernel::static_buf!(
-            capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, $A>
+        let st77xx_alarm = crate::kernel::static_buf!(
+            crate::capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, $A>
         );
-        let st77xx = kernel::static_buf!(
-            capsules_extra::st77xx::ST77XX<
+        let st77xx = crate::kernel::static_buf!(
+            crate::capsules_extra::st77xx::ST77XX<
                 'static,
-                capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, $A>,
+                crate::capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, $A>,
                 $B,
                 $P,
             >
@@ -114,9 +114,9 @@ impl<
     type StaticInput = (
         &'static mut MaybeUninit<VirtualMuxAlarm<'static, A>>,
         &'static mut MaybeUninit<ST77XX<'static, VirtualMuxAlarm<'static, A>, B, P>>,
-        &'static mut MaybeUninit<[u8; capsules_extra::st77xx::BUFFER_SIZE]>,
+        &'static mut MaybeUninit<[u8; crate::capsules_extra::st77xx::BUFFER_SIZE]>,
         &'static mut MaybeUninit<
-            [capsules_extra::st77xx::SendCommand; capsules_extra::st77xx::SEQUENCE_BUFFER_SIZE],
+            [crate::capsules_extra::st77xx::SendCommand; crate::capsules_extra::st77xx::SEQUENCE_BUFFER_SIZE],
         >,
     );
     type Output = &'static ST77XX<'static, VirtualMuxAlarm<'static, A>, B, P>;
@@ -127,10 +127,10 @@ impl<
 
         let buffer = static_buffer
             .2
-            .write([0; capsules_extra::st77xx::BUFFER_SIZE]);
+            .write([0; crate::capsules_extra::st77xx::BUFFER_SIZE]);
         let sequence_buffer = static_buffer.3.write(
-            [capsules_extra::st77xx::SendCommand::Nop;
-                capsules_extra::st77xx::SEQUENCE_BUFFER_SIZE],
+            [crate::capsules_extra::st77xx::SendCommand::Nop;
+                crate::capsules_extra::st77xx::SEQUENCE_BUFFER_SIZE],
         );
 
         let st77xx = static_buffer.1.write(ST77XX::new(

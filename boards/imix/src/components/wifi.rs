@@ -2,21 +2,21 @@
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 // Copyright OxidOS Automotive 2025.
 
-use capsules_extra::wifi;
+use crate::capsules_extra::wifi;
 use core::mem::MaybeUninit;
-use kernel::capabilities::MemoryAllocationCapability;
-use kernel::component::Component;
+use crate::kernel::capabilities::MemoryAllocationCapability;
+use crate::kernel::component::Component;
 
 #[macro_export]
 macro_rules! wifi_component_static {
-    ($D:ty $(,)?) => {{ kernel::static_buf!(capsules_extra::wifi::WifiDriver<'static, $D>) }};
+    ($D:ty $(,)?) => {{ crate::kernel::static_buf!(crate::capsules_extra::wifi::WifiDriver<'static, $D>) }};
 }
 
 pub struct WifiComponent<
     D: 'static + wifi::Device<'static>,
     CAP: MemoryAllocationCapability + 'static,
 > {
-    board_kernel: &'static kernel::Kernel,
+    board_kernel: &'static crate::kernel::Kernel,
     driver_num: usize,
     device: &'static D,
     mem_cap: CAP,
@@ -26,7 +26,7 @@ impl<D: 'static + wifi::Device<'static>, CAP: MemoryAllocationCapability + 'stat
     WifiComponent<D, CAP>
 {
     pub fn new(
-        board_kernel: &'static kernel::Kernel,
+        board_kernel: &'static crate::kernel::Kernel,
         driver_num: usize,
         device: &'static D,
         mem_cap: CAP,

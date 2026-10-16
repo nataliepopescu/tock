@@ -12,22 +12,22 @@
 //!
 //! ```rust,ignore
 //! let touch =
-//!     components::touch::TouchComponent::new(board_kernel, ts, Some(ts), Some(screen)).finalize(());
+//!     crate::components::touch::TouchComponent::new(board_kernel, ts, Some(ts), Some(screen)).finalize(());
 //! ```
 
 use core::cell::Cell;
 use core::mem;
 
-use kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
-use kernel::hil;
-use kernel::hil::screen::ScreenRotation;
-use kernel::hil::touch::{GestureEvent, TouchClient, TouchEvent, TouchStatus};
-use kernel::processbuffer::WriteableProcessBuffer;
-use kernel::syscall::{CommandReturn, SyscallDriver};
-use kernel::{ErrorCode, ProcessId};
+use crate::kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
+use crate::kernel::hil;
+use crate::kernel::hil::screen::ScreenRotation;
+use crate::kernel::hil::touch::{GestureEvent, TouchClient, TouchEvent, TouchStatus};
+use crate::kernel::processbuffer::WriteableProcessBuffer;
+use crate::kernel::syscall::{CommandReturn, SyscallDriver};
+use crate::kernel::{ErrorCode, ProcessId};
 
 /// Syscall driver number.
-use capsules_core::driver;
+use crate::capsules_core::driver;
 pub const DRIVER_NUM: usize = driver::NUM::Touch as usize;
 
 /// Ids for read-write allow buffers
@@ -404,7 +404,7 @@ impl SyscallDriver for Touch<'_> {
         }
     }
 
-    fn allocate_grant(&self, processid: ProcessId) -> Result<(), kernel::process::Error> {
+    fn allocate_grant(&self, processid: ProcessId) -> Result<(), crate::kernel::process::Error> {
         self.apps.enter(processid, |_, _| {})
     }
 }

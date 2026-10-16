@@ -10,9 +10,9 @@
 //! Usage
 //! -----
 //! ```rust
-//!        let thread_driver = components::thread_network::ThreadNetworkComponent::new(
+//!        let thread_driver = crate::components::thread_network::ThreadNetworkComponent::new(
 //!             board_kernel,
-//!             capsules_extra::net::thread::driver::DRIVER_NUM,
+//!             crate::capsules_extra::net::thread::driver::DRIVER_NUM,
 //!             udp_send_mux,
 //!             udp_recv_mux,
 //!             udp_port_table,
@@ -20,33 +20,33 @@
 //!             device_id,
 //!             mux_alarm,
 //!         )
-//!         .finalize(components::thread_network_component_static!(
+//!         .finalize(crate::components::thread_network_component_static!(
 //!         nrf52840::rtc::Rtc,
 //!         nrf52840::aes::AesECB<'static>
 //!         ));
 //! ```
 
-use capsules_core::virtualizers::virtual_aes_ccm::MuxAES128CCM;
-use capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm;
-use capsules_extra::net::ipv6::ipv6_send::IP6SendStruct;
-use capsules_extra::net::network_capabilities::{
+use crate::capsules_core::virtualizers::virtual_aes_ccm::MuxAES128CCM;
+use crate::capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm;
+use crate::capsules_extra::net::ipv6::ipv6_send::IP6SendStruct;
+use crate::capsules_extra::net::network_capabilities::{
     AddrRange, NetworkCapability, PortRange, UdpVisibilityCapability,
 };
-use kernel::hil::symmetric_encryption::{self, AES, AES128, AESCBC, AESCCM, AESCtr, AESECB};
+use crate::kernel::hil::symmetric_encryption::{self, AES, AES128, AESCBC, AESCCM, AESCtr, AESECB};
 
-use capsules_core::virtualizers::virtual_alarm::MuxAlarm;
-use capsules_extra::net::thread::thread_utils::THREAD_PORT_NUMBER;
-use capsules_extra::net::udp::udp_port_table::UdpPortManager;
-use capsules_extra::net::udp::udp_recv::MuxUdpReceiver;
-use capsules_extra::net::udp::udp_recv::UDPReceiver;
-use capsules_extra::net::udp::udp_send::{MuxUdpSender, UDPSendStruct, UDPSender};
+use crate::capsules_core::virtualizers::virtual_alarm::MuxAlarm;
+use crate::capsules_extra::net::thread::thread_utils::THREAD_PORT_NUMBER;
+use crate::capsules_extra::net::udp::udp_port_table::UdpPortManager;
+use crate::capsules_extra::net::udp::udp_recv::MuxUdpReceiver;
+use crate::capsules_extra::net::udp::udp_recv::UDPReceiver;
+use crate::capsules_extra::net::udp::udp_send::{MuxUdpSender, UDPSendStruct, UDPSender};
 use core::mem::MaybeUninit;
-use kernel::capabilities::{
+use crate::kernel::capabilities::{
     MemoryAllocationCapability, NetworkCapabilityCreationCapability, UdpDriverCapability,
 };
-use kernel::component::Component;
-use kernel::hil::radio;
-use kernel::hil::time::Alarm;
+use crate::kernel::component::Component;
+use crate::kernel::hil::radio;
+use crate::kernel::hil::time::Alarm;
 
 const MAX_PAYLOAD_LEN: usize = super::udp_mux::MAX_PAYLOAD_LEN;
 pub const CRYPT_SIZE: usize = 3 * symmetric_encryption::AES_BLOCK_SIZE + radio::MAX_BUF_SIZE;
@@ -55,37 +55,37 @@ pub const CRYPT_SIZE: usize = 3 * symmetric_encryption::AES_BLOCK_SIZE + radio::
 #[macro_export]
 macro_rules! thread_network_component_static {
     ($A:ty, $B:ty, $C:ty $(,)?) => {{
-        use components::udp_mux::MAX_PAYLOAD_LEN;
+        use crate::components::udp_mux::MAX_PAYLOAD_LEN;
 
-        let udp_send = kernel::static_buf!(
-            capsules_extra::net::udp::udp_send::UDPSendStruct<
+        let udp_send = crate::kernel::static_buf!(
+            crate::capsules_extra::net::udp::udp_send::UDPSendStruct<
                 'static,
-                capsules_extra::net::ipv6::ipv6_send::IP6SendStruct<
+                crate::capsules_extra::net::ipv6::ipv6_send::IP6SendStruct<
                     'static,
-                    capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, $A>,
+                    crate::capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, $A>,
                 >,
             >
         );
         let udp_vis_cap =
-            kernel::static_buf!(capsules_extra::net::network_capabilities::UdpVisibilityCapability);
+            crate::kernel::static_buf!(crate::capsules_extra::net::network_capabilities::UdpVisibilityCapability);
         let net_cap =
-            kernel::static_buf!(capsules_extra::net::network_capabilities::NetworkCapability);
-        let thread_network_driver = kernel::static_buf!(
-            capsules_extra::net::thread::driver::ThreadNetworkDriver<
+            crate::kernel::static_buf!(crate::capsules_extra::net::network_capabilities::NetworkCapability);
+        let thread_network_driver = crate::kernel::static_buf!(
+            crate::capsules_extra::net::thread::driver::ThreadNetworkDriver<
                 'static,
                 VirtualMuxAlarm<'static, $A>,
             >
         );
-        let send_buffer = kernel::static_buf!([u8; MAX_PAYLOAD_LEN]);
-        let recv_buffer = kernel::static_buf!([u8; MAX_PAYLOAD_LEN]);
+        let send_buffer = crate::kernel::static_buf!([u8; MAX_PAYLOAD_LEN]);
+        let recv_buffer = crate::kernel::static_buf!([u8; MAX_PAYLOAD_LEN]);
         let udp_recv =
-            kernel::static_buf!(capsules_extra::net::udp::udp_recv::UDPReceiver<'static>);
-        let crypt_buf = kernel::static_buf!([u8; components::ieee802154::CRYPT_SIZE]);
-        let crypt = kernel::static_buf!(
-            capsules_core::virtualizers::virtual_aes_ccm::VirtualAES128CCM<'static, $B>,
+            crate::kernel::static_buf!(crate::capsules_extra::net::udp::udp_recv::UDPReceiver<'static>);
+        let crypt_buf = crate::kernel::static_buf!([u8; crate::components::ieee802154::CRYPT_SIZE]);
+        let crypt = crate::kernel::static_buf!(
+            crate::capsules_core::virtualizers::virtual_aes_ccm::VirtualAES128CCM<'static, $B>,
         );
-        let alarm = kernel::static_buf!(VirtualMuxAlarm<'static, $A>);
-        let driver_cap = kernel::static_buf!($C);
+        let alarm = crate::kernel::static_buf!(VirtualMuxAlarm<'static, $A>);
+        let driver_cap = crate::kernel::static_buf!($C);
 
         (
             udp_send,
@@ -109,7 +109,7 @@ pub struct ThreadNetworkComponent<
     MEM: MemoryAllocationCapability + 'static,
     NET: NetworkCapabilityCreationCapability + 'static,
 > {
-    board_kernel: &'static kernel::Kernel,
+    board_kernel: &'static crate::kernel::Kernel,
     driver_num: usize,
     udp_send_mux:
         &'static MuxUdpSender<'static, IP6SendStruct<'static, VirtualMuxAlarm<'static, A>>>,
@@ -132,7 +132,7 @@ impl<
 > ThreadNetworkComponent<A, B, C, MEM, NET>
 {
     pub fn new(
-        board_kernel: &'static kernel::Kernel,
+        board_kernel: &'static crate::kernel::Kernel,
         driver_num: usize,
         udp_send_mux: &'static MuxUdpSender<
             'static,
@@ -175,18 +175,18 @@ impl<
         &'static mut MaybeUninit<
             UDPSendStruct<
                 'static,
-                capsules_extra::net::ipv6::ipv6_send::IP6SendStruct<
+                crate::capsules_extra::net::ipv6::ipv6_send::IP6SendStruct<
                     'static,
                     VirtualMuxAlarm<'static, A>,
                 >,
             >,
         >,
         &'static mut MaybeUninit<
-            capsules_extra::net::network_capabilities::UdpVisibilityCapability,
+            crate::capsules_extra::net::network_capabilities::UdpVisibilityCapability,
         >,
-        &'static mut MaybeUninit<capsules_extra::net::network_capabilities::NetworkCapability>,
+        &'static mut MaybeUninit<crate::capsules_extra::net::network_capabilities::NetworkCapability>,
         &'static mut MaybeUninit<
-            capsules_extra::net::thread::driver::ThreadNetworkDriver<
+            crate::capsules_extra::net::thread::driver::ThreadNetworkDriver<
                 'static,
                 VirtualMuxAlarm<'static, A>,
             >,
@@ -196,12 +196,12 @@ impl<
         &'static mut MaybeUninit<UDPReceiver<'static>>,
         &'static mut MaybeUninit<[u8; CRYPT_SIZE]>,
         &'static mut MaybeUninit<
-            capsules_core::virtualizers::virtual_aes_ccm::VirtualAES128CCM<'static, B>,
+            crate::capsules_core::virtualizers::virtual_aes_ccm::VirtualAES128CCM<'static, B>,
         >,
         &'static mut MaybeUninit<VirtualMuxAlarm<'static, A>>,
         &'static mut MaybeUninit<C>,
     );
-    type Output = &'static capsules_extra::net::thread::driver::ThreadNetworkDriver<
+    type Output = &'static crate::capsules_extra::net::thread::driver::ThreadNetworkDriver<
         'static,
         VirtualMuxAlarm<'static, A>,
     >;
@@ -214,7 +214,7 @@ impl<
         // AES-128CCM setup
         let crypt_buf = s.7.write([0; CRYPT_SIZE]);
         let aes_ccm = s.8.write(
-            capsules_core::virtualizers::virtual_aes_ccm::VirtualAES128CCM::new(
+            crate::capsules_core::virtualizers::virtual_aes_ccm::VirtualAES128CCM::new(
                 self.aes_mux,
                 crypt_buf,
             ),
@@ -237,7 +237,7 @@ impl<
         let recv_buffer = s.5.write([0; MAX_PAYLOAD_LEN]);
 
         let thread_network_driver = s.3.write(
-            capsules_extra::net::thread::driver::ThreadNetworkDriver::new(
+            crate::capsules_extra::net::thread::driver::ThreadNetworkDriver::new(
                 udp_send,
                 aes_ccm,
                 thread_virtual_alarm,
@@ -246,8 +246,8 @@ impl<
                 self.serial_num,
                 MAX_PAYLOAD_LEN,
                 self.port_table,
-                kernel::utilities::leasable_buffer::SubSliceMut::new(send_buffer),
-                kernel::utilities::leasable_buffer::SubSliceMut::new(recv_buffer),
+                crate::kernel::utilities::leasable_buffer::SubSliceMut::new(send_buffer),
+                crate::kernel::utilities::leasable_buffer::SubSliceMut::new(recv_buffer),
                 driver_cap,
                 net_cap,
             ),

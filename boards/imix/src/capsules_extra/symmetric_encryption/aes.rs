@@ -4,22 +4,22 @@
 
 //! AES.
 
-use capsules_core::driver;
+use crate::capsules_core::driver;
 /// Syscall driver number.
 pub const DRIVER_NUM: usize = driver::NUM::Aes as usize;
 
 use core::cell::Cell;
 use core::marker::PhantomData;
 
-use kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
-use kernel::hil::symmetric_encryption::{
+use crate::kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
+use crate::kernel::hil::symmetric_encryption::{
     AES, AES_BLOCK_SIZE, AESCBC, AESCCM, AESCtr, AESECB, AESGCM, AESKeySize, CCMClient, Client,
     GCMClient,
 };
-use kernel::processbuffer::{ReadableProcessBuffer, WriteableProcessBuffer};
-use kernel::syscall::{CommandReturn, SyscallDriver};
-use kernel::utilities::cells::{OptionalCell, TakeCell};
-use kernel::{ErrorCode, ProcessId};
+use crate::kernel::processbuffer::{ReadableProcessBuffer, WriteableProcessBuffer};
+use crate::kernel::syscall::{CommandReturn, SyscallDriver};
+use crate::kernel::utilities::cells::{OptionalCell, TakeCell};
+use crate::kernel::{ErrorCode, ProcessId};
 
 /// Ids for read-only allow buffers
 mod ro_allow {
@@ -528,8 +528,8 @@ impl<
                     self.data_copied.set(0);
                 })
                 .map_err(|err| {
-                    if err == kernel::process::Error::NoSuchApp
-                        || err == kernel::process::Error::InactiveApp
+                    if err == crate::kernel::process::Error::NoSuchApp
+                        || err == crate::kernel::process::Error::InactiveApp
                     {
                         self.processid.clear();
                     }
@@ -600,8 +600,8 @@ impl<
                     self.data_copied.set(0);
                 })
                 .map_err(|err| {
-                    if err == kernel::process::Error::NoSuchApp
-                        || err == kernel::process::Error::InactiveApp
+                    if err == crate::kernel::process::Error::NoSuchApp
+                        || err == crate::kernel::process::Error::InactiveApp
                     {
                         self.processid.clear();
                     }
@@ -672,8 +672,8 @@ impl<
                     self.data_copied.set(0);
                 })
                 .map_err(|err| {
-                    if err == kernel::process::Error::NoSuchApp
-                        || err == kernel::process::Error::InactiveApp
+                    if err == crate::kernel::process::Error::NoSuchApp
+                        || err == crate::kernel::process::Error::InactiveApp
                     {
                         self.processid.clear();
                     }
@@ -856,7 +856,7 @@ impl<
                             {
                                 let _ = kernel_data.schedule_upcall(
                                     0,
-                                    (kernel::errorcode::into_statuscode(e.into()), 0, 0),
+                                    (crate::kernel::errorcode::into_statuscode(e.into()), 0, 0),
                                 );
                             }
                             CommandReturn::success()
@@ -929,7 +929,7 @@ impl<
         ret
     }
 
-    fn allocate_grant(&self, processid: ProcessId) -> Result<(), kernel::process::Error> {
+    fn allocate_grant(&self, processid: ProcessId) -> Result<(), crate::kernel::process::Error> {
         self.apps.enter(processid, |_, _| {})
     }
 }

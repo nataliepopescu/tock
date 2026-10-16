@@ -17,7 +17,7 @@
 //! -----
 //!
 //! ```rust,ignore
-//! # use kernel::static_init;
+//! # use crate::kernel::static_init;
 //!
 //! // Two i2c addresses are necessary.
 //! // Registers 0x000-0x0FF are accessed by address 0x36.
@@ -45,14 +45,14 @@
 
 use core::cell::Cell;
 
-use kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
-use kernel::hil::i2c;
-use kernel::syscall::{CommandReturn, SyscallDriver};
-use kernel::utilities::cells::{OptionalCell, TakeCell};
-use kernel::{ErrorCode, ProcessId};
+use crate::kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
+use crate::kernel::hil::i2c;
+use crate::kernel::syscall::{CommandReturn, SyscallDriver};
+use crate::kernel::utilities::cells::{OptionalCell, TakeCell};
+use crate::kernel::{ErrorCode, ProcessId};
 
 /// Syscall driver number.
-use capsules_core::driver;
+use crate::capsules_core::driver;
 pub const DRIVER_NUM: usize = driver::NUM::Max17205 as usize;
 
 pub const BUFFER_LENGTH: usize = 8;
@@ -431,7 +431,7 @@ impl<I: i2c::I2CDevice> MAX17205Client for MAX17205Driver<'_, I> {
                 let _ = upcalls.schedule_upcall(
                     upcall::EVENT_COMPLETE,
                     (
-                        kernel::errorcode::into_statuscode(error),
+                        crate::kernel::errorcode::into_statuscode(error),
                         status as usize,
                         0,
                     ),
@@ -452,7 +452,7 @@ impl<I: i2c::I2CDevice> MAX17205Client for MAX17205Driver<'_, I> {
                 let _ = upcalls.schedule_upcall(
                     upcall::EVENT_COMPLETE,
                     (
-                        kernel::errorcode::into_statuscode(error),
+                        crate::kernel::errorcode::into_statuscode(error),
                         percent as usize,
                         (capacity as usize) << 16 | (full_capacity as usize),
                     ),
@@ -467,7 +467,7 @@ impl<I: i2c::I2CDevice> MAX17205Client for MAX17205Driver<'_, I> {
                 let _ = upcalls.schedule_upcall(
                     upcall::EVENT_COMPLETE,
                     (
-                        kernel::errorcode::into_statuscode(error),
+                        crate::kernel::errorcode::into_statuscode(error),
                         voltage as usize,
                         current as usize,
                     ),
@@ -482,7 +482,7 @@ impl<I: i2c::I2CDevice> MAX17205Client for MAX17205Driver<'_, I> {
                 let _ = upcalls.schedule_upcall(
                     upcall::EVENT_COMPLETE,
                     (
-                        kernel::errorcode::into_statuscode(error),
+                        crate::kernel::errorcode::into_statuscode(error),
                         coulomb as usize,
                         0,
                     ),
@@ -497,7 +497,7 @@ impl<I: i2c::I2CDevice> MAX17205Client for MAX17205Driver<'_, I> {
                 let _ = upcalls.schedule_upcall(
                     upcall::EVENT_COMPLETE,
                     (
-                        kernel::errorcode::into_statuscode(error),
+                        crate::kernel::errorcode::into_statuscode(error),
                         (rid & 0xffffffff) as usize,
                         (rid >> 32) as usize,
                     ),
@@ -565,7 +565,7 @@ impl<I: i2c::I2CDevice> SyscallDriver for MAX17205Driver<'_, I> {
         }
     }
 
-    fn allocate_grant(&self, processid: ProcessId) -> Result<(), kernel::process::Error> {
+    fn allocate_grant(&self, processid: ProcessId) -> Result<(), crate::kernel::process::Error> {
         self.apps.enter(processid, |_, _| {})
     }
 }

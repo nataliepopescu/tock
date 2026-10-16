@@ -5,8 +5,8 @@
 //! Component for the sk68xx LED.
 
 use core::mem::MaybeUninit;
-use kernel::component::Component;
-use kernel::hil;
+use crate::kernel::component::Component;
+use crate::kernel::hil;
 
 /// T0H clock divider for an ESP32-C3 with a 160MHz clock speed.
 pub const ESP32C3_160MHZ_T0H: usize = 3;
@@ -14,7 +14,7 @@ pub const ESP32C3_160MHZ_T0H: usize = 3;
 #[macro_export]
 macro_rules! sk68xx_component_static {
     ($P:ty, $T0H:expr $(,)?) => {
-        kernel::static_buf!(capsules_extra::sk68xx::Sk68xx<'static, $P, $T0H>)
+        crate::kernel::static_buf!(crate::capsules_extra::sk68xx::Sk68xx<'static, $P, $T0H>)
     };
 }
 
@@ -38,12 +38,12 @@ impl<P: 'static + hil::gpio::Pin, const T0H: usize> Sk68xxComponent<P, T0H> {
 }
 
 impl<P: 'static + hil::gpio::Pin, const T0H: usize> Component for Sk68xxComponent<P, T0H> {
-    type StaticInput = &'static mut MaybeUninit<capsules_extra::sk68xx::Sk68xx<'static, P, T0H>>;
-    type Output = &'static capsules_extra::sk68xx::Sk68xx<'static, P, T0H>;
+    type StaticInput = &'static mut MaybeUninit<crate::capsules_extra::sk68xx::Sk68xx<'static, P, T0H>>;
+    type Output = &'static crate::capsules_extra::sk68xx::Sk68xx<'static, P, T0H>;
 
     fn finalize(self, static_buffer: Self::StaticInput) -> Self::Output {
         let sk68xx =
-            static_buffer.write(capsules_extra::sk68xx::Sk68xx::new(self.led_pin, self.nop));
+            static_buffer.write(crate::capsules_extra::sk68xx::Sk68xx::new(self.led_pin, self.nop));
         sk68xx.init();
         sk68xx
     }
@@ -52,7 +52,7 @@ impl<P: 'static + hil::gpio::Pin, const T0H: usize> Component for Sk68xxComponen
 #[macro_export]
 macro_rules! sk68xx_led_component_static {
     ($P:ty,  $T0H:expr $(,)?) => {
-        kernel::static_buf!(capsules_extra::sk68xx::Sk68xxLed<'static, $P, $T0H>)
+        crate::kernel::static_buf!(crate::capsules_extra::sk68xx::Sk68xxLed<'static, $P, $T0H>)
     };
 }
 
@@ -65,16 +65,16 @@ macro_rules! sk68xx_led_component_static_esp32c3_160mhz {
 }
 
 pub type Sk68xxLedComponentType<P, const T0H: usize> =
-    capsules_extra::sk68xx::Sk68xxLed<'static, P, T0H>;
+    crate::capsules_extra::sk68xx::Sk68xxLed<'static, P, T0H>;
 
 pub struct Sk68xxLedComponent<P: 'static + hil::gpio::Pin, const T0H: usize> {
-    sk68xx: &'static capsules_extra::sk68xx::Sk68xx<'static, P, T0H>,
+    sk68xx: &'static crate::capsules_extra::sk68xx::Sk68xx<'static, P, T0H>,
     index: usize,
 }
 
 impl<P: 'static + hil::gpio::Pin, const T0H: usize> Sk68xxLedComponent<P, T0H> {
     pub fn new(
-        sk68xx: &'static capsules_extra::sk68xx::Sk68xx<'static, P, T0H>,
+        sk68xx: &'static crate::capsules_extra::sk68xx::Sk68xx<'static, P, T0H>,
         index: usize,
     ) -> Self {
         Self { sk68xx, index }
@@ -82,11 +82,11 @@ impl<P: 'static + hil::gpio::Pin, const T0H: usize> Sk68xxLedComponent<P, T0H> {
 }
 
 impl<P: 'static + hil::gpio::Pin, const T0H: usize> Component for Sk68xxLedComponent<P, T0H> {
-    type StaticInput = &'static mut MaybeUninit<capsules_extra::sk68xx::Sk68xxLed<'static, P, T0H>>;
-    type Output = &'static capsules_extra::sk68xx::Sk68xxLed<'static, P, T0H>;
+    type StaticInput = &'static mut MaybeUninit<crate::capsules_extra::sk68xx::Sk68xxLed<'static, P, T0H>>;
+    type Output = &'static crate::capsules_extra::sk68xx::Sk68xxLed<'static, P, T0H>;
 
     fn finalize(self, static_buffer: Self::StaticInput) -> Self::Output {
-        let sk68xx_led = static_buffer.write(capsules_extra::sk68xx::Sk68xxLed::new(
+        let sk68xx_led = static_buffer.write(crate::capsules_extra::sk68xx::Sk68xxLed::new(
             self.sk68xx,
             self.index,
         ));

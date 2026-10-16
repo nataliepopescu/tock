@@ -7,7 +7,7 @@ use crate::capsules_extra::net::thread::tlv::{LinkMode, MulticastResponder, Tlv,
 use crate::capsules_extra::net::{ieee802154::MacAddress, ipv6::ip_utils::IPAddr};
 pub const THREAD_PORT_NUMBER: u16 = 19788;
 
-use kernel::ErrorCode;
+use crate::kernel::ErrorCode;
 
 pub const SECURITY_SUITE_LEN: usize = 1;
 pub const AUX_SEC_HEADER_LENGTH: usize = 10;

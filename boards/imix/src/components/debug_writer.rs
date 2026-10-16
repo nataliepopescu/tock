@@ -11,30 +11,30 @@
 //! Usage
 //! -----
 //! ```rust
-//! let debug_wrapper = components::debug_writer::DebugWriterComponent::new(
+//! let debug_wrapper = crate::components::debug_writer::DebugWriterComponent::new(
 //!     uart_mux,
-//!     create_capability!(kernel::capabilities::SetDebugWriterCapability),
+//!     create_capability!(crate::kernel::capabilities::SetDebugWriterCapability),
 //! )
-//! .finalize(components::debug_writer_component_static!());
+//! .finalize(crate::components::debug_writer_component_static!());
 //!
-//! let debug_wrapper = components::debug_writer::DebugWriterNoMuxComponent::new(
+//! let debug_wrapper = crate::components::debug_writer::DebugWriterNoMuxComponent::new(
 //!     &nrf52::uart::UARTE0,
-//!     create_capability!(kernel::capabilities::SetDebugWriterCapability),
+//!     create_capability!(crate::kernel::capabilities::SetDebugWriterCapability),
 //! )
-//! .finalize(components::debug_writer_no_mux_component_static!());
+//! .finalize(crate::components::debug_writer_no_mux_component_static!());
 //! ```
 
 // Author: Brad Campbell <bradjc@virginia.edu>
 // Last modified: 11/07/2019
 
-use capsules_core::virtualizers::virtual_uart::{MuxUart, UartDevice};
-use capsules_system::debug_writer::uart_debug_writer::UartDebugWriter;
+use crate::capsules_core::virtualizers::virtual_uart::{MuxUart, UartDevice};
+use crate::capsules_system::debug_writer::uart_debug_writer::UartDebugWriter;
 use core::mem::MaybeUninit;
-use kernel::capabilities::SetDebugWriterCapability;
-use kernel::collections::ring_buffer::RingBuffer;
-use kernel::component::Component;
-use kernel::hil;
-use kernel::hil::uart;
+use crate::kernel::capabilities::SetDebugWriterCapability;
+use crate::kernel::collections::ring_buffer::RingBuffer;
+use crate::kernel::component::Component;
+use crate::kernel::hil;
+use crate::kernel::hil::uart;
 
 // The sum of the output_buf and internal_buf is set to a multiple of 1024 bytes in order to avoid excessive
 // padding between kernel memory and application memory (which often needs to be aligned to at
@@ -55,11 +55,11 @@ const DEBUG_BUFFER_SPLIT: usize = 64;
 #[macro_export]
 macro_rules! debug_writer_component_static {
     ($BUF_SIZE_KB:expr) => {{
-        let uart = kernel::static_buf!(capsules_core::virtualizers::virtual_uart::UartDevice);
-        let ring = kernel::static_buf!(kernel::collections::ring_buffer::RingBuffer<'static, u8>);
-        let buffer = kernel::static_buf!([u8; 1024 * $BUF_SIZE_KB]);
+        let uart = crate::kernel::static_buf!(crate::capsules_core::virtualizers::virtual_uart::UartDevice);
+        let ring = crate::kernel::static_buf!(crate::kernel::collections::ring_buffer::RingBuffer<'static, u8>);
+        let buffer = crate::kernel::static_buf!([u8; 1024 * $BUF_SIZE_KB]);
         let debug =
-            kernel::static_buf!(capsules_system::debug_writer::uart_debug_writer::UartDebugWriter);
+            crate::kernel::static_buf!(crate::capsules_system::debug_writer::uart_debug_writer::UartDebugWriter);
 
         (uart, ring, buffer, debug)
     }};
@@ -74,10 +74,10 @@ macro_rules! debug_writer_component_static {
 #[macro_export]
 macro_rules! debug_writer_no_mux_component_static {
     ($BUF_SIZE_KB:expr) => {{
-        let ring = kernel::static_buf!(kernel::collections::ring_buffer::RingBuffer<'static, u8>);
-        let buffer = kernel::static_buf!([u8; 1024 * $BUF_SIZE_KB]);
+        let ring = crate::kernel::static_buf!(crate::kernel::collections::ring_buffer::RingBuffer<'static, u8>);
+        let buffer = crate::kernel::static_buf!([u8; 1024 * $BUF_SIZE_KB]);
         let debug =
-            kernel::static_buf!(capsules_system::debug_writer::uart_debug_writer::UartDebugWriter);
+            crate::kernel::static_buf!(crate::capsules_system::debug_writer::uart_debug_writer::UartDebugWriter);
 
         (ring, buffer, debug)
     }};
@@ -101,11 +101,11 @@ impl<const BUF_SIZE_BYTES: usize, C: SetDebugWriterCapability>
     /// Create a debug writer component while binding the global variable used
     /// by debug.rs to the main thread.
     #[cfg(target_has_atomic = "ptr")]
-    pub fn new<P: kernel::platform::chip::ThreadIdProvider>(
+    pub fn new<P: crate::kernel::platform::chip::ThreadIdProvider>(
         uart_mux: &'static MuxUart,
         capability: C,
     ) -> Self {
-        kernel::debug::initialize_debug_writer_wrapper::<P>();
+        crate::kernel::debug::initialize_debug_writer_wrapper::<P>();
 
         Self {
             uart_mux,
@@ -125,14 +125,14 @@ impl<const BUF_SIZE_BYTES: usize, C: SetDebugWriterCapability>
     /// support looks like this:
     ///
     /// ```
-    ///  components::debug_writer::DebugWriterComponent::new(
+    ///  crate::components::debug_writer::DebugWriterComponent::new(
     ///      ...,
     ///      || unsafe {
-    ///         kernel::debug::initialize_debug_writer_wrapper_unsafe::<
-    ///             <ChipHw as kernel::platform::chip::Chip>::ThreadIdProvider,
+    ///         crate::kernel::debug::initialize_debug_writer_wrapper_unsafe::<
+    ///             <ChipHw as crate::kernel::platform::chip::Chip>::ThreadIdProvider,
     ///         >();
     ///      })
-    /// .finalize(components::debug_writer_component_static!());
+    /// .finalize(crate::components::debug_writer_component_static!());
     /// ```
     pub fn new_unsafe<F>(uart_mux: &'static MuxUart, capability: C, bind_debug_global: F) -> Self
     where
@@ -164,7 +164,7 @@ impl<const BUF_SIZE_BYTES: usize, C: SetDebugWriterCapability> Component
 
         let (output_buf, internal_buf) = buf.split_at_mut(DEBUG_BUFFER_SPLIT);
 
-        let internal_buf = kernel::utilities::slice_uninit::mut_slice_as_maybeuninit(internal_buf);
+        let internal_buf = crate::kernel::utilities::slice_uninit::mut_slice_as_maybeuninit(internal_buf);
 
         // Create virtual device for kernel debug.
         let debugger_uart = s.0.write(UartDevice::new(self.uart_mux, false));
@@ -174,7 +174,7 @@ impl<const BUF_SIZE_BYTES: usize, C: SetDebugWriterCapability> Component
             s.3.write(UartDebugWriter::new(debugger_uart, output_buf, ring_buffer));
         hil::uart::Transmit::set_transmit_client(debugger_uart, debugger);
 
-        kernel::debug::set_debug_writer_wrapper(debugger, self.capability);
+        crate::kernel::debug::set_debug_writer_wrapper(debugger, self.capability);
     }
 }
 
@@ -222,7 +222,7 @@ impl<
         let buf = s.1.write([0; BUF_SIZE_BYTES]);
         let (output_buf, internal_buf) = buf.split_at_mut(DEBUG_BUFFER_SPLIT);
 
-        let internal_buf = kernel::utilities::slice_uninit::mut_slice_as_maybeuninit(internal_buf);
+        let internal_buf = crate::kernel::utilities::slice_uninit::mut_slice_as_maybeuninit(internal_buf);
 
         // Create virtual device for kernel debug.
         let ring_buffer = s.0.write(RingBuffer::new(internal_buf));
@@ -230,7 +230,7 @@ impl<
             s.2.write(UartDebugWriter::new(self.uart, output_buf, ring_buffer));
         hil::uart::Transmit::set_transmit_client(self.uart, debugger);
 
-        kernel::debug::set_debug_writer_wrapper(debugger, self.capability);
+        crate::kernel::debug::set_debug_writer_wrapper(debugger, self.capability);
 
         let _ = self.uart.configure(uart::Parameters {
             baud_rate: 115200,

@@ -11,4 +11,4 @@ pub use device::{Passphrase, Security, Ssid, len};
 pub use driver::WifiDriver;
 
 /// Syscall driver number.
-pub const DRIVER_NUM: usize = capsules_core::driver::NUM::Wifi as usize;
+pub const DRIVER_NUM: usize = crate::capsules_core::driver::NUM::Wifi as usize;

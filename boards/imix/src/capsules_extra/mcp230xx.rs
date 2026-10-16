@@ -30,7 +30,7 @@
 //! Example usage:
 //!
 //! ```rust,ignore
-//! # use kernel::static_init;
+//! # use crate::kernel::static_init;
 //!
 //! // Configure the MCP230xx. Device address 0x20.
 //! let mcp230xx_i2c = static_init!(
@@ -41,14 +41,14 @@
 //! let mcp230xx = static_init!(
 //!     capsules::mcp230xx::MCP230xx<'static>,
 //!     capsules::mcp230xx::MCP230xx::new(mcp230xx_i2c,
-//!                                       Some(&sam4l::gpio::PA[04]),
+//!                                       Some(&crate::sam4l::gpio::PA[04]),
 //!                                       None,
 //!                                       mcp230xx_buffer,
 //!                                       8, // How many pins in a bank
 //!                                       1, // How many pin banks on the chip
 //!                                       ));
 //! mcp230xx_i2c.set_client(mcp230xx);
-//! sam4l::gpio::PA[04].set_client(mcp230xx);
+//! crate::sam4l::gpio::PA[04].set_client(mcp230xx);
 //!
 //! // Create an array of the GPIO extenders so we can pass them to an
 //! // administrative layer that provides a single interface to them all.
@@ -70,11 +70,11 @@
 //! `mcp230xx` object is created.
 
 use core::cell::Cell;
-use kernel::ErrorCode;
-use kernel::hil;
-use kernel::hil::gpio;
-use kernel::hil::gpio_async;
-use kernel::utilities::cells::{OptionalCell, TakeCell};
+use crate::kernel::ErrorCode;
+use crate::kernel::hil;
+use crate::kernel::hil::gpio;
+use crate::kernel::hil::gpio_async;
+use crate::kernel::utilities::cells::{OptionalCell, TakeCell};
 
 // Buffer to use for I2C messages
 pub const BUFFER_LENGTH: usize = 7;

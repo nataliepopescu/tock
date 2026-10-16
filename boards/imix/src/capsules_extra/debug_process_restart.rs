@@ -11,7 +11,7 @@
 //! -----
 //!
 //! ```rust,ignore
-//! # use kernel::{capabilities, static_init};
+//! # use crate::kernel::{capabilities, static_init};
 //!
 //! struct ProcessMgmtCap;
 //! unsafe impl capabilities::ProcessManagementCapability for ProcessMgmtCap {}
@@ -23,17 +23,17 @@
 //!     capsules::debug_process_restart::DebugProcessRestart::new(
 //!         board_kernel,
 //!         ProcessMgmtCap
-//!         &sam4l::gpio::PA[16],
-//!         kernel::hil::gpio::ActivationMode::ActiveLow,
-//!         kernel::hil::gpio::FloatingState::PullUp
+//!         &crate::sam4l::gpio::PA[16],
+//!         crate::kernel::hil::gpio::ActivationMode::ActiveLow,
+//!         crate::kernel::hil::gpio::FloatingState::PullUp
 //!     )
 //! );
-//! sam4l::gpio::PA[16].set_client(debug_process_restart);
+//! crate::sam4l::gpio::PA[16].set_client(debug_process_restart);
 //! ```
 
-use kernel::Kernel;
-use kernel::capabilities::ProcessManagementCapability;
-use kernel::hil::gpio;
+use crate::kernel::Kernel;
+use crate::kernel::capabilities::ProcessManagementCapability;
+use crate::kernel::hil::gpio;
 
 pub struct DebugProcessRestart<'a, C: ProcessManagementCapability> {
     kernel: &'static Kernel,

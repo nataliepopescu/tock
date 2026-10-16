@@ -6,7 +6,7 @@
 //!
 //! This mirrors the `core::fmt::Write` interface but doesn't expect a `&str`.
 
-use kernel::utilities::binary_write::BinaryWrite;
+use crate::kernel::utilities::binary_write::BinaryWrite;
 
 /// Wrapper to convert a binary buffer writer to provide a `core::fmt::Write`
 /// interface with offset tracking. This allows a synchronous writer to use

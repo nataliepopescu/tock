@@ -23,10 +23,10 @@
 //  of correctly turning the submodules on and off. It allows the caller to
 //  conveniently disable and enable the individual submodules at will.
 
-use kernel::hil::Controller;
-use sam4l::gpio::GPIOPin;
-use sam4l::gpio::PeripheralFunction::{A, B, E};
-use sam4l::gpio::{PeripheralFunction, Port};
+use crate::kernel::hil::Controller;
+use crate::sam4l::gpio::GPIOPin;
+use crate::sam4l::gpio::PeripheralFunction::{A, B, E};
+use crate::sam4l::gpio::{PeripheralFunction, Port};
 
 struct DetachablePin {
     pin: &'static GPIOPin<'static>,

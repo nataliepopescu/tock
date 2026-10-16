@@ -5,12 +5,12 @@
 //! Helper library for RSA public and private keys
 
 use core::cell::Cell;
-use kernel::ErrorCode;
-use kernel::hil::public_key_crypto::keys::{
+use crate::kernel::ErrorCode;
+use crate::kernel::hil::public_key_crypto::keys::{
     PubKey, PubKeyMut, PubPrivKey, PubPrivKeyMut, RsaKey, RsaKeyMut, RsaPrivKey, RsaPrivKeyMut,
 };
-use kernel::utilities::cells::OptionalCell;
-use kernel::utilities::mut_imut_buffer::MutImutBuffer;
+use crate::kernel::utilities::cells::OptionalCell;
+use crate::kernel::utilities::mut_imut_buffer::MutImutBuffer;
 
 // Copy OpenSSL and use e as 65537
 const PUBLIC_EXPONENT: u32 = 65537;
@@ -94,7 +94,7 @@ impl<const L: usize> PubKey for RSAKeys<L> {
         Ok(())
     }
 
-    fn pub_key(&self) -> Result<&'static [u8], kernel::ErrorCode> {
+    fn pub_key(&self) -> Result<&'static [u8], crate::kernel::ErrorCode> {
         if self.public_key.is_some() {
             match self.public_key.take().unwrap() {
                 MutImutBuffer::Immutable(ret) => Ok(ret),
@@ -132,7 +132,7 @@ impl<const L: usize> PubKeyMut for RSAKeys<L> {
         Ok(())
     }
 
-    fn pub_key(&self) -> Result<&'static mut [u8], kernel::ErrorCode> {
+    fn pub_key(&self) -> Result<&'static mut [u8], crate::kernel::ErrorCode> {
         if self.public_key.is_some() {
             match self.public_key.take().unwrap() {
                 MutImutBuffer::Mutable(ret) => Ok(ret),
@@ -360,7 +360,7 @@ impl PubKey for RSA2048Keys {
     fn import_public_key(
         &self,
         public_key: &'static [u8],
-    ) -> Result<(), (kernel::ErrorCode, &'static [u8])> {
+    ) -> Result<(), (crate::kernel::ErrorCode, &'static [u8])> {
         let key = self
             .0
             .import_public_key(MutImutBuffer::Immutable(public_key));
@@ -374,7 +374,7 @@ impl PubKey for RSA2048Keys {
         }
     }
 
-    fn pub_key(&self) -> Result<&'static [u8], kernel::ErrorCode> {
+    fn pub_key(&self) -> Result<&'static [u8], crate::kernel::ErrorCode> {
         match self.0.pub_key() {
             Ok(buf) => match buf {
                 MutImutBuffer::Immutable(ret) => Ok(ret),
@@ -393,7 +393,7 @@ impl PubPrivKey for RSA2048Keys {
     fn import_private_key(
         &self,
         private_key: &'static [u8],
-    ) -> Result<(), (kernel::ErrorCode, &'static [u8])> {
+    ) -> Result<(), (crate::kernel::ErrorCode, &'static [u8])> {
         let key = self
             .0
             .import_private_key(MutImutBuffer::Immutable(private_key));
@@ -407,7 +407,7 @@ impl PubPrivKey for RSA2048Keys {
         }
     }
 
-    fn priv_key(&self) -> Result<&'static [u8], kernel::ErrorCode> {
+    fn priv_key(&self) -> Result<&'static [u8], crate::kernel::ErrorCode> {
         match self.0.priv_key() {
             Ok(buf) => match buf {
                 MutImutBuffer::Immutable(ret) => Ok(ret),
@@ -458,7 +458,7 @@ impl PubKeyMut for RSA2048KeysMut {
     fn import_public_key(
         &self,
         public_key: &'static mut [u8],
-    ) -> Result<(), (kernel::ErrorCode, &'static mut [u8])> {
+    ) -> Result<(), (crate::kernel::ErrorCode, &'static mut [u8])> {
         let key = self.0.import_public_key(MutImutBuffer::Mutable(public_key));
 
         match key {
@@ -470,7 +470,7 @@ impl PubKeyMut for RSA2048KeysMut {
         }
     }
 
-    fn pub_key(&self) -> Result<&'static mut [u8], kernel::ErrorCode> {
+    fn pub_key(&self) -> Result<&'static mut [u8], crate::kernel::ErrorCode> {
         match self.0.pub_key() {
             Ok(buf) => match buf {
                 MutImutBuffer::Mutable(ret) => Ok(ret),
@@ -489,7 +489,7 @@ impl PubPrivKeyMut for RSA2048KeysMut {
     fn import_private_key(
         &self,
         private_key: &'static mut [u8],
-    ) -> Result<(), (kernel::ErrorCode, &'static mut [u8])> {
+    ) -> Result<(), (crate::kernel::ErrorCode, &'static mut [u8])> {
         let key = self
             .0
             .import_private_key(MutImutBuffer::Mutable(private_key));
@@ -503,7 +503,7 @@ impl PubPrivKeyMut for RSA2048KeysMut {
         }
     }
 
-    fn priv_key(&self) -> Result<&'static mut [u8], kernel::ErrorCode> {
+    fn priv_key(&self) -> Result<&'static mut [u8], crate::kernel::ErrorCode> {
         match self.0.priv_key() {
             Ok(buf) => match buf {
                 MutImutBuffer::Mutable(ret) => Ok(ret),
@@ -554,7 +554,7 @@ impl PubKey for RSA4096Keys {
     fn import_public_key(
         &self,
         public_key: &'static [u8],
-    ) -> Result<(), (kernel::ErrorCode, &'static [u8])> {
+    ) -> Result<(), (crate::kernel::ErrorCode, &'static [u8])> {
         let key = self
             .0
             .import_public_key(MutImutBuffer::Immutable(public_key));
@@ -568,7 +568,7 @@ impl PubKey for RSA4096Keys {
         }
     }
 
-    fn pub_key(&self) -> Result<&'static [u8], kernel::ErrorCode> {
+    fn pub_key(&self) -> Result<&'static [u8], crate::kernel::ErrorCode> {
         match self.0.pub_key() {
             Ok(buf) => match buf {
                 MutImutBuffer::Immutable(ret) => Ok(ret),
@@ -587,7 +587,7 @@ impl PubPrivKey for RSA4096Keys {
     fn import_private_key(
         &self,
         private_key: &'static [u8],
-    ) -> Result<(), (kernel::ErrorCode, &'static [u8])> {
+    ) -> Result<(), (crate::kernel::ErrorCode, &'static [u8])> {
         let key = self
             .0
             .import_private_key(MutImutBuffer::Immutable(private_key));
@@ -601,7 +601,7 @@ impl PubPrivKey for RSA4096Keys {
         }
     }
 
-    fn priv_key(&self) -> Result<&'static [u8], kernel::ErrorCode> {
+    fn priv_key(&self) -> Result<&'static [u8], crate::kernel::ErrorCode> {
         match self.0.priv_key() {
             Ok(buf) => match buf {
                 MutImutBuffer::Immutable(ret) => Ok(ret),
@@ -652,7 +652,7 @@ impl PubKeyMut for RSA4096KeysMut {
     fn import_public_key(
         &self,
         public_key: &'static mut [u8],
-    ) -> Result<(), (kernel::ErrorCode, &'static mut [u8])> {
+    ) -> Result<(), (crate::kernel::ErrorCode, &'static mut [u8])> {
         let key = self.0.import_public_key(MutImutBuffer::Mutable(public_key));
 
         match key {
@@ -664,7 +664,7 @@ impl PubKeyMut for RSA4096KeysMut {
         }
     }
 
-    fn pub_key(&self) -> Result<&'static mut [u8], kernel::ErrorCode> {
+    fn pub_key(&self) -> Result<&'static mut [u8], crate::kernel::ErrorCode> {
         match self.0.pub_key() {
             Ok(buf) => match buf {
                 MutImutBuffer::Mutable(ret) => Ok(ret),
@@ -683,7 +683,7 @@ impl PubPrivKeyMut for RSA4096KeysMut {
     fn import_private_key(
         &self,
         private_key: &'static mut [u8],
-    ) -> Result<(), (kernel::ErrorCode, &'static mut [u8])> {
+    ) -> Result<(), (crate::kernel::ErrorCode, &'static mut [u8])> {
         let key = self
             .0
             .import_private_key(MutImutBuffer::Mutable(private_key));
@@ -697,7 +697,7 @@ impl PubPrivKeyMut for RSA4096KeysMut {
         }
     }
 
-    fn priv_key(&self) -> Result<&'static mut [u8], kernel::ErrorCode> {
+    fn priv_key(&self) -> Result<&'static mut [u8], crate::kernel::ErrorCode> {
         match self.0.priv_key() {
             Ok(buf) => match buf {
                 MutImutBuffer::Mutable(ret) => Ok(ret),

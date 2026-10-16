@@ -45,8 +45,8 @@
 //!
 //! ```
 //! # use core::cell::Cell;
-//! # use kernel::platform::dma_fence::DmaFence;
-//! # use kernel::utilities::dma_slice::DmaSliceMut;
+//! # use crate::kernel::platform::dma_fence::DmaFence;
+//! # use crate::kernel::utilities::dma_slice::DmaSliceMut;
 //! #
 //! # #[derive(Debug, Copy, Clone)]
 //! # struct SomeDmaFence;

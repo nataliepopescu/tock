@@ -12,15 +12,15 @@
 //! tests in parallel with different bit rates should see different clock
 //! frequencies.
 
-use capsules_core::virtualizers::virtual_spi::MuxSpiMaster;
-use components::spi::SpiComponent;
+use crate::capsules_core::virtualizers::virtual_spi::MuxSpiMaster;
+use crate::components::spi::SpiComponent;
 use core::cell::Cell;
 use core::ptr::addr_of_mut;
-use kernel::ErrorCode;
-use kernel::component::Component;
-use kernel::debug;
-use kernel::hil::spi::{self, SpiMasterDevice};
-use kernel::utilities::leasable_buffer::SubSliceMut;
+use crate::kernel::ErrorCode;
+use crate::kernel::component::Component;
+use crate::kernel::debug;
+use crate::kernel::hil::spi::{self, SpiMasterDevice};
+use crate::kernel::utilities::leasable_buffer::SubSliceMut;
 
 #[allow(unused_variables, dead_code)]
 pub struct SpiLoopback {
@@ -89,7 +89,7 @@ pub unsafe fn spi_loopback_test(
     counter: u8,
     speed: u32,
 ) {
-    let spicb = kernel::static_init!(SpiLoopback, SpiLoopback::new(spi, 0, counter));
+    let spicb = crate::kernel::static_init!(SpiLoopback, SpiLoopback::new(spi, 0, counter));
     spi.set_client(spicb);
     spi.set_rate(speed)
         .expect("Failed to set SPI speed in SPI loopback test.");
@@ -109,14 +109,14 @@ pub unsafe fn spi_loopback_test(
 
 #[inline(never)]
 #[allow(unused_variables, dead_code)]
-pub unsafe fn spi_two_loopback_test(mux: &'static MuxSpiMaster<'static, sam4l::spi::SpiHw>) {
-    let spi_fast = SpiComponent::new(mux, sam4l::spi::Peripheral::Peripheral0)
-        .finalize(components::spi_component_static!(sam4l::spi::SpiHw));
-    let spi_slow = SpiComponent::new(mux, sam4l::spi::Peripheral::Peripheral1)
-        .finalize(components::spi_component_static!(sam4l::spi::SpiHw));
+pub unsafe fn spi_two_loopback_test(mux: &'static MuxSpiMaster<'static, crate::sam4l::spi::SpiHw>) {
+    let spi_fast = SpiComponent::new(mux, crate::sam4l::spi::Peripheral::Peripheral0)
+        .finalize(crate::components::spi_component_static!(crate::sam4l::spi::SpiHw));
+    let spi_slow = SpiComponent::new(mux, crate::sam4l::spi::Peripheral::Peripheral1)
+        .finalize(crate::components::spi_component_static!(crate::sam4l::spi::SpiHw));
 
-    let spicb_fast = kernel::static_init!(SpiLoopback, SpiLoopback::new(spi_fast, 0, 0x80));
-    let spicb_slow = kernel::static_init!(SpiLoopback, SpiLoopback::new(spi_slow, 1, 0x00));
+    let spicb_fast = crate::kernel::static_init!(SpiLoopback, SpiLoopback::new(spi_fast, 0, 0x80));
+    let spicb_slow = crate::kernel::static_init!(SpiLoopback, SpiLoopback::new(spi_slow, 1, 0x00));
     spi_fast
         .set_rate(1000000)
         .expect("Failed to set SPI speed in SPI loopback test.");

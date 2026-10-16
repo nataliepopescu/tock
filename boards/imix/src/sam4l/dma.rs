@@ -9,11 +9,11 @@ use core::cell::Cell;
 use core::cmp;
 use core::sync::atomic;
 use enum_primitive::cast::FromPrimitive;
-use kernel::debug;
-use kernel::utilities::StaticRef;
-use kernel::utilities::cells::{OptionalCell, TakeCell};
-use kernel::utilities::registers::interfaces::{Readable, Writeable};
-use kernel::utilities::registers::{ReadOnly, ReadWrite, WriteOnly, register_bitfields};
+use crate::kernel::debug;
+use crate::kernel::utilities::StaticRef;
+use crate::kernel::utilities::cells::{OptionalCell, TakeCell};
+use crate::kernel::utilities::registers::interfaces::{Readable, Writeable};
+use crate::kernel::utilities::registers::{ReadOnly, ReadWrite, WriteOnly, register_bitfields};
 
 /// Memory registers for a DMA channel. Section 16.6.1 of the datasheet.
 #[repr(C)]

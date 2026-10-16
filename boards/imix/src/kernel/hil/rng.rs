@@ -52,11 +52,11 @@
 //! once a second using the `Alarm` and `RNG` traits.
 //!
 //! ```
-//! use kernel::hil;
-//! use kernel::hil::time::ConvertTicks;
-//! use kernel::hil::time::Frequency;
-//! use kernel::hil::time::Time;
-//! use kernel::ErrorCode;
+//! use crate::kernel::hil;
+//! use crate::kernel::hil::time::ConvertTicks;
+//! use crate::kernel::hil::time::Frequency;
+//! use crate::kernel::hil::time::Time;
+//! use crate::kernel::ErrorCode;
 //!
 //! struct RngTest<'a, A: 'a + hil::time::Alarm<'a>> {
 //!     rng: &'a dyn hil::rng::Rng<'a>,

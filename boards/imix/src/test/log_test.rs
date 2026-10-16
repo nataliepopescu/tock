@@ -29,28 +29,28 @@
 //! and use the `USER` and `RESET` buttons to manually erase the log and reboot the imix,
 //! respectively.
 
-use capsules_core::virtualizers::virtual_alarm::{MuxAlarm, VirtualMuxAlarm};
-use capsules_extra::log;
+use crate::capsules_core::virtualizers::virtual_alarm::{MuxAlarm, VirtualMuxAlarm};
+use crate::capsules_extra::log;
 use core::cell::Cell;
 use core::ptr::addr_of_mut;
-use kernel::ErrorCode;
-use kernel::debug;
-use kernel::hil::flash;
-use kernel::hil::gpio::{self, Interrupt};
-use kernel::hil::log::{LogRead, LogReadClient, LogWrite, LogWriteClient};
-use kernel::hil::time::{Alarm, AlarmClient, ConvertTicks};
-use kernel::static_init;
-use kernel::storage_volume;
-use kernel::utilities::cells::{NumericCellExt, TakeCell};
-use sam4l::ast::Ast;
-use sam4l::flashcalw;
+use crate::kernel::ErrorCode;
+use crate::kernel::debug;
+use crate::kernel::hil::flash;
+use crate::kernel::hil::gpio::{self, Interrupt};
+use crate::kernel::hil::log::{LogRead, LogReadClient, LogWrite, LogWriteClient};
+use crate::kernel::hil::time::{Alarm, AlarmClient, ConvertTicks};
+use crate::kernel::static_init;
+use crate::kernel::storage_volume;
+use crate::kernel::utilities::cells::{NumericCellExt, TakeCell};
+use crate::sam4l::ast::Ast;
+use crate::sam4l::flashcalw;
 
 // Allocate 2kiB volume for log storage.
 storage_volume!(TEST_LOG, 2);
 
 pub unsafe fn run(
     mux_alarm: &'static MuxAlarm<'static, Ast>,
-    flash_controller: &'static sam4l::flashcalw::FLASHCALW,
+    flash_controller: &'static crate::sam4l::flashcalw::FLASHCALW,
 ) {
     // Set up flash controller.
     flash_controller.configure();
@@ -61,7 +61,7 @@ pub unsafe fn run(
         Log,
         log::Log::new(&TEST_LOG, flash_controller, pagebuffer, true)
     );
-    kernel::deferred_call::DeferredCallClient::register(log);
+    crate::kernel::deferred_call::DeferredCallClient::register(log);
     flash::HasClient::set_client(flash_controller, log);
 
     let alarm = static_init!(
@@ -80,7 +80,7 @@ pub unsafe fn run(
     test.alarm.set_alarm_client(test);
 
     // Create user button.
-    let button_pin = sam4l::gpio::GPIOPin::new(sam4l::gpio::Pin::PC24);
+    let button_pin = crate::sam4l::gpio::GPIOPin::new(crate::sam4l::gpio::Pin::PC24);
     button_pin.enable_interrupts(gpio::InterruptEdge::RisingEdge);
     button_pin.set_client(test);
 

@@ -10,38 +10,38 @@
 //! Usage
 //! -----
 //! ```rust
-//! let nonvolatile_storage = components::nonvolatile_storage::NonvolatileStorageComponent::new(
+//! let nonvolatile_storage = crate::components::nonvolatile_storage::NonvolatileStorageComponent::new(
 //!     board_kernel,
-//!     &sam4l::flashcalw::FLASH_CONTROLLER,
+//!     &crate::sam4l::flashcalw::FLASH_CONTROLLER,
 //!     0x60000,
 //!     0x20000,
 //!     core::ptr::addr_of!(_sstorage) as usize,
 //!     core::ptr::addr_of!(_estorage) as usize,
 //! )
-//! .finalize(components::nonvolatile_storage_component_static!(
-//!     sam4l::flashcalw::FLASHCALW
+//! .finalize(crate::components::nonvolatile_storage_component_static!(
+//!     crate::sam4l::flashcalw::FLASHCALW
 //! ));
 //! ```
 
-use capsules_extra::nonvolatile_storage_driver::NonvolatileStorage;
-use capsules_extra::nonvolatile_to_pages::NonvolatileToPages;
+use crate::capsules_extra::nonvolatile_storage_driver::NonvolatileStorage;
+use crate::capsules_extra::nonvolatile_to_pages::NonvolatileToPages;
 use core::mem::MaybeUninit;
-use kernel::capabilities::MemoryAllocationCapability;
-use kernel::component::Component;
-use kernel::hil;
+use crate::kernel::capabilities::MemoryAllocationCapability;
+use crate::kernel::component::Component;
+use crate::kernel::hil;
 
 // Setup static space for the objects.
 #[macro_export]
 macro_rules! nonvolatile_storage_component_static {
     ($F:ty $(,)?) => {{
-        let page = kernel::static_buf!(<$F as kernel::hil::flash::Flash>::Page);
-        let ntp = kernel::static_buf!(
-            capsules_extra::nonvolatile_to_pages::NonvolatileToPages<'static, $F>
+        let page = crate::kernel::static_buf!(<$F as crate::kernel::hil::flash::Flash>::Page);
+        let ntp = crate::kernel::static_buf!(
+            crate::capsules_extra::nonvolatile_to_pages::NonvolatileToPages<'static, $F>
         );
-        let ns = kernel::static_buf!(
-            capsules_extra::nonvolatile_storage_driver::NonvolatileStorage<'static>
+        let ns = crate::kernel::static_buf!(
+            crate::capsules_extra::nonvolatile_storage_driver::NonvolatileStorage<'static>
         );
-        let buffer = kernel::static_buf!([u8; capsules_extra::nonvolatile_storage_driver::BUF_LEN]);
+        let buffer = crate::kernel::static_buf!([u8; crate::capsules_extra::nonvolatile_storage_driver::BUF_LEN]);
 
         (page, ntp, ns, buffer)
     }};
@@ -53,7 +53,7 @@ pub struct NonvolatileStorageComponent<
     F: 'static + hil::flash::Flash + hil::flash::HasClient<'static, NonvolatileToPages<'static, F>>,
     CAP: MemoryAllocationCapability + 'static,
 > {
-    board_kernel: &'static kernel::Kernel,
+    board_kernel: &'static crate::kernel::Kernel,
     driver_num: usize,
     flash: &'static F,
     userspace_start: usize,
@@ -69,7 +69,7 @@ impl<
 > NonvolatileStorageComponent<F, CAP>
 {
     pub fn new(
-        board_kernel: &'static kernel::Kernel,
+        board_kernel: &'static crate::kernel::Kernel,
         driver_num: usize,
         flash: &'static F,
         userspace_start: usize,
@@ -100,14 +100,14 @@ impl<
         &'static mut MaybeUninit<<F as hil::flash::Flash>::Page>,
         &'static mut MaybeUninit<NonvolatileToPages<'static, F>>,
         &'static mut MaybeUninit<NonvolatileStorage<'static>>,
-        &'static mut MaybeUninit<[u8; capsules_extra::nonvolatile_storage_driver::BUF_LEN]>,
+        &'static mut MaybeUninit<[u8; crate::capsules_extra::nonvolatile_storage_driver::BUF_LEN]>,
     );
     type Output = &'static NonvolatileStorage<'static>;
 
     fn finalize(self, static_buffer: Self::StaticInput) -> Self::Output {
         let buffer = static_buffer
             .3
-            .write([0; capsules_extra::nonvolatile_storage_driver::BUF_LEN]);
+            .write([0; crate::capsules_extra::nonvolatile_storage_driver::BUF_LEN]);
 
         let flash_pagebuffer = static_buffer
             .0

@@ -5,14 +5,14 @@
 //! Component for SignatureVerifyInMemoryKeys.
 
 use core::mem::MaybeUninit;
-use kernel::component::Component;
-use kernel::deferred_call::DeferredCallClient;
+use crate::kernel::component::Component;
+use crate::kernel::deferred_call::DeferredCallClient;
 
 #[macro_export]
 macro_rules! signature_verify_in_memory_keys_component_static {
     ($S:ty, $NUM_KEYS:expr, $KL:expr, $HL:expr, $SL:expr $(,)?) => {{
-        let verifier = kernel::static_buf!(
-            capsules_extra::signature_verify_in_memory_keys::SignatureVerifyInMemoryKeys<
+        let verifier = crate::kernel::static_buf!(
+            crate::capsules_extra::signature_verify_in_memory_keys::SignatureVerifyInMemoryKeys<
                 'static,
                 $S,
                 $NUM_KEYS,
@@ -32,7 +32,7 @@ pub type SignatureVerifyInMemoryKeysComponentType<
     const KL: usize,
     const HL: usize,
     const SL: usize,
-> = capsules_extra::signature_verify_in_memory_keys::SignatureVerifyInMemoryKeys<
+> = crate::capsules_extra::signature_verify_in_memory_keys::SignatureVerifyInMemoryKeys<
     'static,
     S,
     NUM_KEYS,
@@ -42,8 +42,8 @@ pub type SignatureVerifyInMemoryKeysComponentType<
 >;
 
 pub struct SignatureVerifyInMemoryKeysComponent<
-    S: kernel::hil::public_key_crypto::signature::SignatureVerify<'static, HL, SL>
-        + kernel::hil::public_key_crypto::keys::SetKeyBySlice<'static, KL>
+    S: crate::kernel::hil::public_key_crypto::signature::SignatureVerify<'static, HL, SL>
+        + crate::kernel::hil::public_key_crypto::keys::SetKeyBySlice<'static, KL>
         + 'static,
     const NUM_KEYS: usize,
     const KL: usize,
@@ -55,8 +55,8 @@ pub struct SignatureVerifyInMemoryKeysComponent<
 }
 
 impl<
-    S: kernel::hil::public_key_crypto::signature::SignatureVerify<'static, HL, SL>
-        + kernel::hil::public_key_crypto::keys::SetKeyBySlice<'static, KL>
+    S: crate::kernel::hil::public_key_crypto::signature::SignatureVerify<'static, HL, SL>
+        + crate::kernel::hil::public_key_crypto::keys::SetKeyBySlice<'static, KL>
         + 'static,
     const NUM_KEYS: usize,
     const KL: usize,
@@ -70,8 +70,8 @@ impl<
 }
 
 impl<
-    S: kernel::hil::public_key_crypto::signature::SignatureVerify<'static, HL, SL>
-        + kernel::hil::public_key_crypto::keys::SetKeyBySlice<'static, KL>
+    S: crate::kernel::hil::public_key_crypto::signature::SignatureVerify<'static, HL, SL>
+        + crate::kernel::hil::public_key_crypto::keys::SetKeyBySlice<'static, KL>
         + 'static,
     const NUM_KEYS: usize,
     const KL: usize,
@@ -80,7 +80,7 @@ impl<
 > Component for SignatureVerifyInMemoryKeysComponent<S, NUM_KEYS, KL, HL, SL>
 {
     type StaticInput = &'static mut MaybeUninit<
-        capsules_extra::signature_verify_in_memory_keys::SignatureVerifyInMemoryKeys<
+        crate::capsules_extra::signature_verify_in_memory_keys::SignatureVerifyInMemoryKeys<
             'static,
             S,
             NUM_KEYS,
@@ -91,7 +91,7 @@ impl<
     >;
 
     type Output =
-        &'static capsules_extra::signature_verify_in_memory_keys::SignatureVerifyInMemoryKeys<
+        &'static crate::capsules_extra::signature_verify_in_memory_keys::SignatureVerifyInMemoryKeys<
             'static,
             S,
             NUM_KEYS,
@@ -102,7 +102,7 @@ impl<
 
     fn finalize(self, s: Self::StaticInput) -> Self::Output {
         let verifier_multiple_keys = s.write(
-            capsules_extra::signature_verify_in_memory_keys::SignatureVerifyInMemoryKeys::new(
+            crate::capsules_extra::signature_verify_in_memory_keys::SignatureVerifyInMemoryKeys::new(
                 self.verifier,
             ),
         );

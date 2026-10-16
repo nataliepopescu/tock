@@ -14,23 +14,23 @@
 //! Usage
 //! -----
 //! ```rust
-//! let nonvolatile_storage = components::isolated_nonvolatile_storage::IsolatedNonvolatileStorageComponent::new(
+//! let nonvolatile_storage = crate::components::isolated_nonvolatile_storage::IsolatedNonvolatileStorageComponent::new(
 //!     board_kernel,
-//!     &sam4l::flashcalw::FLASH_CONTROLLER,
+//!     &crate::sam4l::flashcalw::FLASH_CONTROLLER,
 //!     0x60000,
 //!     0x20000,
 //! )
-//! .finalize(components::isolated_nonvolatile_storage_component_static!(
-//!     sam4l::flashcalw::FLASHCALW
+//! .finalize(crate::components::isolated_nonvolatile_storage_component_static!(
+//!     crate::sam4l::flashcalw::FLASHCALW
 //! ));
 //! ```
 
-use capsules_extra::isolated_nonvolatile_storage_driver::IsolatedNonvolatileStorage;
-use capsules_extra::nonvolatile_to_pages::NonvolatileToPages;
+use crate::capsules_extra::isolated_nonvolatile_storage_driver::IsolatedNonvolatileStorage;
+use crate::capsules_extra::nonvolatile_to_pages::NonvolatileToPages;
 use core::mem::MaybeUninit;
-use kernel::capabilities::MemoryAllocationCapability;
-use kernel::component::Component;
-use kernel::hil;
+use crate::kernel::capabilities::MemoryAllocationCapability;
+use crate::kernel::component::Component;
+use crate::kernel::hil;
 
 // How much storage space to allocate per-app. Currently, regions are not
 // growable, so this will be all the space the app gets.
@@ -41,18 +41,18 @@ pub const ISOLATED_NONVOLATILE_STORAGE_APP_REGION_SIZE_DEFAULT: usize = 2048;
 #[macro_export]
 macro_rules! isolated_nonvolatile_storage_component_static {
     ($F:ty, $APP_REGION_SIZE:expr $(,)?) => {{
-        let page = kernel::static_buf!(<$F as kernel::hil::flash::Flash>::Page);
-        let ntp = kernel::static_buf!(
-            capsules_extra::nonvolatile_to_pages::NonvolatileToPages<'static, $F>
+        let page = crate::kernel::static_buf!(<$F as crate::kernel::hil::flash::Flash>::Page);
+        let ntp = crate::kernel::static_buf!(
+            crate::capsules_extra::nonvolatile_to_pages::NonvolatileToPages<'static, $F>
         );
-        let ns = kernel::static_buf!(
-            capsules_extra::isolated_nonvolatile_storage_driver::IsolatedNonvolatileStorage<
+        let ns = crate::kernel::static_buf!(
+            crate::capsules_extra::isolated_nonvolatile_storage_driver::IsolatedNonvolatileStorage<
                 'static,
                 $APP_REGION_SIZE,
             >
         );
         let buffer =
-            kernel::static_buf!([u8; capsules_extra::isolated_nonvolatile_storage_driver::BUF_LEN]);
+            crate::kernel::static_buf!([u8; crate::capsules_extra::isolated_nonvolatile_storage_driver::BUF_LEN]);
 
         (page, ntp, ns, buffer)
     }};
@@ -66,7 +66,7 @@ pub struct IsolatedNonvolatileStorageComponent<
     const APP_REGION_SIZE: usize,
     CAP: MemoryAllocationCapability + 'static,
 > {
-    board_kernel: &'static kernel::Kernel,
+    board_kernel: &'static crate::kernel::Kernel,
     driver_num: usize,
     flash: &'static F,
     userspace_start: usize,
@@ -81,7 +81,7 @@ impl<
 > IsolatedNonvolatileStorageComponent<F, APP_REGION_SIZE, CAP>
 {
     pub fn new(
-        board_kernel: &'static kernel::Kernel,
+        board_kernel: &'static crate::kernel::Kernel,
         driver_num: usize,
         flash: &'static F,
         userspace_start: usize,
@@ -110,7 +110,7 @@ impl<
         &'static mut MaybeUninit<NonvolatileToPages<'static, F>>,
         &'static mut MaybeUninit<IsolatedNonvolatileStorage<'static, APP_REGION_SIZE>>,
         &'static mut MaybeUninit<
-            [u8; capsules_extra::isolated_nonvolatile_storage_driver::BUF_LEN],
+            [u8; crate::capsules_extra::isolated_nonvolatile_storage_driver::BUF_LEN],
         >,
     );
     type Output = &'static IsolatedNonvolatileStorage<'static, APP_REGION_SIZE>;
@@ -118,7 +118,7 @@ impl<
     fn finalize(self, static_buffer: Self::StaticInput) -> Self::Output {
         let buffer = static_buffer
             .3
-            .write([0; capsules_extra::isolated_nonvolatile_storage_driver::BUF_LEN]);
+            .write([0; crate::capsules_extra::isolated_nonvolatile_storage_driver::BUF_LEN]);
 
         let flash_pagebuffer = static_buffer
             .0

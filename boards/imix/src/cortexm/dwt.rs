@@ -7,10 +7,10 @@
 //! <https://developer.arm.com/documentation/100166/0001/Data-Watchpoint-and-Trace-Unit/DWT-Programmers--model?lang=en>
 
 use super::dcb;
-use kernel::hil;
-use kernel::utilities::StaticRef;
-use kernel::utilities::registers::interfaces::{ReadWriteable, Readable, Writeable};
-use kernel::utilities::registers::{ReadOnly, ReadWrite, register_bitfields, register_structs};
+use crate::kernel::hil;
+use crate::kernel::utilities::StaticRef;
+use crate::kernel::utilities::registers::interfaces::{ReadWriteable, Readable, Writeable};
+use crate::kernel::utilities::registers::{ReadOnly, ReadWrite, register_bitfields, register_structs};
 
 register_structs! {
     /// In an ARMv7-M processor, a System Control Block (SCB) in the SCS

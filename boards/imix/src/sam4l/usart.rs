@@ -9,16 +9,16 @@
 use core::cell::Cell;
 use core::cmp;
 use core::sync::atomic::{AtomicBool, Ordering};
-use kernel::ErrorCode;
-use kernel::deferred_call::{DeferredCall, DeferredCallClient};
-use kernel::hil::spi;
-use kernel::hil::spi::cs::ChipSelectPolar;
-use kernel::hil::uart;
-use kernel::utilities::StaticRef;
-use kernel::utilities::cells::OptionalCell;
-use kernel::utilities::leasable_buffer::SubSliceMut;
-use kernel::utilities::registers::interfaces::{ReadWriteable, Readable, Writeable};
-use kernel::utilities::registers::{ReadOnly, ReadWrite, WriteOnly, register_bitfields};
+use crate::kernel::ErrorCode;
+use crate::kernel::deferred_call::{DeferredCall, DeferredCallClient};
+use crate::kernel::hil::spi;
+use crate::kernel::hil::spi::cs::ChipSelectPolar;
+use crate::kernel::hil::uart;
+use crate::kernel::utilities::StaticRef;
+use crate::kernel::utilities::cells::OptionalCell;
+use crate::kernel::utilities::leasable_buffer::SubSliceMut;
+use crate::kernel::utilities::registers::interfaces::{ReadWriteable, Readable, Writeable};
+use crate::kernel::utilities::registers::{ReadOnly, ReadWrite, WriteOnly, register_bitfields};
 
 use crate::sam4l::dma;
 use crate::sam4l::pm;
@@ -884,7 +884,7 @@ impl dma::DMAClient for USART<'_> {
     }
 }
 
-/// Implementation of kernel::uart
+/// Implementation of crate::kernel::uart
 impl<'a> uart::Receive<'a> for USART<'a> {
     fn set_receive_client(&self, client: &'a dyn uart::ReceiveClient) {
         if let Some(UsartClient::Uart(_rx, Some(tx))) = self.client.take() {

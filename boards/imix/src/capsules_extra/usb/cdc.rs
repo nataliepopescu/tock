@@ -18,16 +18,16 @@ use super::descriptors::InterfaceDescriptor;
 use super::descriptors::TransferDirection;
 use super::usbc_client_ctrl::ClientCtrl;
 
-use kernel::ErrorCode;
-use kernel::deferred_call::{DeferredCall, DeferredCallClient};
-use kernel::hil;
-use kernel::hil::time::{Alarm, AlarmClient, ConvertTicks};
-use kernel::hil::uart;
-use kernel::hil::usb::TransferType;
-use kernel::utilities::cells::OptionalCell;
-use kernel::utilities::cells::TakeCell;
-use kernel::utilities::registers::InMemoryRegister;
-use kernel::utilities::registers::interfaces::{Readable, Writeable};
+use crate::kernel::ErrorCode;
+use crate::kernel::deferred_call::{DeferredCall, DeferredCallClient};
+use crate::kernel::hil;
+use crate::kernel::hil::time::{Alarm, AlarmClient, ConvertTicks};
+use crate::kernel::hil::uart;
+use crate::kernel::hil::usb::TransferType;
+use crate::kernel::utilities::cells::OptionalCell;
+use crate::kernel::utilities::cells::TakeCell;
+use crate::kernel::utilities::registers::InMemoryRegister;
+use crate::kernel::utilities::registers::interfaces::{Readable, Writeable};
 
 /// Identifying number for the endpoint when transferring data from us to the
 /// host.

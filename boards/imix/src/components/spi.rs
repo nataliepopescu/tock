@@ -17,12 +17,12 @@
 //! Usage
 //! -----
 //! ```rust
-//! let mux_spi = components::spi::SpiMuxComponent::new(&sam4l::spi::SPI).finalize(
-//!     components::spi_mux_component_static!(sam4l::spi::SpiHw));
+//! let mux_spi = crate::components::spi::SpiMuxComponent::new(&crate::sam4l::spi::SPI).finalize(
+//!     crate::components::spi_mux_component_static!(crate::sam4l::spi::SpiHw));
 //! let spi_syscalls = SpiSyscallComponent::new(mux_spi, 3).finalize(
-//!     components::spi_syscalls_component_static!(sam4l::spi::SpiHw));
+//!     crate::components::spi_syscalls_component_static!(crate::sam4l::spi::SpiHw));
 //! let rf233_spi = SpiComponent::new(mux_spi, 3).finalize(
-//!     components::spi_component_static!(sam4l::spi::SpiHw));
+//!     crate::components::spi_component_static!(crate::sam4l::spi::SpiHw));
 //! ```
 
 // Author: Philip Levis <pal@cs.stanford.edu>
@@ -31,38 +31,38 @@
 use core::marker::PhantomData;
 use core::mem::MaybeUninit;
 
-use capsules_core::spi_controller::{DEFAULT_READ_BUF_LENGTH, DEFAULT_WRITE_BUF_LENGTH, Spi};
-use capsules_core::spi_peripheral::SpiPeripheral;
-use capsules_core::virtualizers::virtual_spi;
-use capsules_core::virtualizers::virtual_spi::{MuxSpiMaster, VirtualSpiMasterDevice};
-use kernel::capabilities::MemoryAllocationCapability;
-use kernel::component::Component;
-use kernel::hil::spi;
-use kernel::hil::spi::{SpiMasterDevice, SpiSlaveDevice};
+use crate::capsules_core::spi_controller::{DEFAULT_READ_BUF_LENGTH, DEFAULT_WRITE_BUF_LENGTH, Spi};
+use crate::capsules_core::spi_peripheral::SpiPeripheral;
+use crate::capsules_core::virtualizers::virtual_spi;
+use crate::capsules_core::virtualizers::virtual_spi::{MuxSpiMaster, VirtualSpiMasterDevice};
+use crate::kernel::capabilities::MemoryAllocationCapability;
+use crate::kernel::component::Component;
+use crate::kernel::hil::spi;
+use crate::kernel::hil::spi::{SpiMasterDevice, SpiSlaveDevice};
 
 // Setup static space for the objects.
 #[macro_export]
 macro_rules! spi_mux_component_static {
-    ($S:ty $(,)?) => {{ kernel::static_buf!(capsules_core::virtualizers::virtual_spi::MuxSpiMaster<'static, $S>) }};
+    ($S:ty $(,)?) => {{ crate::kernel::static_buf!(crate::capsules_core::virtualizers::virtual_spi::MuxSpiMaster<'static, $S>) }};
 }
 
 #[macro_export]
 macro_rules! spi_syscall_component_static {
     ($S:ty $(,)?) => {{
-        let virtual_spi = kernel::static_buf!(
-            capsules_core::virtualizers::virtual_spi::VirtualSpiMasterDevice<'static, $S>
+        let virtual_spi = crate::kernel::static_buf!(
+            crate::capsules_core::virtualizers::virtual_spi::VirtualSpiMasterDevice<'static, $S>
         );
-        let spi = kernel::static_buf!(
-            capsules_core::spi_controller::Spi<
+        let spi = crate::kernel::static_buf!(
+            crate::capsules_core::spi_controller::Spi<
                 'static,
-                capsules_core::virtualizers::virtual_spi::VirtualSpiMasterDevice<'static, $S>,
+                crate::capsules_core::virtualizers::virtual_spi::VirtualSpiMasterDevice<'static, $S>,
             >
         );
 
         let spi_read_buf =
-            kernel::static_buf!([u8; capsules_core::spi_controller::DEFAULT_READ_BUF_LENGTH]);
+            crate::kernel::static_buf!([u8; crate::capsules_core::spi_controller::DEFAULT_READ_BUF_LENGTH]);
         let spi_write_buf =
-            kernel::static_buf!([u8; capsules_core::spi_controller::DEFAULT_WRITE_BUF_LENGTH]);
+            crate::kernel::static_buf!([u8; crate::capsules_core::spi_controller::DEFAULT_WRITE_BUF_LENGTH]);
 
         (virtual_spi, spi, spi_read_buf, spi_write_buf)
     }};
@@ -71,20 +71,20 @@ macro_rules! spi_syscall_component_static {
 #[macro_export]
 macro_rules! spi_syscallp_component_static {
     ($S:ty $(,)?) => {{
-        let spi_slave = kernel::static_buf!(
-            capsules_core::virtualizers::virtual_spi::SpiSlaveDevice<'static, $S>
+        let spi_slave = crate::kernel::static_buf!(
+            crate::capsules_core::virtualizers::virtual_spi::SpiSlaveDevice<'static, $S>
         );
-        let spi_peripheral = kernel::static_buf!(
-            capsules_core::spi_peripheral::SpiPeripheral<
+        let spi_peripheral = crate::kernel::static_buf!(
+            crate::capsules_core::spi_peripheral::SpiPeripheral<
                 'static,
-                capsules_core::virtualizers::virtual_spi::SpiSlaveDevice<'static, $S>,
+                crate::capsules_core::virtualizers::virtual_spi::SpiSlaveDevice<'static, $S>,
             >
         );
 
         let spi_read_buf =
-            kernel::static_buf!([u8; capsules_core::spi_controller::DEFAULT_READ_BUF_LENGTH]);
+            crate::kernel::static_buf!([u8; crate::capsules_core::spi_controller::DEFAULT_READ_BUF_LENGTH]);
         let spi_write_buf =
-            kernel::static_buf!([u8; capsules_core::spi_controller::DEFAULT_WRITE_BUF_LENGTH]);
+            crate::kernel::static_buf!([u8; crate::capsules_core::spi_controller::DEFAULT_WRITE_BUF_LENGTH]);
 
         (spi_slave, spi_peripheral, spi_read_buf, spi_write_buf)
     }};
@@ -93,15 +93,15 @@ macro_rules! spi_syscallp_component_static {
 #[macro_export]
 macro_rules! spi_component_static {
     ($S:ty $(,)?) => {{
-        kernel::static_buf!(
-            capsules_core::virtualizers::virtual_spi::VirtualSpiMasterDevice<'static, $S>
+        crate::kernel::static_buf!(
+            crate::capsules_core::virtualizers::virtual_spi::VirtualSpiMasterDevice<'static, $S>
         )
     }};
 }
 
 #[macro_export]
 macro_rules! spi_peripheral_component_static {
-    ($S:ty $(,)?) => {{ kernel::static_buf!(capsules_core::spi_peripheral::SpiPeripheral<'static, $S>) }};
+    ($S:ty $(,)?) => {{ crate::kernel::static_buf!(crate::capsules_core::spi_peripheral::SpiPeripheral<'static, $S>) }};
 }
 
 pub struct SpiMuxComponent<S: 'static + spi::SpiMaster<'static>> {
@@ -114,7 +114,7 @@ pub struct SpiSyscallComponent<
     S: 'static + spi::SpiMaster<'static>,
     CAP: MemoryAllocationCapability + 'static,
 > {
-    board_kernel: &'static kernel::Kernel,
+    board_kernel: &'static crate::kernel::Kernel,
     spi_mux: &'static MuxSpiMaster<'static, S>,
     chip_select: S::ChipSelect,
     driver_num: usize,
@@ -125,7 +125,7 @@ pub struct SpiSyscallPComponent<
     S: 'static + spi::SpiSlave<'static>,
     CAP: MemoryAllocationCapability + 'static,
 > {
-    board_kernel: &'static kernel::Kernel,
+    board_kernel: &'static crate::kernel::Kernel,
     spi_slave: &'static S,
     driver_num: usize,
     mem_cap: CAP,
@@ -153,7 +153,7 @@ impl<S: 'static + spi::SpiMaster<'static>> Component for SpiMuxComponent<S> {
 
     fn finalize(self, static_buffer: Self::StaticInput) -> Self::Output {
         let mux_spi = static_buffer.write(MuxSpiMaster::new(self.spi));
-        kernel::deferred_call::DeferredCallClient::register(mux_spi);
+        crate::kernel::deferred_call::DeferredCallClient::register(mux_spi);
 
         self.spi.set_client(mux_spi);
 
@@ -169,7 +169,7 @@ impl<S: 'static + spi::SpiMaster<'static>, CAP: MemoryAllocationCapability + 'st
     SpiSyscallComponent<S, CAP>
 {
     pub fn new(
-        board_kernel: &'static kernel::Kernel,
+        board_kernel: &'static crate::kernel::Kernel,
         mux: &'static MuxSpiMaster<'static, S>,
         chip_select: S::ChipSelect,
         driver_num: usize,
@@ -221,7 +221,7 @@ impl<S: 'static + spi::SpiSlave<'static>, CAP: MemoryAllocationCapability + 'sta
     SpiSyscallPComponent<S, CAP>
 {
     pub fn new(
-        board_kernel: &'static kernel::Kernel,
+        board_kernel: &'static crate::kernel::Kernel,
         slave: &'static S,
         driver_num: usize,
         mem_cap: CAP,
@@ -305,7 +305,7 @@ pub struct SpiPeripheralComponent<
     S: 'static + spi::SpiSlave<'static>,
     CAP: MemoryAllocationCapability + 'static,
 > {
-    board_kernel: &'static kernel::Kernel,
+    board_kernel: &'static crate::kernel::Kernel,
     device: &'static S,
     driver_num: usize,
     mem_cap: CAP,
@@ -315,7 +315,7 @@ impl<S: 'static + spi::SpiSlave<'static>, CAP: MemoryAllocationCapability + 'sta
     SpiPeripheralComponent<S, CAP>
 {
     pub fn new(
-        board_kernel: &'static kernel::Kernel,
+        board_kernel: &'static crate::kernel::Kernel,
         device: &'static S,
         driver_num: usize,
         mem_cap: CAP,
@@ -330,7 +330,7 @@ impl<S: 'static + spi::SpiSlave<'static>, CAP: MemoryAllocationCapability + 'sta
 }
 
 impl<
-    S: 'static + spi::SpiSlave<'static> + kernel::hil::spi::SpiSlaveDevice<'static>,
+    S: 'static + spi::SpiSlave<'static> + crate::kernel::hil::spi::SpiSlaveDevice<'static>,
     CAP: MemoryAllocationCapability + 'static,
 > Component for SpiPeripheralComponent<S, CAP>
 {

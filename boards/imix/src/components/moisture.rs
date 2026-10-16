@@ -7,32 +7,32 @@
 //! Usage
 //! -----
 //! ```rust
-//!     let moisture = components::moisture::MoistureComponent::new(
+//!     let moisture = crate::components::moisture::MoistureComponent::new(
 //!         board_kernel,
-//!         capsules_extra::moisture::DRIVER_NUM,
+//!         crate::capsules_extra::moisture::DRIVER_NUM,
 //!         chirp_moisture,
 //!     )
-//!     .finalize(components::moisture_component_static!(ChirpI2cMoistureType));
+//!     .finalize(crate::components::moisture_component_static!(ChirpI2cMoistureType));
 //! ```
 
-use capsules_extra::moisture::MoistureSensor;
+use crate::capsules_extra::moisture::MoistureSensor;
 use core::mem::MaybeUninit;
-use kernel::capabilities::MemoryAllocationCapability;
-use kernel::component::Component;
-use kernel::hil;
+use crate::kernel::capabilities::MemoryAllocationCapability;
+use crate::kernel::component::Component;
+use crate::kernel::hil;
 
 #[macro_export]
 macro_rules! moisture_component_static {
-    ($H: ty $(,)?) => {{ kernel::static_buf!(capsules_extra::moisture::MoistureSensor<'static, $H>) }};
+    ($H: ty $(,)?) => {{ crate::kernel::static_buf!(crate::capsules_extra::moisture::MoistureSensor<'static, $H>) }};
 }
 
-pub type MoistureComponentType<H> = capsules_extra::moisture::MoistureSensor<'static, H>;
+pub type MoistureComponentType<H> = crate::capsules_extra::moisture::MoistureSensor<'static, H>;
 
 pub struct MoistureComponent<
     T: 'static + hil::sensors::MoistureDriver<'static>,
     CAP: MemoryAllocationCapability + 'static,
 > {
-    board_kernel: &'static kernel::Kernel,
+    board_kernel: &'static crate::kernel::Kernel,
     driver_num: usize,
     sensor: &'static T,
     mem_cap: CAP,
@@ -42,7 +42,7 @@ impl<T: 'static + hil::sensors::MoistureDriver<'static>, CAP: MemoryAllocationCa
     MoistureComponent<T, CAP>
 {
     pub fn new(
-        board_kernel: &'static kernel::Kernel,
+        board_kernel: &'static crate::kernel::Kernel,
         driver_num: usize,
         sensor: &'static T,
         mem_cap: CAP,

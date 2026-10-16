@@ -5,22 +5,22 @@
 //! Components for creating a virtual scheduler timer.
 
 use crate::components::virtual_scheduler_timer::hil::time;
-use capsules_core::virtualizers::virtual_alarm::{MuxAlarm, VirtualMuxAlarm};
-use capsules_system::virtual_scheduler_timer::VirtualSchedulerTimer;
+use crate::capsules_core::virtualizers::virtual_alarm::{MuxAlarm, VirtualMuxAlarm};
+use crate::capsules_system::virtual_scheduler_timer::VirtualSchedulerTimer;
 use core::mem::MaybeUninit;
-use kernel::component::Component;
-use kernel::hil;
+use crate::kernel::component::Component;
+use crate::kernel::hil;
 
 // Setup static space for the objects.
 #[macro_export]
 macro_rules! virtual_scheduler_timer_component_static {
     ($A: ty $(,)?) => {{
-        let alarm = kernel::static_buf!(
-            capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, $A>
+        let alarm = crate::kernel::static_buf!(
+            crate::capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, $A>
         );
-        let scheduler_timer = kernel::static_buf!(
-            capsules_system::virtual_scheduler_timer::VirtualSchedulerTimer<
-                capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, $A>,
+        let scheduler_timer = crate::kernel::static_buf!(
+            crate::capsules_system::virtual_scheduler_timer::VirtualSchedulerTimer<
+                crate::capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, $A>,
             >
         );
 
@@ -62,8 +62,8 @@ impl<A: 'static + time::Alarm<'static>> Component for VirtualSchedulerTimerCompo
 #[macro_export]
 macro_rules! virtual_scheduler_timer_no_mux_component_static {
     ($A: ty $(,)?) => {{
-        let scheduler_timer = kernel::static_buf!(
-            capsules_system::virtual_scheduler_timer::VirtualSchedulerTimer<$A>
+        let scheduler_timer = crate::kernel::static_buf!(
+            crate::capsules_system::virtual_scheduler_timer::VirtualSchedulerTimer<$A>
         );
 
         scheduler_timer

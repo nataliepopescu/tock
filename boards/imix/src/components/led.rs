@@ -7,25 +7,25 @@
 //! Usage
 //! -----
 //! ```rust
-//! let led = components::led::LedsComponent::new().finalize(components::led_component_static!(
-//!     kernel::hil::led::LedLow<'static, sam4l::gpio::GPIOPin>,
-//!     LedLow::new(&sam4l::gpio::PORT[LED_RED_PIN]),
-//!     LedLow::new(&sam4l::gpio::PORT[LED_GREEN_PIN]),
-//!     LedLow::new(&sam4l::gpio::PORT[LED_BLUE_PIN]),
+//! let led = crate::components::led::LedsComponent::new().finalize(crate::components::led_component_static!(
+//!     crate::kernel::hil::led::LedLow<'static, crate::sam4l::gpio::GPIOPin>,
+//!     LedLow::new(&crate::sam4l::gpio::PORT[LED_RED_PIN]),
+//!     LedLow::new(&crate::sam4l::gpio::PORT[LED_GREEN_PIN]),
+//!     LedLow::new(&crate::sam4l::gpio::PORT[LED_BLUE_PIN]),
 //! ));
 //! ```
 
-use capsules_core::led::LedDriver;
+use crate::capsules_core::led::LedDriver;
 use core::marker::PhantomData;
 use core::mem::MaybeUninit;
-use kernel::component::Component;
-use kernel::hil::led::Led;
+use crate::kernel::component::Component;
+use crate::kernel::hil::led::Led;
 
 #[macro_export]
 macro_rules! led_component_static {
     ($Led:ty, $($L:expr),+ $(,)?) => {{
-        use kernel::count_expressions;
-        use kernel::static_init;
+        use crate::kernel::count_expressions;
+        use crate::kernel::static_init;
         const NUM_LEDS: usize = count_expressions!($($L),+);
         let arr = static_init!(
             [&'static $Led; NUM_LEDS],
@@ -39,7 +39,7 @@ macro_rules! led_component_static {
             ]
         );
 
-        let led = kernel::static_buf!( capsules_core::led::LedDriver<'static, $Led, NUM_LEDS>);
+        let led = crate::kernel::static_buf!( crate::capsules_core::led::LedDriver<'static, $Led, NUM_LEDS>);
         (led, arr)
     }};
 }

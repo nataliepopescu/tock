@@ -8,27 +8,27 @@
 //! -----
 //! ```rust
 //! let humidity = HumidityComponent::new(board_kernel, nrf52::humidity::TEMP)
-//!     .finalize(components::humidity_component_static!());
+//!     .finalize(crate::components::humidity_component_static!());
 //! ```
 
-use capsules_extra::humidity::HumiditySensor;
+use crate::capsules_extra::humidity::HumiditySensor;
 use core::mem::MaybeUninit;
-use kernel::capabilities::MemoryAllocationCapability;
-use kernel::component::Component;
-use kernel::hil;
+use crate::kernel::capabilities::MemoryAllocationCapability;
+use crate::kernel::component::Component;
+use crate::kernel::hil;
 
 #[macro_export]
 macro_rules! humidity_component_static {
-    ($H: ty $(,)?) => {{ kernel::static_buf!(capsules_extra::humidity::HumiditySensor<'static, $H>) }};
+    ($H: ty $(,)?) => {{ crate::kernel::static_buf!(crate::capsules_extra::humidity::HumiditySensor<'static, $H>) }};
 }
 
-pub type HumidityComponentType<H> = capsules_extra::humidity::HumiditySensor<'static, H>;
+pub type HumidityComponentType<H> = crate::capsules_extra::humidity::HumiditySensor<'static, H>;
 
 pub struct HumidityComponent<
     T: 'static + hil::sensors::HumidityDriver<'static>,
     CAP: MemoryAllocationCapability + 'static,
 > {
-    board_kernel: &'static kernel::Kernel,
+    board_kernel: &'static crate::kernel::Kernel,
     driver_num: usize,
     sensor: &'static T,
     mem_cap: CAP,
@@ -38,7 +38,7 @@ impl<T: 'static + hil::sensors::HumidityDriver<'static>, CAP: MemoryAllocationCa
     HumidityComponent<T, CAP>
 {
     pub fn new(
-        board_kernel: &'static kernel::Kernel,
+        board_kernel: &'static crate::kernel::Kernel,
         driver_num: usize,
         sensor: &'static T,
         mem_cap: CAP,

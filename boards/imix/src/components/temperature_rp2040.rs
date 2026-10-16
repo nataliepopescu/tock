@@ -4,21 +4,21 @@
 
 //! Component for the RaspberryPI 2040 built-in temperature sensor.
 
-use capsules_core::virtualizers::virtual_adc::AdcDevice;
-use capsules_extra::temperature_rp2040::TemperatureRp2040;
+use crate::capsules_core::virtualizers::virtual_adc::AdcDevice;
+use crate::capsules_extra::temperature_rp2040::TemperatureRp2040;
 use core::mem::MaybeUninit;
-use kernel::component::Component;
-use kernel::hil::adc;
-use kernel::hil::adc::AdcChannel;
+use crate::kernel::component::Component;
+use crate::kernel::hil::adc;
+use crate::kernel::hil::adc::AdcChannel;
 
 #[macro_export]
 macro_rules! temperature_rp2040_adc_component_static {
     ($A:ty $(,)?) => {{
-        let adc_device = components::adc_component_static!($A);
-        let temperature_rp2040 = kernel::static_buf!(
-            capsules_extra::temperature_rp2040::TemperatureRp2040<
+        let adc_device = crate::components::adc_component_static!($A);
+        let temperature_rp2040 = crate::kernel::static_buf!(
+            crate::capsules_extra::temperature_rp2040::TemperatureRp2040<
                 'static,
-                capsules_core::virtualizers::virtual_adc::AdcDevice<'static, $A>,
+                crate::capsules_core::virtualizers::virtual_adc::AdcDevice<'static, $A>,
             >
         );
 
@@ -27,10 +27,10 @@ macro_rules! temperature_rp2040_adc_component_static {
 }
 
 pub type TemperatureRp2040ComponentType<A> =
-    capsules_extra::temperature_rp2040::TemperatureRp2040<'static, A>;
+    crate::capsules_extra::temperature_rp2040::TemperatureRp2040<'static, A>;
 
 pub struct TemperatureRp2040Component<A: 'static + adc::Adc<'static>> {
-    adc_mux: &'static capsules_core::virtualizers::virtual_adc::MuxAdc<'static, A>,
+    adc_mux: &'static crate::capsules_core::virtualizers::virtual_adc::MuxAdc<'static, A>,
     adc_channel: A::Channel,
     slope: f32,
     v_27: f32,
@@ -38,7 +38,7 @@ pub struct TemperatureRp2040Component<A: 'static + adc::Adc<'static>> {
 
 impl<A: 'static + adc::Adc<'static>> TemperatureRp2040Component<A> {
     pub fn new(
-        adc_mux: &'static capsules_core::virtualizers::virtual_adc::MuxAdc<'static, A>,
+        adc_mux: &'static crate::capsules_core::virtualizers::virtual_adc::MuxAdc<'static, A>,
         adc_channel: A::Channel,
         slope: f32,
         v_27: f32,

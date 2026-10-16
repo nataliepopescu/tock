@@ -8,28 +8,28 @@
 //! -----
 //! ```rust
 //! let hts221 = Hts221Component::new(mux_i2c, mux_alarm, 0x5f).finalize(
-//!     components::hts221_component_static!(sam4l::ast::Ast));
-//! let temperature = components::temperature::TemperatureComponent::new(board_kernel, hts221).finalize(());
-//! let humidity = components::humidity::HumidityComponent::new(board_kernel, hts221).finalize(());
+//!     crate::components::hts221_component_static!(crate::sam4l::ast::Ast));
+//! let temperature = crate::components::temperature::TemperatureComponent::new(board_kernel, hts221).finalize(());
+//! let humidity = crate::components::humidity::HumidityComponent::new(board_kernel, hts221).finalize(());
 //! ```
 
-use capsules_core::virtualizers::virtual_i2c::{I2CDevice, MuxI2C};
-use capsules_extra::hts221::Hts221;
+use crate::capsules_core::virtualizers::virtual_i2c::{I2CDevice, MuxI2C};
+use crate::capsules_extra::hts221::Hts221;
 use core::mem::MaybeUninit;
-use kernel::component::Component;
-use kernel::hil::i2c;
+use crate::kernel::component::Component;
+use crate::kernel::hil::i2c;
 
 // Setup static space for the objects.
 #[macro_export]
 macro_rules! hts221_component_static {
     ($I:ty $(,)?) => {{
         let i2c_device =
-            kernel::static_buf!(capsules_core::virtualizers::virtual_i2c::I2CDevice<$I>);
-        let buffer = kernel::static_buf!([u8; 17]);
-        let hts221 = kernel::static_buf!(
-            capsules_extra::hts221::Hts221<
+            crate::kernel::static_buf!(crate::capsules_core::virtualizers::virtual_i2c::I2CDevice<$I>);
+        let buffer = crate::kernel::static_buf!([u8; 17]);
+        let hts221 = crate::kernel::static_buf!(
+            crate::capsules_extra::hts221::Hts221<
                 'static,
-                capsules_core::virtualizers::virtual_i2c::I2CDevice<$I>,
+                crate::capsules_core::virtualizers::virtual_i2c::I2CDevice<$I>,
             >
         );
 
@@ -37,7 +37,7 @@ macro_rules! hts221_component_static {
     }};
 }
 
-pub type Hts221ComponentType<I> = capsules_extra::hts221::Hts221<'static, I>;
+pub type Hts221ComponentType<I> = crate::capsules_extra::hts221::Hts221<'static, I>;
 
 pub struct Hts221Component<I: 'static + i2c::I2CMaster<'static>> {
     i2c_mux: &'static MuxI2C<'static, I>,

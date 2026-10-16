@@ -16,7 +16,7 @@
 //! -----
 //!
 //! ```rust,ignore
-//! # use kernel::static_init;
+//! # use crate::kernel::static_init;
 //!
 //! // Create the mux.
 //! let mux_mac = static_init!(
@@ -35,9 +35,9 @@
 use crate::capsules_extra::ieee802154::{device, framer};
 use crate::capsules_extra::net::ieee802154::{Header, KeyId, MacAddress, PanID, SecurityLevel};
 
-use kernel::ErrorCode;
-use kernel::collections::list::{List, ListLink, ListNode};
-use kernel::utilities::cells::{MapCell, OptionalCell};
+use crate::kernel::ErrorCode;
+use crate::kernel::collections::list::{List, ListLink, ListNode};
+use crate::kernel::utilities::cells::{MapCell, OptionalCell};
 
 /// IEE 802.15.4 MAC device muxer that keeps a list of MAC users and sequences
 /// any pending transmission requests. Any received frames from the underlying

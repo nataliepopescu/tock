@@ -31,12 +31,12 @@
 
 use crate::sam4l::pm;
 use core::cell::Cell;
-use kernel::ErrorCode;
-use kernel::debug;
-use kernel::hil::analog_comparator;
-use kernel::utilities::StaticRef;
-use kernel::utilities::registers::interfaces::{ReadWriteable, Readable, Writeable};
-use kernel::utilities::registers::{ReadOnly, ReadWrite, WriteOnly, register_bitfields};
+use crate::kernel::ErrorCode;
+use crate::kernel::debug;
+use crate::kernel::hil::analog_comparator;
+use crate::kernel::utilities::StaticRef;
+use crate::kernel::utilities::registers::interfaces::{ReadWriteable, Readable, Writeable};
+use crate::kernel::utilities::registers::{ReadOnly, ReadWrite, WriteOnly, register_bitfields};
 
 /// Representation of an AC channel on the SAM4L.
 pub struct AcChannel {

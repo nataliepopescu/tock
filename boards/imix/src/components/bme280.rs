@@ -8,38 +8,38 @@
 //! -----
 //! ```rust
 //!     let bme280 =
-//!         Bme280Component::new(mux_i2c, 0x77).finalize(components::bme280_component_static!());
-//!     let temperature = components::temperature::TemperatureComponent::new(
+//!         Bme280Component::new(mux_i2c, 0x77).finalize(crate::components::bme280_component_static!());
+//!     let temperature = crate::components::temperature::TemperatureComponent::new(
 //!         board_kernel,
-//!         capsules_extra::temperature::DRIVER_NUM,
+//!         crate::capsules_extra::temperature::DRIVER_NUM,
 //!         bme280,
 //!     )
-//!     .finalize(components::temperature_component_static!());
-//!     let humidity = components::humidity::HumidityComponent::new(
+//!     .finalize(crate::components::temperature_component_static!());
+//!     let humidity = crate::components::humidity::HumidityComponent::new(
 //!         board_kernel,
-//!         capsules_extra::humidity::DRIVER_NUM,
+//!         crate::capsules_extra::humidity::DRIVER_NUM,
 //!         bme280,
 //!     )
-//!     .finalize(components::humidity_component_static!());
+//!     .finalize(crate::components::humidity_component_static!());
 //! ```
 
-use capsules_core::virtualizers::virtual_i2c::{I2CDevice, MuxI2C};
-use capsules_extra::bme280::Bme280;
+use crate::capsules_core::virtualizers::virtual_i2c::{I2CDevice, MuxI2C};
+use crate::capsules_extra::bme280::Bme280;
 use core::mem::MaybeUninit;
-use kernel::component::Component;
-use kernel::hil::i2c;
+use crate::kernel::component::Component;
+use crate::kernel::hil::i2c;
 
 // Setup static space for the objects.
 #[macro_export]
 macro_rules! bme280_component_static {
     ($I:ty $(,)?) => {{
         let i2c_device =
-            kernel::static_buf!(capsules_core::virtualizers::virtual_i2c::I2CDevice<'static, $I>);
-        let i2c_buffer = kernel::static_buf!([u8; 26]);
-        let bme280 = kernel::static_buf!(
-            capsules_extra::bme280::Bme280<
+            crate::kernel::static_buf!(crate::capsules_core::virtualizers::virtual_i2c::I2CDevice<'static, $I>);
+        let i2c_buffer = crate::kernel::static_buf!([u8; 26]);
+        let bme280 = crate::kernel::static_buf!(
+            crate::capsules_extra::bme280::Bme280<
                 'static,
-                capsules_core::virtualizers::virtual_i2c::I2CDevice<$I>,
+                crate::capsules_core::virtualizers::virtual_i2c::I2CDevice<$I>,
             >
         );
 
@@ -47,7 +47,7 @@ macro_rules! bme280_component_static {
     }};
 }
 
-pub type Bme280ComponentType<I> = capsules_extra::bme280::Bme280<'static, I>;
+pub type Bme280ComponentType<I> = crate::capsules_extra::bme280::Bme280<'static, I>;
 
 pub struct Bme280Component<I: 'static + i2c::I2CMaster<'static>> {
     i2c_mux: &'static MuxI2C<'static, I>,

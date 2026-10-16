@@ -6,19 +6,19 @@
 
 use core::ptr::addr_of_mut;
 
-use kernel::ErrorCode;
-use kernel::hil::gpio::Configure;
-use kernel::hil::spi::{self, SpiMaster};
-use kernel::utilities::leasable_buffer::SubSliceMut;
+use crate::kernel::ErrorCode;
+use crate::kernel::hil::gpio::Configure;
+use crate::kernel::hil::spi::{self, SpiMaster};
+use crate::kernel::utilities::leasable_buffer::SubSliceMut;
 
 #[allow(unused_variables, dead_code)]
 pub struct DummyCB {
     val: u8,
-    spi: &'static sam4l::spi::SpiHw<'static>,
+    spi: &'static crate::sam4l::spi::SpiHw<'static>,
 }
 
 impl DummyCB {
-    pub fn new(spi: &'static sam4l::spi::SpiHw<'static>) -> Self {
+    pub fn new(spi: &'static crate::sam4l::spi::SpiHw<'static>) -> Self {
         Self { val: 0x55_u8, spi }
     }
 }
@@ -46,9 +46,9 @@ impl spi::SpiMasterClient for DummyCB {
             // FLOP = !FLOP;
             // let len: usize = BUF1.len();
             // if FLOP {
-            //     sam4l::spi::SPI.read_write_bytes(&mut BUF1, Some(&mut BUF2), len);
+            //     crate::sam4l::spi::SPI.read_write_bytes(&mut BUF1, Some(&mut BUF2), len);
             // } else {
-            //     sam4l::spi::SPI.read_write_bytes(&mut BUF2, Some(&mut BUF1), len);
+            //     crate::sam4l::spi::SPI.read_write_bytes(&mut BUF2, Some(&mut BUF1), len);
             // }
         }
     }
@@ -69,18 +69,18 @@ impl spi::SpiMasterClient for DummyCB {
 // the board.
 #[inline(never)]
 #[allow(unused_variables, dead_code)]
-pub unsafe fn spi_dummy_test(spi: &'static sam4l::spi::SpiHw<'static>) {
+pub unsafe fn spi_dummy_test(spi: &'static crate::sam4l::spi::SpiHw<'static>) {
     // set the LED to mark that we've programmed.
-    let pin = sam4l::gpio::GPIOPin::new(sam4l::gpio::Pin::PC10);
+    let pin = crate::sam4l::gpio::GPIOPin::new(crate::sam4l::gpio::Pin::PC10);
     pin.make_output();
     pin.set();
 
-    let pin2 = sam4l::gpio::GPIOPin::new(sam4l::gpio::Pin::PC31); // It's on D2 of the IMIX
+    let pin2 = crate::sam4l::gpio::GPIOPin::new(crate::sam4l::gpio::Pin::PC31); // It's on D2 of the IMIX
     pin2.make_output();
     pin2.set();
 
-    let spicb = kernel::static_init!(DummyCB, DummyCB::new(spi));
-    spi.specify_chip_select(sam4l::spi::Peripheral::Peripheral0)
+    let spicb = crate::kernel::static_init!(DummyCB, DummyCB::new(spi));
+    spi.specify_chip_select(crate::sam4l::spi::Peripheral::Peripheral0)
         .unwrap();
     spi.set_client(spicb);
 

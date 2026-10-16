@@ -13,24 +13,24 @@
 //! -----
 //!
 //! ```rust,ignore
-//! # use kernel::static_init;
+//! # use crate::kernel::static_init;
 //!
 //! let fxos8700_i2c = static_init!(I2CDevice, I2CDevice::new(i2c_bus, 0x1e));
 //! let fxos8700 = static_init!(
 //!     capsules::fxos8700cq::Fxos8700cq<'static>,
 //!     capsules::fxos8700cq::Fxos8700cq::new(fxos8700_i2c,
-//!                                           &sam4l::gpio::PA[9], // Interrupt pin
+//!                                           &crate::sam4l::gpio::PA[9], // Interrupt pin
 //!                                           &mut capsules::fxos8700cq::BUF));
 //! fxos8700_i2c.set_client(fxos8700);
-//! sam4l::gpio::PA[9].set_client(fxos8700);
+//! crate::sam4l::gpio::PA[9].set_client(fxos8700);
 //! ```
 
 use core::cell::Cell;
-use kernel::ErrorCode;
-use kernel::hil;
-use kernel::hil::gpio;
-use kernel::hil::i2c::{Error, I2CClient, I2CDevice};
-use kernel::utilities::cells::{OptionalCell, TakeCell};
+use crate::kernel::ErrorCode;
+use crate::kernel::hil;
+use crate::kernel::hil::gpio;
+use crate::kernel::hil::i2c::{Error, I2CClient, I2CDevice};
+use crate::kernel::utilities::cells::{OptionalCell, TakeCell};
 
 /// Recommended buffer length for this driver.
 pub const BUF_LEN: usize = 6;

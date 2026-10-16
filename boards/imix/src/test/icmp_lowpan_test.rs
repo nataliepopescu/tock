@@ -14,29 +14,29 @@
 //! test::icmp_lowpan_test::run(mux_mac, mux_alarm);
 //! ```
 
-use capsules_extra::ieee802154::device::MacDevice;
-use capsules_extra::net::icmpv6::icmpv6_send::{ICMP6SendStruct, ICMP6Sender};
-use capsules_extra::net::icmpv6::{ICMP6Header, ICMP6Type};
-use capsules_extra::net::ieee802154::MacAddress;
-use capsules_extra::net::ipv6::ip_utils::IPAddr;
-use capsules_extra::net::ipv6::ipv6_send::{IP6SendStruct, IP6Sender};
-use capsules_extra::net::ipv6::{IP6Packet, IPPayload, TransportHeader};
-use capsules_extra::net::network_capabilities::{
+use crate::capsules_extra::ieee802154::device::MacDevice;
+use crate::capsules_extra::net::icmpv6::icmpv6_send::{ICMP6SendStruct, ICMP6Sender};
+use crate::capsules_extra::net::icmpv6::{ICMP6Header, ICMP6Type};
+use crate::capsules_extra::net::ieee802154::MacAddress;
+use crate::capsules_extra::net::ipv6::ip_utils::IPAddr;
+use crate::capsules_extra::net::ipv6::ipv6_send::{IP6SendStruct, IP6Sender};
+use crate::capsules_extra::net::ipv6::{IP6Packet, IPPayload, TransportHeader};
+use crate::capsules_extra::net::network_capabilities::{
     AddrRange, IpVisibilityCapability, NetworkCapability, PortRange,
 };
-use capsules_extra::net::sixlowpan::sixlowpan_compression;
-use capsules_extra::net::sixlowpan::sixlowpan_state::{Sixlowpan, SixlowpanState, TxState};
-use kernel::ErrorCode;
+use crate::capsules_extra::net::sixlowpan::sixlowpan_compression;
+use crate::capsules_extra::net::sixlowpan::sixlowpan_state::{Sixlowpan, SixlowpanState, TxState};
+use crate::kernel::ErrorCode;
 
-use capsules_core::virtualizers::virtual_alarm::{MuxAlarm, VirtualMuxAlarm};
+use crate::capsules_core::virtualizers::virtual_alarm::{MuxAlarm, VirtualMuxAlarm};
 use core::cell::Cell;
 use core::ptr::addr_of_mut;
-use kernel::capabilities::NetworkCapabilityCreationCapability;
-use kernel::create_capability;
-use kernel::debug;
-use kernel::hil::radio;
-use kernel::hil::time::{self, Alarm, ConvertTicks};
-use kernel::static_init;
+use crate::kernel::capabilities::NetworkCapabilityCreationCapability;
+use crate::kernel::create_capability;
+use crate::kernel::debug;
+use crate::kernel::hil::radio;
+use crate::kernel::hil::time::{self, Alarm, ConvertTicks};
+use crate::kernel::static_init;
 
 pub const SRC_ADDR: IPAddr = IPAddr([
     0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,
@@ -68,19 +68,19 @@ pub struct LowpanICMPTest<'a, A: time::Alarm<'a>> {
     net_cap: &'static NetworkCapability,
 }
 
-type Rf233 = capsules_extra::rf233::RF233<
+type Rf233 = crate::capsules_extra::rf233::RF233<
     'static,
-    capsules_core::virtualizers::virtual_spi::VirtualSpiMasterDevice<
+    crate::capsules_core::virtualizers::virtual_spi::VirtualSpiMasterDevice<
         'static,
-        sam4l::spi::SpiHw<'static>,
+        crate::sam4l::spi::SpiHw<'static>,
     >,
 >;
 type Ieee802154MacDevice =
-    components::ieee802154::Ieee802154ComponentMacDeviceType<Rf233, sam4l::aes::Aes<'static>>;
+    crate::components::ieee802154::Ieee802154ComponentMacDeviceType<Rf233, crate::sam4l::aes::Aes<'static>>;
 
 pub unsafe fn run(
-    mux_mac: &'static capsules_extra::ieee802154::virtual_mac::MuxMac<'static, Ieee802154MacDevice>,
-    mux_alarm: &'static MuxAlarm<'static, sam4l::ast::Ast>,
+    mux_mac: &'static crate::capsules_extra::ieee802154::virtual_mac::MuxMac<'static, Ieee802154MacDevice>,
+    mux_alarm: &'static MuxAlarm<'static, crate::sam4l::ast::Ast>,
 ) {
     let create_cap = create_capability!(NetworkCapabilityCreationCapability);
     let net_cap = static_init!(
@@ -92,12 +92,12 @@ pub unsafe fn run(
         IpVisibilityCapability::new(&create_cap)
     );
     let radio_mac = static_init!(
-        capsules_extra::ieee802154::virtual_mac::MacUser<'static, Ieee802154MacDevice>,
-        capsules_extra::ieee802154::virtual_mac::MacUser::new(mux_mac)
+        crate::capsules_extra::ieee802154::virtual_mac::MacUser<'static, Ieee802154MacDevice>,
+        crate::capsules_extra::ieee802154::virtual_mac::MacUser::new(mux_mac)
     );
     mux_mac.add_user(radio_mac);
     let ipsender_virtual_alarm = static_init!(
-        VirtualMuxAlarm<'static, sam4l::ast::Ast>,
+        VirtualMuxAlarm<'static, crate::sam4l::ast::Ast>,
         VirtualMuxAlarm::new(mux_alarm)
     );
     ipsender_virtual_alarm.setup();
@@ -105,7 +105,7 @@ pub unsafe fn run(
     let sixlowpan = static_init!(
         Sixlowpan<
             'static,
-            VirtualMuxAlarm<sam4l::ast::Ast<'static>>,
+            VirtualMuxAlarm<crate::sam4l::ast::Ast<'static>>,
             sixlowpan_compression::Context,
         >,
         Sixlowpan::new(
@@ -132,7 +132,7 @@ pub unsafe fn run(
     let ip6_dg = static_init!(IP6Packet<'static>, IP6Packet::new(ip_pyld));
 
     let ip6_sender = static_init!(
-        IP6SendStruct<'static, VirtualMuxAlarm<'static, sam4l::ast::Ast<'static>>>,
+        IP6SendStruct<'static, VirtualMuxAlarm<'static, crate::sam4l::ast::Ast<'static>>>,
         IP6SendStruct::new(
             ip6_dg,
             ipsender_virtual_alarm,
@@ -149,19 +149,19 @@ pub unsafe fn run(
     let icmp_send_struct = static_init!(
         ICMP6SendStruct<
             'static,
-            IP6SendStruct<'static, VirtualMuxAlarm<'static, sam4l::ast::Ast<'static>>>,
+            IP6SendStruct<'static, VirtualMuxAlarm<'static, crate::sam4l::ast::Ast<'static>>>,
         >,
         ICMP6SendStruct::new(ip6_sender)
     );
 
     let alarm = static_init!(
-        VirtualMuxAlarm<'static, sam4l::ast::Ast>,
+        VirtualMuxAlarm<'static, crate::sam4l::ast::Ast>,
         VirtualMuxAlarm::new(mux_alarm)
     );
     alarm.setup();
 
     let icmp_lowpan_test = static_init!(
-        LowpanICMPTest<'static, VirtualMuxAlarm<'static, sam4l::ast::Ast>>,
+        LowpanICMPTest<'static, VirtualMuxAlarm<'static, crate::sam4l::ast::Ast>>,
         LowpanICMPTest::new(
             //sixlowpan_tx,
             //radio_mac,
@@ -178,7 +178,7 @@ pub unsafe fn run(
     icmp_lowpan_test.start();
 }
 
-impl<'a, A: time::Alarm<'a>> capsules_extra::net::icmpv6::icmpv6_send::ICMP6SendClient
+impl<'a, A: time::Alarm<'a>> crate::capsules_extra::net::icmpv6::icmpv6_send::ICMP6SendClient
     for LowpanICMPTest<'a, A>
 {
     fn send_done(&self, result: Result<(), ErrorCode>) {

@@ -4,11 +4,11 @@
 
 //! Provides an EUI-64 (Extended Unique Identifier) interface for userspace.
 
-use capsules_core::driver;
+use crate::capsules_core::driver;
 pub const DRIVER_NUM: usize = driver::NUM::Eui64 as usize;
 
-use kernel::syscall::{CommandReturn, SyscallDriver};
-use kernel::{ErrorCode, ProcessId};
+use crate::kernel::syscall::{CommandReturn, SyscallDriver};
+use crate::kernel::{ErrorCode, ProcessId};
 
 pub struct Eui64 {
     eui64: u64,
@@ -35,7 +35,7 @@ impl SyscallDriver for Eui64 {
         }
     }
 
-    fn allocate_grant(&self, _: ProcessId) -> Result<(), kernel::process::Error> {
+    fn allocate_grant(&self, _: ProcessId) -> Result<(), crate::kernel::process::Error> {
         Ok(())
     }
 }

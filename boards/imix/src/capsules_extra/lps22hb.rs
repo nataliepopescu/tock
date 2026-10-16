@@ -24,7 +24,7 @@
 //! -----
 //!
 //! ```rust,ignore
-//! # use kernel::static_init;
+//! # use crate::kernel::static_init;
 //!
 //! let lps22hb_i2c = static_init!(
 //!     capsules::virtual_i2c::I2CDevice,
@@ -37,12 +37,12 @@
 //! ```
 
 use core::cell::Cell;
-use kernel::ErrorCode;
-use kernel::hil::i2c::{self, I2CClient, I2CDevice};
-use kernel::hil::sensors::{PressureClient, PressureDriver};
-use kernel::utilities::cells::{OptionalCell, TakeCell};
+use crate::kernel::ErrorCode;
+use crate::kernel::hil::i2c::{self, I2CClient, I2CDevice};
+use crate::kernel::hil::sensors::{PressureClient, PressureDriver};
+use crate::kernel::utilities::cells::{OptionalCell, TakeCell};
 
-use capsules_core::driver;
+use crate::capsules_core::driver;
 /// Syscall driver number.
 pub const DRIVER_NUM: usize = driver::NUM::Pressure as usize;
 

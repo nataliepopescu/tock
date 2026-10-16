@@ -17,14 +17,14 @@
 //! -----
 //!
 //! To use this capsule, we need an implementation of a hardware
-//! `capsules_extra::ieee802154::mac::Mac`. Suppose we have such an implementation of type
+//! `crate::capsules_extra::ieee802154::mac::Mac`. Suppose we have such an implementation of type
 //! `XMacDevice`.
 //!
 //! ```rust,ignore
 //! let xmac: &XMacDevice = /* ... */;
 //! let mac_device = static_init!(
-//!     capsules_extra::ieee802154::mac::Framer<'static, XMacDevice>,
-//!     capsules_extra::ieee802154::mac::Framer::new(xmac));
+//!     crate::capsules_extra::ieee802154::mac::Framer<'static, XMacDevice>,
+//!     crate::capsules_extra::ieee802154::mac::Framer::new(xmac));
 //! xmac.set_transmit_client(mac_device);
 //! xmac.set_receive_client(mac_device, &mut MAC_RX_BUF);
 //! xmac.set_config_client(mac_device);
@@ -59,11 +59,11 @@
 //! 802.15.4 frames:
 //!
 //! ```rust,ignore
-//! use kernel::static_init;
+//! use crate::kernel::static_init;
 //!
 //! let radio_capsule = static_init!(
-//!     capsules_extra::ieee802154::RadioDriver<'static>,
-//!     capsules_extra::ieee802154::RadioDriver::new(mac_device, board_kernel.create_grant(&grant_cap), &mut RADIO_BUF));
+//!     crate::capsules_extra::ieee802154::RadioDriver<'static>,
+//!     crate::capsules_extra::ieee802154::RadioDriver::new(mac_device, board_kernel.create_grant(&grant_cap), &mut RADIO_BUF));
 //! mac_device.set_key_procedure(radio_capsule);
 //! mac_device.set_device_procedure(radio_capsule);
 //! mac_device.set_transmit_client(radio_capsule);
@@ -86,12 +86,12 @@ use crate::capsules_extra::net::stream::{encode_bytes, encode_u8, encode_u32};
 
 use core::cell::Cell;
 
-use kernel::ErrorCode;
-use kernel::hil::radio::{self, LQI_SIZE};
-use kernel::hil::symmetric_encryption::{AES128, AESCCM, CCMClient};
-use kernel::processbuffer::ReadableProcessSlice;
-use kernel::utilities::cells::{MapCell, OptionalCell};
-use kernel::utilities::leasable_buffer::SubSliceMut;
+use crate::kernel::ErrorCode;
+use crate::kernel::hil::radio::{self, LQI_SIZE};
+use crate::kernel::hil::symmetric_encryption::{AES128, AESCCM, CCMClient};
+use crate::kernel::processbuffer::ReadableProcessSlice;
+use crate::kernel::utilities::cells::{MapCell, OptionalCell};
+use crate::kernel::utilities::leasable_buffer::SubSliceMut;
 
 /// Wraps a static mutable byte slice along with header information
 /// for a payload.
@@ -318,8 +318,8 @@ enum RxState {
     ReadyToYield(FrameInfo, &'static mut [u8], u8),
 }
 
-/// Wraps an IEEE 802.15.4 [kernel::hil::radio::Radio]
-/// and exposes [`capsules_extra::ieee802154::mac::Mac`](crate::capsules_extra::ieee802154::mac::Mac) functionality.
+/// Wraps an IEEE 802.15.4 [crate::kernel::hil::radio::Radio]
+/// and exposes [`crate::capsules_extra::ieee802154::mac::Mac`](crate::capsules_extra::ieee802154::mac::Mac) functionality.
 ///
 /// It hides header preparation, transmission and processing logic
 /// from the user by essentially maintaining multiple state machines
@@ -464,12 +464,12 @@ impl<'a, M: Mac<'a>, A: AESCCM<'a, AES128>> Framer<'a, M, A> {
                             Some(mac) => match mac {
                                 MacAddress::Long(val) => val,
                                 MacAddress::Short(_) => {
-                                    kernel::debug!("[15.4] DROPPED PACKET - error only short address provided on encrypted packet.");
+                                    crate::kernel::debug!("[15.4] DROPPED PACKET - error only short address provided on encrypted packet.");
                                     return None
                                 },
                             },
                             None => {
-                                kernel::debug!("[15.4] DROPPED PACKET - Malformed, no src address provided.");
+                                crate::kernel::debug!("[15.4] DROPPED PACKET - Malformed, no src address provided.");
                                 return None
                             },
                         };
@@ -620,7 +620,7 @@ impl<'a, M: Mac<'a>, A: AESCCM<'a, AES128>> Framer<'a, M, A> {
                             {
                                 // No error is returned for the receive function because recv occurs implicitly
                                 // Log debug statement here so that this error does not occur silently
-                                kernel::debug!(
+                                crate::kernel::debug!(
                                     "[15.4 RECV FAIL] - Failed setting crypto key/nonce."
                                 );
                                 self.mac.set_receive_buffer(buf);

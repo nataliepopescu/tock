@@ -22,9 +22,9 @@
 
 use core::ptr::addr_of_mut;
 
-use capsules_extra::sha256::Sha256Software;
-use capsules_extra::test::sha256::TestSha256;
-use kernel::static_init;
+use crate::capsules_extra::sha256::Sha256Software;
+use crate::capsules_extra::test::sha256::TestSha256;
+use crate::kernel::static_init;
 
 pub unsafe fn run_sha256() {
     let t = static_init_test_sha256();
@@ -49,7 +49,7 @@ pub static mut LHASH: [u8; 32] = [
 
 unsafe fn static_init_test_sha256() -> &'static TestSha256<'static, Sha256Software<'static>> {
     let sha = static_init!(Sha256Software<'static>, Sha256Software::new());
-    kernel::deferred_call::DeferredCallClient::register(sha);
+    crate::kernel::deferred_call::DeferredCallClient::register(sha);
     let bytes = b"hello ";
     for i in 0..12 {
         for j in 0..6 {

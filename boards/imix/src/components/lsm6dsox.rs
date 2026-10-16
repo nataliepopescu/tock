@@ -8,44 +8,44 @@
 //! ------
 //!
 //! ```rust
-//! let lsm6dsoxtr = components::lsm6dsox::Lsm6dsoxtrI2CComponent::new(
+//! let lsm6dsoxtr = crate::components::lsm6dsox::Lsm6dsoxtrI2CComponent::new(
 //!     mux_i2c,
-//!     capsules_extra::lsm6dsoxtr::ACCELEROMETER_BASE_ADDRESS,
+//!     crate::capsules_extra::lsm6dsoxtr::ACCELEROMETER_BASE_ADDRESS,
 //!     board_kernel,
-//!     capsules_extra::lsm6dsoxtr::DRIVER_NUM,
+//!     crate::capsules_extra::lsm6dsoxtr::DRIVER_NUM,
 //! )
-//! .finalize(components::lsm6ds_i2c_component_static!());
+//! .finalize(crate::components::lsm6ds_i2c_component_static!());
 //!
 //! let _ = lsm6dsoxtr
 //!          .configure(
-//!              capsules_extra::lsm6ds_definitions::LSM6DSOXGyroDataRate::LSM6DSOX_GYRO_RATE_12_5_HZ,
-//!              capsules_extra::lsm6ds_definitions::LSM6DSOXAccelDataRate::LSM6DSOX_ACCEL_RATE_12_5_HZ,
-//!              capsules_extra::lsm6ds_definitions::LSM6DSOXAccelRange::LSM6DSOX_ACCEL_RANGE_2_G,
-//!              capsules_extra::lsm6ds_definitions::LSM6DSOXTRGyroRange::LSM6DSOX_GYRO_RANGE_250_DPS,
+//!              crate::capsules_extra::lsm6ds_definitions::LSM6DSOXGyroDataRate::LSM6DSOX_GYRO_RATE_12_5_HZ,
+//!              crate::capsules_extra::lsm6ds_definitions::LSM6DSOXAccelDataRate::LSM6DSOX_ACCEL_RATE_12_5_HZ,
+//!              crate::capsules_extra::lsm6ds_definitions::LSM6DSOXAccelRange::LSM6DSOX_ACCEL_RANGE_2_G,
+//!              crate::capsules_extra::lsm6ds_definitions::LSM6DSOXTRGyroRange::LSM6DSOX_GYRO_RANGE_250_DPS,
 //!              true,
 //!          )
 //!          .map_err(|e| panic!("ERROR Failed LSM6DSOXTR sensor configuration ({:?})", e));
 //! ```
 //! Author: Cristiana Andrei <cristiana.andrei@stud.fils.upb.ro>
 
-use capsules_core::virtualizers::virtual_i2c::{I2CDevice, MuxI2C};
-use capsules_extra::lsm6dsoxtr::Lsm6dsoxtrI2C;
+use crate::capsules_core::virtualizers::virtual_i2c::{I2CDevice, MuxI2C};
+use crate::capsules_extra::lsm6dsoxtr::Lsm6dsoxtrI2C;
 use core::mem::MaybeUninit;
-use kernel::capabilities::MemoryAllocationCapability;
-use kernel::component::Component;
-use kernel::hil::i2c;
+use crate::kernel::capabilities::MemoryAllocationCapability;
+use crate::kernel::component::Component;
+use crate::kernel::hil::i2c;
 
 // Setup static space for the objects.
 #[macro_export]
 macro_rules! lsm6ds_i2c_component_static {
     ($I:ty $(,)?) => {{
-        let buffer = kernel::static_buf!([u8; 8]);
+        let buffer = crate::kernel::static_buf!([u8; 8]);
         let i2c_device =
-            kernel::static_buf!(capsules_core::virtualizers::virtual_i2c::I2CDevice<'static, $I>);
-        let lsm6dsoxtr = kernel::static_buf!(
-            capsules_extra::lsm6dsoxtr::Lsm6dsoxtrI2C<
+            crate::kernel::static_buf!(crate::capsules_core::virtualizers::virtual_i2c::I2CDevice<'static, $I>);
+        let lsm6dsoxtr = crate::kernel::static_buf!(
+            crate::capsules_extra::lsm6dsoxtr::Lsm6dsoxtrI2C<
                 'static,
-                capsules_core::virtualizers::virtual_i2c::I2CDevice<'static, $I>,
+                crate::capsules_core::virtualizers::virtual_i2c::I2CDevice<'static, $I>,
             >
         );
 
@@ -59,7 +59,7 @@ pub struct Lsm6dsoxtrI2CComponent<
 > {
     i2c_mux: &'static MuxI2C<'static, I>,
     i2c_address: u8,
-    board_kernel: &'static kernel::Kernel,
+    board_kernel: &'static crate::kernel::Kernel,
     driver_num: usize,
     mem_cap: CAP,
 }
@@ -70,7 +70,7 @@ impl<I: 'static + i2c::I2CMaster<'static>, CAP: MemoryAllocationCapability + 'st
     pub fn new(
         i2c_mux: &'static MuxI2C<'static, I>,
         i2c_address: u8,
-        board_kernel: &'static kernel::Kernel,
+        board_kernel: &'static crate::kernel::Kernel,
         driver_num: usize,
         mem_cap: CAP,
     ) -> Lsm6dsoxtrI2CComponent<I, CAP> {

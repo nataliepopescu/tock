@@ -65,11 +65,11 @@
 //! Usage
 //! -----
 //!
-//! You need a device that provides the `kernel::BleAdvertisementDriver` trait along with a virtual
+//! You need a device that provides the `crate::kernel::BleAdvertisementDriver` trait along with a virtual
 //! timer to perform events and not block the entire kernel
 //!
 //! ```rust,ignore
-//! # use kernel::static_init;
+//! # use crate::kernel::static_init;
 //! # use capsules::virtual_alarm::VirtualMuxAlarm;
 //!
 //! let ble_radio = static_init!(
@@ -109,19 +109,19 @@
 use core::cell::Cell;
 use core::cmp;
 
-use kernel::debug;
-use kernel::grant::{AllowRoCount, AllowRwCount, Grant, GrantKernelData, UpcallCount};
-use kernel::hil::ble_advertising;
-use kernel::hil::ble_advertising::RadioChannel;
-use kernel::hil::time::{Frequency, Ticks};
-use kernel::processbuffer::{ReadableProcessBuffer, WriteableProcessBuffer};
-use kernel::syscall::{CommandReturn, SyscallDriver};
-use kernel::utilities::cells::OptionalCell;
-use kernel::utilities::copy_slice::CopyOrErr;
-use kernel::{ErrorCode, ProcessId};
+use crate::kernel::debug;
+use crate::kernel::grant::{AllowRoCount, AllowRwCount, Grant, GrantKernelData, UpcallCount};
+use crate::kernel::hil::ble_advertising;
+use crate::kernel::hil::ble_advertising::RadioChannel;
+use crate::kernel::hil::time::{Frequency, Ticks};
+use crate::kernel::processbuffer::{ReadableProcessBuffer, WriteableProcessBuffer};
+use crate::kernel::syscall::{CommandReturn, SyscallDriver};
+use crate::kernel::utilities::cells::OptionalCell;
+use crate::kernel::utilities::copy_slice::CopyOrErr;
+use crate::kernel::{ErrorCode, ProcessId};
 
 /// Syscall driver number.
-use capsules_core::driver;
+use crate::capsules_core::driver;
 pub const DRIVER_NUM: usize = driver::NUM::BleAdvertising as usize;
 
 /// Ids for read-only allow buffers
@@ -235,7 +235,7 @@ impl App {
     // Byte 2-5          random
     // Byte 6            0xf0
     // FIXME: For now use ProcessId as "randomness"
-    fn generate_random_address(&mut self, processid: kernel::ProcessId) -> Result<(), ErrorCode> {
+    fn generate_random_address(&mut self, processid: crate::kernel::ProcessId) -> Result<(), ErrorCode> {
         self.address = [
             0xf0,
             (processid.id() & 0xff) as u8,
@@ -249,14 +249,14 @@ impl App {
 
     fn send_advertisement<'a, B, A>(
         &mut self,
-        processid: kernel::ProcessId,
+        processid: crate::kernel::ProcessId,
         kernel_data: &GrantKernelData,
         ble: &BLE<'a, B, A>,
         channel: RadioChannel,
     ) -> Result<(), ErrorCode>
     where
         B: ble_advertising::BleAdvertisementDriver<'a> + ble_advertising::BleConfig,
-        A: kernel::hil::time::Alarm<'a>,
+        A: crate::kernel::hil::time::Alarm<'a>,
     {
         // Ensure we have an address set before advertisement
         self.generate_random_address(processid)?;
@@ -326,7 +326,7 @@ impl App {
 pub struct BLE<'a, B, A>
 where
     B: ble_advertising::BleAdvertisementDriver<'a> + ble_advertising::BleConfig,
-    A: kernel::hil::time::Alarm<'a>,
+    A: crate::kernel::hil::time::Alarm<'a>,
 {
     radio: &'a B,
     busy: Cell<bool>,
@@ -336,16 +336,16 @@ where
         AllowRoCount<{ ro_allow::COUNT }>,
         AllowRwCount<{ rw_allow::COUNT }>,
     >,
-    kernel_tx: kernel::utilities::cells::TakeCell<'static, [u8]>,
+    kernel_tx: crate::kernel::utilities::cells::TakeCell<'static, [u8]>,
     alarm: &'a A,
-    sending_app: OptionalCell<kernel::ProcessId>,
-    receiving_app: OptionalCell<kernel::ProcessId>,
+    sending_app: OptionalCell<crate::kernel::ProcessId>,
+    receiving_app: OptionalCell<crate::kernel::ProcessId>,
 }
 
 impl<'a, B, A> BLE<'a, B, A>
 where
     B: ble_advertising::BleAdvertisementDriver<'a> + ble_advertising::BleConfig,
-    A: kernel::hil::time::Alarm<'a>,
+    A: crate::kernel::hil::time::Alarm<'a>,
 {
     pub fn new(
         radio: &'a B,
@@ -362,7 +362,7 @@ where
             radio,
             busy: Cell::new(false),
             app: container,
-            kernel_tx: kernel::utilities::cells::TakeCell::new(tx_buf),
+            kernel_tx: crate::kernel::utilities::cells::TakeCell::new(tx_buf),
             alarm,
             sending_app: OptionalCell::empty(),
             receiving_app: OptionalCell::empty(),
@@ -403,10 +403,10 @@ where
 }
 
 // Timer alarm
-impl<'a, B, A> kernel::hil::time::AlarmClient for BLE<'a, B, A>
+impl<'a, B, A> crate::kernel::hil::time::AlarmClient for BLE<'a, B, A>
 where
     B: ble_advertising::BleAdvertisementDriver<'a> + ble_advertising::BleConfig,
-    A: kernel::hil::time::Alarm<'a>,
+    A: crate::kernel::hil::time::Alarm<'a>,
 {
     // When an alarm is fired, we find which apps have expired timers. Expired
     // timers indicate a desire to perform some operation (e.g. start an
@@ -480,7 +480,7 @@ where
 impl<'a, B, A> ble_advertising::RxClient for BLE<'a, B, A>
 where
     B: ble_advertising::BleAdvertisementDriver<'a> + ble_advertising::BleConfig,
-    A: kernel::hil::time::Alarm<'a>,
+    A: crate::kernel::hil::time::Alarm<'a>,
 {
     fn receive_event(&self, buf: &'static mut [u8], len: u8, result: Result<(), ErrorCode>) {
         self.receiving_app.map(|processid| {
@@ -511,7 +511,7 @@ where
                     if success {
                         let _ = kernel_data.schedule_upcall(
                             0,
-                            (kernel::errorcode::into_statuscode(result), len as usize, 0),
+                            (crate::kernel::errorcode::into_statuscode(result), len as usize, 0),
                         );
                     }
                 }
@@ -550,7 +550,7 @@ where
 impl<'a, B, A> ble_advertising::TxClient for BLE<'a, B, A>
 where
     B: ble_advertising::BleAdvertisementDriver<'a> + ble_advertising::BleConfig,
-    A: kernel::hil::time::Alarm<'a>,
+    A: crate::kernel::hil::time::Alarm<'a>,
 {
     // The Result<(), ErrorCode> indicates valid CRC or not, not used yet but could be used for
     // re-transmissions for invalid CRCs
@@ -602,14 +602,14 @@ where
 impl<'a, B, A> SyscallDriver for BLE<'a, B, A>
 where
     B: ble_advertising::BleAdvertisementDriver<'a> + ble_advertising::BleConfig,
-    A: kernel::hil::time::Alarm<'a>,
+    A: crate::kernel::hil::time::Alarm<'a>,
 {
     fn command(
         &self,
         command_num: usize,
         data: usize,
         interval: usize,
-        processid: kernel::ProcessId,
+        processid: crate::kernel::ProcessId,
     ) -> CommandReturn {
         match command_num {
             // Start periodic advertisements
@@ -718,7 +718,7 @@ where
         }
     }
 
-    fn allocate_grant(&self, processid: ProcessId) -> Result<(), kernel::process::Error> {
+    fn allocate_grant(&self, processid: ProcessId) -> Result<(), crate::kernel::process::Error> {
         self.app.enter(processid, |_, _| {})
     }
 }

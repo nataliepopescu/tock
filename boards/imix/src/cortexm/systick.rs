@@ -5,9 +5,9 @@
 //! Cortex-M SysTick Timer
 
 use core::cell::Cell;
-use kernel::utilities::StaticRef;
-use kernel::utilities::registers::interfaces::{Readable, Writeable};
-use kernel::utilities::registers::{FieldValue, ReadOnly, ReadWrite, register_bitfields};
+use crate::kernel::utilities::StaticRef;
+use crate::kernel::utilities::registers::interfaces::{Readable, Writeable};
+use crate::kernel::utilities::registers::{FieldValue, ReadOnly, ReadWrite, register_bitfields};
 
 use core::num::NonZeroU32;
 
@@ -146,7 +146,7 @@ impl SysTick {
     }
 }
 
-impl kernel::platform::scheduler_timer::SchedulerTimer for SysTick {
+impl crate::kernel::platform::scheduler_timer::SchedulerTimer for SysTick {
     fn start(&self, us: NonZeroU32) {
         let reload = {
             // We need to convert from microseconds to native tics, which could

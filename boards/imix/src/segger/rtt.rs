@@ -44,7 +44,7 @@
 //! In `main()`:
 //!
 //! ```rust,ignore
-//! # use kernel::static_init;
+//! # use crate::kernel::static_init;
 //! # use capsules::virtual_alarm::VirtualMuxAlarm;
 //!
 //! let virtual_alarm_rtt = static_init!(
@@ -78,7 +78,7 @@
 //!         board_kernel.create_grant(&grant_cap)
 //!     )
 //! );
-//! kernel::hil::uart::UART::set_client(rtt, console);
+//! crate::kernel::hil::uart::UART::set_client(rtt, console);
 //! console.initialize();
 //! ```
 
@@ -86,14 +86,14 @@ use core::cell::Cell;
 use core::marker::PhantomData;
 use core::ops::Index;
 use core::sync::atomic::{Ordering, fence};
-use kernel::ErrorCode;
-use kernel::hil;
-use kernel::hil::time::ConvertTicks;
-use kernel::hil::uart;
-use kernel::utilities::cells::{OptionalCell, TakeCell};
-use kernel::utilities::io_write::IoWrite;
-use kernel::utilities::registers::InMemoryRegister;
-use kernel::utilities::registers::interfaces::{Readable, Writeable};
+use crate::kernel::ErrorCode;
+use crate::kernel::hil;
+use crate::kernel::hil::time::ConvertTicks;
+use crate::kernel::hil::uart;
+use crate::kernel::utilities::cells::{OptionalCell, TakeCell};
+use crate::kernel::utilities::io_write::IoWrite;
+use crate::kernel::utilities::registers::InMemoryRegister;
+use crate::kernel::utilities::registers::interfaces::{Readable, Writeable};
 
 /// Suggested length for the up buffer to pass to the Segger RTT capsule.
 pub const DEFAULT_UP_BUFFER_LENGTH: usize = 1024;
@@ -376,7 +376,7 @@ impl<'a, A: hil::time::Alarm<'a>> uart::Receive<'a> for SeggerRtt<'a, A> {
 ///
 /// For boards that want to use RTT to display panic messages, this
 /// provides an implementation of
-/// [`PanicWriter`](kernel::platform::chip::PanicWriter) with synchronous
+/// [`PanicWriter`](crate::kernel::platform::chip::PanicWriter) with synchronous
 /// output.
 ///
 /// This is only to be used by panic messages and is not used within the normal
@@ -401,7 +401,7 @@ impl core::fmt::Write for RttPanicWriter<'_> {
     }
 }
 
-impl<'a> kernel::platform::chip::PanicWriter for SeggerRttMemory<'a> {
+impl<'a> crate::kernel::platform::chip::PanicWriter for SeggerRttMemory<'a> {
     type Config = &'a SeggerRttMemory<'a>;
 
     fn create_panic_writer(

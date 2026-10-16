@@ -12,9 +12,9 @@
 //! - Date: Aug 2, 2015
 
 use crate::sam4l::bscif;
-use kernel::utilities::StaticRef;
-use kernel::utilities::registers::interfaces::{Readable, Writeable};
-use kernel::utilities::registers::{
+use crate::kernel::utilities::StaticRef;
+use crate::kernel::utilities::registers::interfaces::{Readable, Writeable};
+use crate::kernel::utilities::registers::{
     FieldValue, ReadOnly, ReadWrite, WriteOnly, register_bitfields,
 };
 

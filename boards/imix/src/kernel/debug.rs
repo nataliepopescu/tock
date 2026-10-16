@@ -13,22 +13,22 @@
 //!
 //! ```ignore
 //! let debug_gpios = static_init!(
-//!     [&'static dyn kernel::hil::gpio::Pin; 2],
+//!     [&'static dyn crate::kernel::hil::gpio::Pin; 2],
 //!     [
-//!         &sam4l::gpio::PA[13],
-//!         &sam4l::gpio::PA[15],
+//!         &crate::sam4l::gpio::PA[13],
+//!         &crate::sam4l::gpio::PA[15],
 //!     ]
 //! );
-//! kernel::debug::initialize_debug_gpio::<
-//!     <ChipHw as kernel::platform::chip::Chip>::ThreadIdProvider,
+//! crate::kernel::debug::initialize_debug_gpio::<
+//!     <ChipHw as crate::kernel::platform::chip::Chip>::ThreadIdProvider,
 //! >();
-//! kernel::debug::assign_gpios(debug_gpios);
+//! crate::kernel::debug::assign_gpios(debug_gpios);
 //!
-//! components::debug_writer::DebugWriterComponent::new(
+//! crate::components::debug_writer::DebugWriterComponent::new(
 //!     uart_mux,
-//!     create_capability!(kernel::capabilities::SetDebugWriterCapability)
+//!     create_capability!(crate::kernel::capabilities::SetDebugWriterCapability)
 //! )
-//! .finalize(components::debug_writer_component_static!());
+//! .finalize(crate::components::debug_writer_component_static!());
 //! ```
 //!
 //! An alternative to using the default `DebugWriterComponent`, which defaults
@@ -37,7 +37,7 @@
 //! fixed "push" address:
 //!
 //! ```ignore
-//! use kernel::debug::DebugWriter;
+//! use crate::kernel::debug::DebugWriter;
 //!
 //! pub struct SyncDebugWriter;
 //!
@@ -73,13 +73,13 @@
 //!     utils::SyncDebugWriter
 //! );
 //!
-//! kernel::debug::initialize_debug_writer_wrapper::<
-//!     <ChipHw as kernel::platform::chip::Chip>::ThreadIdProvider
+//! crate::kernel::debug::initialize_debug_writer_wrapper::<
+//!     <ChipHw as crate::kernel::platform::chip::Chip>::ThreadIdProvider
 //! >();
 //!
-//! kernel::debug::set_debug_writer_wrapper(
+//! crate::kernel::debug::set_debug_writer_wrapper(
 //!     debug_writer,
-//!     create_capability!(kernel::capabilities::SetDebugWriterCapability)
+//!     create_capability!(crate::kernel::capabilities::SetDebugWriterCapability)
 //! );
 //! ```
 //!
@@ -87,7 +87,7 @@
 //! -------
 //!
 //! ```no_run
-//! # use kernel::{debug, debug_gpio, debug_verbose};
+//! # use crate::kernel::{debug, debug_gpio, debug_verbose};
 //! # fn main() {
 //! # let i = 42;
 //! debug!("Yes the code gets here with value {}", i);

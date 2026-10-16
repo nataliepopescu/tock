@@ -18,26 +18,26 @@
 //! -----
 //!
 //! ```rust,ignore
-//! # use kernel::{hil, static_init};
-//! # use capsules_core::virtual_uart::{MuxUart, UartDevice};
+//! # use crate::kernel::{hil, static_init};
+//! # use crate::capsules_core::virtual_uart::{MuxUart, UartDevice};
 //!
 //! // Create a shared UART channel for the console and for kernel debug.
 //! let uart_mux = static_init!(
 //!     MuxUart<'static>,
-//!     MuxUart::new(&sam4l::usart::USART0, &mut capsules_core::virtual_uart::RX_BUF)
+//!     MuxUart::new(&crate::sam4l::usart::USART0, &mut crate::capsules_core::virtual_uart::RX_BUF)
 //! );
-//! hil::uart::UART::set_receive_client(&sam4l::usart::USART0, uart_mux);
-//! hil::uart::UART::set_transmit_client(&sam4l::usart::USART0, uart_mux);
+//! hil::uart::UART::set_receive_client(&crate::sam4l::usart::USART0, uart_mux);
+//! hil::uart::UART::set_transmit_client(&crate::sam4l::usart::USART0, uart_mux);
 //!
 //! // Create a UartDevice for the console.
 //! let console_uart = static_init!(UartDevice, UartDevice::new(uart_mux, true));
 //! console_uart.setup(); // This is important!
 //! let console = static_init!(
-//!     capsules_core::console::Console<'static>,
-//!     capsules_core::console::Console::new(
+//!     crate::capsules_core::console::Console<'static>,
+//!     crate::capsules_core::console::Console::new(
 //!         console_uart,
-//!         &mut capsules_core::console::WRITE_BUF,
-//!         &mut capsules_core::console::READ_BUF,
+//!         &mut crate::capsules_core::console::WRITE_BUF,
+//!         &mut crate::capsules_core::console::READ_BUF,
 //!         board_kernel.create_grant(&grant_cap)
 //!     )
 //! );
@@ -48,11 +48,11 @@
 use core::cell::Cell;
 use core::cmp;
 
-use kernel::ErrorCode;
-use kernel::collections::list::{List, ListLink, ListNode};
-use kernel::deferred_call::{DeferredCall, DeferredCallClient};
-use kernel::hil::uart;
-use kernel::utilities::cells::{OptionalCell, TakeCell};
+use crate::kernel::ErrorCode;
+use crate::kernel::collections::list::{List, ListLink, ListNode};
+use crate::kernel::deferred_call::{DeferredCall, DeferredCallClient};
+use crate::kernel::hil::uart;
+use crate::kernel::utilities::cells::{OptionalCell, TakeCell};
 
 pub const RX_BUF_LEN: usize = 64;
 

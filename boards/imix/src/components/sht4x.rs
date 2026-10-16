@@ -10,35 +10,35 @@
 //! -----
 //!
 //! ```rust
-//! let sht4x = components::sht4x::SHT4xComponent::new(sensors_i2c_bus, capsules_extra::sht4x::BASE_ADDR, mux_alarm).finalize(
-//!         components::sht4x_component_static!(nrf52::rtc::Rtc<'static>),
+//! let sht4x = crate::components::sht4x::SHT4xComponent::new(sensors_i2c_bus, crate::capsules_extra::sht4x::BASE_ADDR, mux_alarm).finalize(
+//!         crate::components::sht4x_component_static!(nrf52::rtc::Rtc<'static>),
 //!     );
 //! sht4x.reset();
 //! ```
 
-use capsules_core::virtualizers::virtual_alarm::{MuxAlarm, VirtualMuxAlarm};
-use capsules_core::virtualizers::virtual_i2c::{I2CDevice, MuxI2C};
-use capsules_extra::sht4x::SHT4x;
+use crate::capsules_core::virtualizers::virtual_alarm::{MuxAlarm, VirtualMuxAlarm};
+use crate::capsules_core::virtualizers::virtual_i2c::{I2CDevice, MuxI2C};
+use crate::capsules_extra::sht4x::SHT4x;
 use core::mem::MaybeUninit;
-use kernel::component::Component;
-use kernel::hil::i2c;
-use kernel::hil::time::Alarm;
+use crate::kernel::component::Component;
+use crate::kernel::hil::i2c;
+use crate::kernel::hil::time::Alarm;
 
 // Setup static space for the objects.
 #[macro_export]
 macro_rules! sht4x_component_static {
     ($A:ty, $I:ty $(,)?) => {{
-        let buffer = kernel::static_buf!([u8; 6]);
+        let buffer = crate::kernel::static_buf!([u8; 6]);
         let i2c_device =
-            kernel::static_buf!(capsules_core::virtualizers::virtual_i2c::I2CDevice<'static, $I>);
-        let sht4x_alarm = kernel::static_buf!(
-            capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, $A>
+            crate::kernel::static_buf!(crate::capsules_core::virtualizers::virtual_i2c::I2CDevice<'static, $I>);
+        let sht4x_alarm = crate::kernel::static_buf!(
+            crate::capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, $A>
         );
-        let sht4x = kernel::static_buf!(
-            capsules_extra::sht4x::SHT4x<
+        let sht4x = crate::kernel::static_buf!(
+            crate::capsules_extra::sht4x::SHT4x<
                 'static,
-                capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, $A>,
-                capsules_core::virtualizers::virtual_i2c::I2CDevice<'static, $I>,
+                crate::capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, $A>,
+                crate::capsules_core::virtualizers::virtual_i2c::I2CDevice<'static, $I>,
             >
         );
 
@@ -46,7 +46,7 @@ macro_rules! sht4x_component_static {
     }};
 }
 
-pub type SHT4xComponentType<A, I> = capsules_extra::sht4x::SHT4x<'static, A, I>;
+pub type SHT4xComponentType<A, I> = crate::capsules_extra::sht4x::SHT4x<'static, A, I>;
 
 pub struct SHT4xComponent<A: 'static + Alarm<'static>, I: 'static + i2c::I2CMaster<'static>> {
     i2c_mux: &'static MuxI2C<'static, I>,

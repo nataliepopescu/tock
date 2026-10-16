@@ -8,12 +8,12 @@ use core::cell::Cell;
 
 use crate::sam4l::pm::{self, Clock, PBDClock};
 
-use cortexm4::support;
+use crate::cortexm4::support;
 
-use kernel::utilities::StaticRef;
-use kernel::utilities::math::log_base_two_u64;
-use kernel::utilities::registers::interfaces::{ReadWriteable, Readable, Writeable};
-use kernel::utilities::registers::{
+use crate::kernel::utilities::StaticRef;
+use crate::kernel::utilities::math::log_base_two_u64;
+use crate::kernel::utilities::registers::interfaces::{ReadWriteable, Readable, Writeable};
+use crate::kernel::utilities::registers::{
     FieldValue, ReadOnly, ReadWrite, WriteOnly, register_bitfields,
 };
 
@@ -226,7 +226,7 @@ impl Wdt {
     }
 }
 
-impl kernel::platform::watchdog::WatchDog for Wdt {
+impl crate::kernel::platform::watchdog::WatchDog for Wdt {
     fn setup(&self) {
         // Setup the WatchDog with a 100ms period.
         self.start(100);

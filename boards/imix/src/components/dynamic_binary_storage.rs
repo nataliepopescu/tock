@@ -8,50 +8,50 @@
 //! a system call interface to SequentialDynamicBinaryStorage.
 //!
 //!```rust, ignore
-//! # use kernel::static_init;
+//! # use crate::kernel::static_init;
 //!
-//! let dynamic_binary_storage = components::dyn_binary_storage::SequentialBinaryStorageComponent::new(
+//! let dynamic_binary_storage = crate::components::dyn_binary_storage::SequentialBinaryStorageComponent::new(
 //!     board_kernel,
 //!     &base_peripherals.nvmc,
 //!     &loader,
 //! )
-//! .finalize(components::sequential_binary_storage_component_static!(
+//! .finalize(crate::components::sequential_binary_storage_component_static!(
 //!     nrf52840::nvmc::Nvmc,
 //!     nrf52840::chip::NRF52<Nrf52840DefaultPeripherals>,
-//!     kernel::process::ProcessStandardDebugFull,
+//!     crate::kernel::process::ProcessStandardDebugFull,
 //! ));
 //! ```
 
-use capsules_extra::nonvolatile_to_pages::NonvolatileToPages;
+use crate::capsules_extra::nonvolatile_to_pages::NonvolatileToPages;
 use core::mem::MaybeUninit;
-use kernel::component::Component;
-use kernel::deferred_call::DeferredCallClient;
-use kernel::dynamic_binary_storage::SequentialDynamicBinaryStorage;
-use kernel::hil;
-use kernel::platform::chip::Chip;
-use kernel::process::ProcessStandardDebug;
-use kernel::process::SequentialProcessLoaderMachine;
+use crate::kernel::component::Component;
+use crate::kernel::deferred_call::DeferredCallClient;
+use crate::kernel::dynamic_binary_storage::SequentialDynamicBinaryStorage;
+use crate::kernel::hil;
+use crate::kernel::platform::chip::Chip;
+use crate::kernel::process::ProcessStandardDebug;
+use crate::kernel::process::SequentialProcessLoaderMachine;
 
-pub type NVPages<F> = capsules_extra::nonvolatile_to_pages::NonvolatileToPages<'static, F>;
+pub type NVPages<F> = crate::capsules_extra::nonvolatile_to_pages::NonvolatileToPages<'static, F>;
 
 // Setup static space for the objects.
 #[macro_export]
 macro_rules! sequential_binary_storage_component_static {
     ($F:ty, $C:ty, $D:ty $(,)?) => {{
-        let page = kernel::static_buf!(<$F as kernel::hil::flash::Flash>::Page);
-        let ntp = kernel::static_buf!(
-            capsules_extra::nonvolatile_to_pages::NonvolatileToPages<'static, $F>
+        let page = crate::kernel::static_buf!(<$F as crate::kernel::hil::flash::Flash>::Page);
+        let ntp = crate::kernel::static_buf!(
+            crate::capsules_extra::nonvolatile_to_pages::NonvolatileToPages<'static, $F>
         );
-        let pl = kernel::static_buf!(
-            kernel::dynamic_binary_storage::SequentialDynamicBinaryStorage<
+        let pl = crate::kernel::static_buf!(
+            crate::kernel::dynamic_binary_storage::SequentialDynamicBinaryStorage<
                 'static,
                 'static,
                 $C,
                 $D,
-                capsules_extra::nonvolatile_to_pages::NonvolatileToPages<'static, $F>,
+                crate::capsules_extra::nonvolatile_to_pages::NonvolatileToPages<'static, $F>,
             >
         );
-        let buffer = kernel::static_buf!([u8; kernel::dynamic_binary_storage::BUF_LEN]);
+        let buffer = crate::kernel::static_buf!([u8; crate::kernel::dynamic_binary_storage::BUF_LEN]);
 
         (page, ntp, pl, buffer)
     }};
@@ -62,7 +62,7 @@ pub struct SequentialBinaryStorageComponent<
     C: Chip + 'static,
     D: ProcessStandardDebug + 'static,
 > {
-    board_kernel: &'static kernel::Kernel,
+    board_kernel: &'static crate::kernel::Kernel,
     nv_flash: &'static F,
     loader_driver: &'static SequentialProcessLoaderMachine<'static, C, D>,
 }
@@ -74,7 +74,7 @@ impl<
 > SequentialBinaryStorageComponent<F, C, D>
 {
     pub fn new(
-        board_kernel: &'static kernel::Kernel,
+        board_kernel: &'static crate::kernel::Kernel,
         nv_flash: &'static F,
         loader_driver: &'static SequentialProcessLoaderMachine<'static, C, D>,
     ) -> Self {
@@ -98,7 +98,7 @@ impl<
         &'static mut MaybeUninit<
             SequentialDynamicBinaryStorage<'static, 'static, C, D, NonvolatileToPages<'static, F>>,
         >,
-        &'static mut MaybeUninit<[u8; kernel::dynamic_binary_storage::BUF_LEN]>,
+        &'static mut MaybeUninit<[u8; crate::kernel::dynamic_binary_storage::BUF_LEN]>,
     );
     type Output = &'static SequentialDynamicBinaryStorage<
         'static,
@@ -111,7 +111,7 @@ impl<
     fn finalize(self, static_buffer: Self::StaticInput) -> Self::Output {
         let buffer = static_buffer
             .3
-            .write([0; kernel::dynamic_binary_storage::BUF_LEN]);
+            .write([0; crate::kernel::dynamic_binary_storage::BUF_LEN]);
 
         let flash_pagebuffer = static_buffer
             .0

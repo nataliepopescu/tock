@@ -4,21 +4,21 @@
 
 //! Component for the built-in STM temperature sensor.
 
-use capsules_core::virtualizers::virtual_adc::AdcDevice;
-use capsules_extra::temperature_stm::TemperatureSTM;
+use crate::capsules_core::virtualizers::virtual_adc::AdcDevice;
+use crate::capsules_extra::temperature_stm::TemperatureSTM;
 use core::mem::MaybeUninit;
-use kernel::component::Component;
-use kernel::hil::adc;
-use kernel::hil::adc::AdcChannel;
+use crate::kernel::component::Component;
+use crate::kernel::hil::adc;
+use crate::kernel::hil::adc::AdcChannel;
 
 #[macro_export]
 macro_rules! temperature_stm_adc_component_static {
     ($A:ty $(,)?) => {{
-        let adc_device = components::adc_component_static!($A);
-        let temperature_stm = kernel::static_buf!(
-            capsules_extra::temperature_stm::TemperatureSTM<
+        let adc_device = crate::components::adc_component_static!($A);
+        let temperature_stm = crate::kernel::static_buf!(
+            crate::capsules_extra::temperature_stm::TemperatureSTM<
                 'static,
-                capsules_core::virtualizers::virtual_adc::AdcDevice<'static, $A>,
+                crate::capsules_core::virtualizers::virtual_adc::AdcDevice<'static, $A>,
             >
         );
 
@@ -27,10 +27,10 @@ macro_rules! temperature_stm_adc_component_static {
 }
 
 pub type TemperatureSTMComponentType<A> =
-    capsules_extra::temperature_stm::TemperatureSTM<'static, A>;
+    crate::capsules_extra::temperature_stm::TemperatureSTM<'static, A>;
 
 pub struct TemperatureSTMComponent<A: 'static + adc::Adc<'static>> {
-    adc_mux: &'static capsules_core::virtualizers::virtual_adc::MuxAdc<'static, A>,
+    adc_mux: &'static crate::capsules_core::virtualizers::virtual_adc::MuxAdc<'static, A>,
     adc_channel: A::Channel,
     slope: f32,
     v_25: f32,
@@ -38,7 +38,7 @@ pub struct TemperatureSTMComponent<A: 'static + adc::Adc<'static>> {
 
 impl<A: 'static + adc::Adc<'static>> TemperatureSTMComponent<A> {
     pub fn new(
-        adc_mux: &'static capsules_core::virtualizers::virtual_adc::MuxAdc<'static, A>,
+        adc_mux: &'static crate::capsules_core::virtualizers::virtual_adc::MuxAdc<'static, A>,
         adc_channel: A::Channel,
         slope: f32,
         v_25: f32,

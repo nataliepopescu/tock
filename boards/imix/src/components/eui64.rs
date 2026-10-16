@@ -7,20 +7,20 @@
 //! Usage
 //! -----
 //! ```rust
-//!let eui64 = components::eui64::Eui64Component::new(u64::from_le_bytes(device_id))
-//!     .finalize(components::eui64_component_static!());
+//!let eui64 = crate::components::eui64::Eui64Component::new(u64::from_le_bytes(device_id))
+//!     .finalize(crate::components::eui64_component_static!());
 //! ```
 
-use capsules_extra::eui64::Eui64;
+use crate::capsules_extra::eui64::Eui64;
 use core::mem::MaybeUninit;
-use kernel::component::Component;
+use crate::kernel::component::Component;
 
 #[macro_export]
 macro_rules! eui64_component_static {
-    () => {{ kernel::static_buf!(capsules_extra::eui64::Eui64) }};
+    () => {{ crate::kernel::static_buf!(crate::capsules_extra::eui64::Eui64) }};
 }
 
-pub type Eui64ComponentType = capsules_extra::eui64::Eui64;
+pub type Eui64ComponentType = crate::capsules_extra::eui64::Eui64;
 
 pub struct Eui64Component {
     eui64: u64,

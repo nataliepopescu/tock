@@ -8,35 +8,35 @@
 //! -----
 //! ```rust
 //!     let ccs811 =
-//!         Ccs811Component::new(mux_i2c, 0x77).finalize(components::ccs811_component_static!());
-//!     let temperature = components::temperature::TemperatureComponent::new(
+//!         Ccs811Component::new(mux_i2c, 0x77).finalize(crate::components::ccs811_component_static!());
+//!     let temperature = crate::components::temperature::TemperatureComponent::new(
 //!         board_kernel,
-//!         capsules_extra::temperature::DRIVER_NUM,
+//!         crate::capsules_extra::temperature::DRIVER_NUM,
 //!         ccs811,
 //!     )
 //!     .finalize(());
-//!     let humidity = components::humidity::HumidityComponent::new(
+//!     let humidity = crate::components::humidity::HumidityComponent::new(
 //!         board_kernel,
-//!         capsules_extra::humidity::DRIVER_NUM,
+//!         crate::capsules_extra::humidity::DRIVER_NUM,
 //!         ccs811,
 //!     )
 //!     .finalize(());
 //! ```
 
-use capsules_core::virtualizers::virtual_i2c::{I2CDevice, MuxI2C};
-use capsules_extra::ccs811::Ccs811;
+use crate::capsules_core::virtualizers::virtual_i2c::{I2CDevice, MuxI2C};
+use crate::capsules_extra::ccs811::Ccs811;
 use core::mem::MaybeUninit;
-use kernel::component::Component;
-use kernel::hil::i2c;
+use crate::kernel::component::Component;
+use crate::kernel::hil::i2c;
 
 // Setup static space for the objects.
 #[macro_export]
 macro_rules! ccs811_component_static {
     ($I:ty $(,)?) => {{
         let i2c_device =
-            kernel::static_buf!(capsules_core::virtualizers::virtual_i2c::I2CDevice<$I>);
-        let buffer = kernel::static_buf!([u8; 6]);
-        let ccs811 = kernel::static_buf!(capsules_extra::ccs811::Ccs811<'static>);
+            crate::kernel::static_buf!(crate::capsules_core::virtualizers::virtual_i2c::I2CDevice<$I>);
+        let buffer = crate::kernel::static_buf!([u8; 6]);
+        let ccs811 = crate::kernel::static_buf!(crate::capsules_extra::ccs811::Ccs811<'static>);
 
         (i2c_device, buffer, ccs811)
     }};
@@ -70,7 +70,7 @@ impl<I: 'static + i2c::I2CMaster<'static>> Component for Ccs811Component<I> {
             .write(I2CDevice::new(self.i2c_mux, self.i2c_address));
         let buffer = static_buffer.1.write([0; 6]);
         let ccs811 = static_buffer.2.write(Ccs811::new(ccs811_i2c, buffer));
-        kernel::deferred_call::DeferredCallClient::register(ccs811);
+        crate::kernel::deferred_call::DeferredCallClient::register(ccs811);
 
         ccs811_i2c.set_client(ccs811);
         ccs811.startup();

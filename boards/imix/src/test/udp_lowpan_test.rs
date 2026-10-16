@@ -121,32 +121,32 @@
 
 use super::super::imix_components::test::mock_udp::MockUDPComponent;
 use crate::mock_udp_component_static;
-use capsules_core::virtualizers::virtual_alarm::{MuxAlarm, VirtualMuxAlarm};
-use capsules_extra::net::ipv6::ip_utils::IPAddr;
-use capsules_extra::net::ipv6::ipv6_send::IP6SendStruct;
-use capsules_extra::net::network_capabilities::{
+use crate::capsules_core::virtualizers::virtual_alarm::{MuxAlarm, VirtualMuxAlarm};
+use crate::capsules_extra::net::ipv6::ip_utils::IPAddr;
+use crate::capsules_extra::net::ipv6::ipv6_send::IP6SendStruct;
+use crate::capsules_extra::net::network_capabilities::{
     AddrRange, NetworkCapability, PortRange, UdpVisibilityCapability,
 };
-use capsules_extra::net::udp::udp_port_table::UdpPortManager;
-use capsules_extra::net::udp::udp_recv::MuxUdpReceiver;
-use capsules_extra::net::udp::udp_send::MuxUdpSender;
-use capsules_extra::test::udp::MockUdp;
+use crate::capsules_extra::net::udp::udp_port_table::UdpPortManager;
+use crate::capsules_extra::net::udp::udp_recv::MuxUdpReceiver;
+use crate::capsules_extra::net::udp::udp_send::MuxUdpSender;
+use crate::capsules_extra::test::udp::MockUdp;
 use core::cell::Cell;
 use core::ptr::addr_of_mut;
-use kernel::ErrorCode;
-use kernel::capabilities::NetworkCapabilityCreationCapability;
-use kernel::component::Component;
-use kernel::create_capability;
-use kernel::debug;
-use kernel::hil::time::{self, Alarm, ConvertTicks};
-use kernel::static_init;
+use crate::kernel::ErrorCode;
+use crate::kernel::capabilities::NetworkCapabilityCreationCapability;
+use crate::kernel::component::Component;
+use crate::kernel::create_capability;
+use crate::kernel::debug;
+use crate::kernel::hil::time::{self, Alarm, ConvertTicks};
+use crate::kernel::static_init;
 
 pub const TEST_DELAY_MS: u32 = 2000;
 pub const TEST_LOOP: bool = false;
 static mut UDP_PAYLOAD: [u8; PAYLOAD_LEN] = [0; PAYLOAD_LEN]; //Becomes payload of UDP packet
 
 const UDP_HDR_SIZE: usize = 8;
-const PAYLOAD_LEN: usize = components::udp_mux::MAX_PAYLOAD_LEN;
+const PAYLOAD_LEN: usize = crate::components::udp_mux::MAX_PAYLOAD_LEN;
 static mut UDP_PAYLOAD1: [u8; PAYLOAD_LEN - UDP_HDR_SIZE] = [0; PAYLOAD_LEN - UDP_HDR_SIZE];
 static mut UDP_PAYLOAD2: [u8; PAYLOAD_LEN - UDP_HDR_SIZE] = [0; PAYLOAD_LEN - UDP_HDR_SIZE];
 
@@ -170,14 +170,14 @@ pub struct LowpanTest<'a, A: time::Alarm<'a>> {
 pub unsafe fn initialize_all(
     udp_send_mux: &'static MuxUdpSender<
         'static,
-        IP6SendStruct<'static, VirtualMuxAlarm<'static, sam4l::ast::Ast<'static>>>,
+        IP6SendStruct<'static, VirtualMuxAlarm<'static, crate::sam4l::ast::Ast<'static>>>,
     >,
     udp_recv_mux: &'static MuxUdpReceiver<'static>,
     port_table: &'static UdpPortManager,
-    mux_alarm: &'static MuxAlarm<'static, sam4l::ast::Ast>,
+    mux_alarm: &'static MuxAlarm<'static, crate::sam4l::ast::Ast>,
 ) -> &'static LowpanTest<
     'static,
-    capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, sam4l::ast::Ast<'static>>,
+    crate::capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, crate::sam4l::ast::Ast<'static>>,
 > {
     let create_cap = create_capability!(NetworkCapabilityCreationCapability);
     let net_cap = static_init!(
@@ -215,13 +215,13 @@ pub unsafe fn initialize_all(
     .finalize(mock_udp_component_static!());
 
     let alarm = static_init!(
-        VirtualMuxAlarm<'static, sam4l::ast::Ast>,
+        VirtualMuxAlarm<'static, crate::sam4l::ast::Ast>,
         VirtualMuxAlarm::new(mux_alarm)
     );
     alarm.setup();
 
     let udp_lowpan_test = static_init!(
-        LowpanTest<'static, VirtualMuxAlarm<'static, sam4l::ast::Ast>>,
+        LowpanTest<'static, VirtualMuxAlarm<'static, crate::sam4l::ast::Ast>>,
         LowpanTest::new(alarm, port_table, mock_udp1, mock_udp2,)
     );
 

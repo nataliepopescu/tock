@@ -10,14 +10,14 @@
 //!
 //! I2C example
 //! ```rust,ignore
-//! let bus = components::bus::I2CMasterBusComponent::new(i2c_mux, address)
-//!     .finalize(components::spi_bus_component_helper!());
+//! let bus = crate::components::bus::I2CMasterBusComponent::new(i2c_mux, address)
+//!     .finalize(crate::components::spi_bus_component_helper!());
 //! ```
 //!
 //! SPI example
 //! ```rust,ignore
 //! let bus =
-//!     components::bus::SpiMasterBusComponent::new().finalize(components::spi_bus_component_helper!(
+//!     crate::components::bus::SpiMasterBusComponent::new().finalize(crate::components::spi_bus_component_helper!(
 //!         // spi type
 //!         nrf52840::spi::SPIM,
 //!         // chip select
@@ -28,13 +28,13 @@
 //! ```
 
 use core::cell::Cell;
-use kernel::ErrorCode;
-use kernel::debug;
-use kernel::hil::bus8080::{self, Bus8080, BusAddr8080};
-use kernel::hil::i2c::{Error, I2CClient, I2CDevice};
-use kernel::hil::spi::{ClockPhase, ClockPolarity, SpiMasterClient, SpiMasterDevice};
-use kernel::utilities::cells::OptionalCell;
-use kernel::utilities::leasable_buffer::SubSliceMut;
+use crate::kernel::ErrorCode;
+use crate::kernel::debug;
+use crate::kernel::hil::bus8080::{self, Bus8080, BusAddr8080};
+use crate::kernel::hil::i2c::{Error, I2CClient, I2CDevice};
+use crate::kernel::hil::spi::{ClockPhase, ClockPolarity, SpiMasterClient, SpiMasterDevice};
+use crate::kernel::utilities::cells::OptionalCell;
+use crate::kernel::utilities::leasable_buffer::SubSliceMut;
 
 // Buses, such as I2C or SPI, are generally serial and transmit data byte by byte,
 // without taking endianness into account. The receiving device—in this case,

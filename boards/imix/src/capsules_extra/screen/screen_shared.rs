@@ -12,7 +12,7 @@
 //!
 //! ```rust,ignore
 //! AppScreenRegion {
-//!     app_id: kernel::process:ShortId::new(id),
+//!     app_id: crate::kernel::process:ShortId::new(id),
 //!     frame: Frame {
 //!         x: 0,
 //!         y: 0,
@@ -26,16 +26,16 @@
 //! screen config settings (brightness, invert) as those operations affect the
 //! entire screen.
 
-use kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
-use kernel::hil;
-use kernel::processbuffer::ReadableProcessBuffer;
-use kernel::syscall::{CommandReturn, SyscallDriver};
-use kernel::utilities::cells::{OptionalCell, TakeCell};
-use kernel::utilities::leasable_buffer::SubSliceMut;
-use kernel::{ErrorCode, ProcessId};
+use crate::kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
+use crate::kernel::hil;
+use crate::kernel::processbuffer::ReadableProcessBuffer;
+use crate::kernel::syscall::{CommandReturn, SyscallDriver};
+use crate::kernel::utilities::cells::{OptionalCell, TakeCell};
+use crate::kernel::utilities::leasable_buffer::SubSliceMut;
+use crate::kernel::{ErrorCode, ProcessId};
 
 /// Syscall driver number.
-use capsules_core::driver;
+use crate::capsules_core::driver;
 pub const DRIVER_NUM: usize = driver::NUM::Screen as usize;
 
 /// Ids for read-only allow buffers
@@ -74,13 +74,13 @@ pub struct Frame {
 }
 
 pub struct AppScreenRegion {
-    app_id: kernel::process::ShortId,
+    app_id: crate::kernel::process::ShortId,
     frame: Frame,
 }
 
 impl AppScreenRegion {
     pub fn new(
-        app_id: kernel::process::ShortId,
+        app_id: crate::kernel::process::ShortId,
         x: usize,
         y: usize,
         width: usize,
@@ -294,7 +294,7 @@ impl<'a, S: hil::screen::Screen<'a>> ScreenShared<'a, S> {
                     self.current_process.take().map(|process_id| {
                         self.schedule_callback(
                             process_id,
-                            kernel::errorcode::into_statuscode(r),
+                            crate::kernel::errorcode::into_statuscode(r),
                             0,
                             0,
                         );
@@ -340,7 +340,7 @@ impl<'a, S: hil::screen::Screen<'a>> ScreenShared<'a, S> {
                                 self.current_process.clear();
                                 self.schedule_callback(
                                     process_id,
-                                    kernel::errorcode::into_statuscode(Err(err)),
+                                    crate::kernel::errorcode::into_statuscode(Err(err)),
                                     0,
                                     0,
                                 );
@@ -362,7 +362,7 @@ impl<'a, S: hil::screen::Screen<'a>> hil::screen::ScreenClient for ScreenShared<
     fn command_complete(&self, r: Result<(), ErrorCode>) {
         if r.is_err() {
             self.current_process.take().map(|process_id| {
-                self.schedule_callback(process_id, kernel::errorcode::into_statuscode(r), 0, 0);
+                self.schedule_callback(process_id, crate::kernel::errorcode::into_statuscode(r), 0, 0);
             });
         }
 
@@ -374,7 +374,7 @@ impl<'a, S: hil::screen::Screen<'a>> hil::screen::ScreenClient for ScreenShared<
 
         // Notify that the write is finished.
         self.current_process.take().map(|process_id| {
-            self.schedule_callback(process_id, kernel::errorcode::into_statuscode(r), 0, 0);
+            self.schedule_callback(process_id, crate::kernel::errorcode::into_statuscode(r), 0, 0);
         });
 
         self.run_next_command();
@@ -426,7 +426,7 @@ impl<'a, S: hil::screen::Screen<'a>> SyscallDriver for ScreenShared<'a, S> {
 
                         // Just issue upcall.
                         let _ = kernel_data
-                            .schedule_upcall(0, (kernel::errorcode::into_statuscode(Ok(())), 0, 0));
+                            .schedule_upcall(0, (crate::kernel::errorcode::into_statuscode(Ok(())), 0, 0));
                     })
                     .map_err(ErrorCode::from)
                     .into()
@@ -447,7 +447,7 @@ impl<'a, S: hil::screen::Screen<'a>> SyscallDriver for ScreenShared<'a, S> {
         }
     }
 
-    fn allocate_grant(&self, processid: ProcessId) -> Result<(), kernel::process::Error> {
+    fn allocate_grant(&self, processid: ProcessId) -> Result<(), crate::kernel::process::Error> {
         self.apps.enter(processid, |_, _| {})
     }
 }

@@ -6,17 +6,17 @@
 //! to decide whether an application can be loaded. See
 //| the [AppID TRD](../../doc/reference/trd-appid.md).
 
-use kernel::ErrorCode;
-use kernel::deferred_call::{DeferredCall, DeferredCallClient};
-use kernel::hil::digest::{ClientData, ClientHash, ClientVerify};
-use kernel::hil::digest::{DigestDataVerify, Sha256};
-use kernel::process::{Process, ProcessBinary, ShortId};
-use kernel::process_checker::CheckResult;
-use kernel::process_checker::{AppCredentialsPolicy, AppCredentialsPolicyClient};
-use kernel::process_checker::{AppUniqueness, Compress};
-use kernel::utilities::cells::OptionalCell;
-use kernel::utilities::cells::TakeCell;
-use kernel::utilities::leasable_buffer::{SubSlice, SubSliceMut};
+use crate::kernel::ErrorCode;
+use crate::kernel::deferred_call::{DeferredCall, DeferredCallClient};
+use crate::kernel::hil::digest::{ClientData, ClientHash, ClientVerify};
+use crate::kernel::hil::digest::{DigestDataVerify, Sha256};
+use crate::kernel::process::{Process, ProcessBinary, ShortId};
+use crate::kernel::process_checker::CheckResult;
+use crate::kernel::process_checker::{AppCredentialsPolicy, AppCredentialsPolicyClient};
+use crate::kernel::process_checker::{AppUniqueness, Compress};
+use crate::kernel::utilities::cells::OptionalCell;
+use crate::kernel::utilities::cells::TakeCell;
+use crate::kernel::utilities::leasable_buffer::{SubSlice, SubSliceMut};
 use tock_tbf::types::TbfFooterV2Credentials;
 use tock_tbf::types::TbfFooterV2CredentialsType;
 
@@ -215,9 +215,9 @@ impl ClientHash<32_usize> for AppCheckerSha256 {
 ///
 /// ```rust,ignore
 /// let assigner = static_init!(
-///     kernel::process_checker::basic::AppIdAssignerNames<fn(&'static str) -> u32>,
-///     kernel::process_checker::basic::AppIdAssignerNames::new(
-///         &((|s| { kernel::utilities::helpers::crc32_posix(s.as_bytes()) })
+///     crate::kernel::process_checker::basic::AppIdAssignerNames<fn(&'static str) -> u32>,
+///     crate::kernel::process_checker::basic::AppIdAssignerNames::new(
+///         &((|s| { crate::kernel::utilities::helpers::crc32_posix(s.as_bytes()) })
 ///         as fn(&'static str) -> u32)
 ///     )
 /// );

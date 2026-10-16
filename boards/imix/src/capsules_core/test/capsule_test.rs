@@ -40,7 +40,7 @@
 //! }
 //! ```
 
-use kernel::ErrorCode;
+use crate::kernel::ErrorCode;
 
 /// Errors for the result of a failed test.
 pub enum CapsuleTestError {

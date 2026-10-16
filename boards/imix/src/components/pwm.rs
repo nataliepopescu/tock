@@ -4,37 +4,37 @@
 
 //! Components for using PWM.
 
-use capsules_core::virtualizers::virtual_pwm::{MuxPwm, PwmPinUser};
-use capsules_extra::pwm::Pwm;
+use crate::capsules_core::virtualizers::virtual_pwm::{MuxPwm, PwmPinUser};
+use crate::capsules_extra::pwm::Pwm;
 use core::mem::MaybeUninit;
-use kernel::capabilities::MemoryAllocationCapability;
-use kernel::component::Component;
-use kernel::hil::pwm;
+use crate::kernel::capabilities::MemoryAllocationCapability;
+use crate::kernel::component::Component;
+use crate::kernel::hil::pwm;
 
 #[macro_export]
 macro_rules! pwm_mux_component_static {
-    ($A:ty $(,)?) => {{ kernel::static_buf!(capsules_core::virtualizers::virtual_pwm::MuxPwm<'static, $A>) }};
+    ($A:ty $(,)?) => {{ crate::kernel::static_buf!(crate::capsules_core::virtualizers::virtual_pwm::MuxPwm<'static, $A>) }};
 }
 
 #[macro_export]
 macro_rules! pwm_pin_user_component_static {
-    ($A:ty $(,)?) => {{ kernel::static_buf!(capsules_core::virtualizers::virtual_pwm::PwmPinUser<'static, $A>) }};
+    ($A:ty $(,)?) => {{ crate::kernel::static_buf!(crate::capsules_core::virtualizers::virtual_pwm::PwmPinUser<'static, $A>) }};
 }
 
 #[macro_export]
 macro_rules! pwm_driver_component_helper {
     ($($P:expr),+ $(,)?) => {{
-        use kernel::count_expressions;
-        use kernel::static_init;
+        use crate::kernel::count_expressions;
+        use crate::kernel::static_init;
         const NUM_DRIVERS: usize = count_expressions!($($P),+);
 
         let drivers = static_init!(
-            [&'static dyn kernel::hil::pwm::PwmPin; NUM_DRIVERS],
+            [&'static dyn crate::kernel::hil::pwm::PwmPin; NUM_DRIVERS],
             [
                 $($P,)*
             ]
         );
-        let pwm = kernel::static_buf!(capsules_extra::pwm::Pwm<'static, NUM_DRIVERS>);
+        let pwm = crate::kernel::static_buf!(crate::capsules_extra::pwm::Pwm<'static, NUM_DRIVERS>);
         (pwm, drivers)
     }};
 }
@@ -88,10 +88,10 @@ impl<P: 'static + pwm::Pwm> Component for PwmPinUserComponent<P> {
 }
 
 pub type PwmDriverComponentType<const NUM_PINS: usize> =
-    capsules_extra::pwm::Pwm<'static, NUM_PINS>;
+    crate::capsules_extra::pwm::Pwm<'static, NUM_PINS>;
 
 pub struct PwmDriverComponent<const NUM_PINS: usize, CAP: MemoryAllocationCapability + 'static> {
-    board_kernel: &'static kernel::Kernel,
+    board_kernel: &'static crate::kernel::Kernel,
     driver_num: usize,
     mem_cap: CAP,
 }
@@ -100,7 +100,7 @@ impl<const NUM_PINS: usize, CAP: MemoryAllocationCapability + 'static>
     PwmDriverComponent<NUM_PINS, CAP>
 {
     pub fn new(
-        board_kernel: &'static kernel::Kernel,
+        board_kernel: &'static crate::kernel::Kernel,
         driver_num: usize,
         mem_cap: CAP,
     ) -> PwmDriverComponent<NUM_PINS, CAP> {
@@ -117,9 +117,9 @@ impl<const NUM_PINS: usize, CAP: MemoryAllocationCapability + 'static> Component
 {
     type StaticInput = (
         &'static mut MaybeUninit<Pwm<'static, NUM_PINS>>,
-        &'static [&'static dyn kernel::hil::pwm::PwmPin; NUM_PINS],
+        &'static [&'static dyn crate::kernel::hil::pwm::PwmPin; NUM_PINS],
     );
-    type Output = &'static capsules_extra::pwm::Pwm<'static, NUM_PINS>;
+    type Output = &'static crate::capsules_extra::pwm::Pwm<'static, NUM_PINS>;
 
     fn finalize(self, static_buffer: Self::StaticInput) -> Self::Output {
         let grant_adc = self
@@ -128,7 +128,7 @@ impl<const NUM_PINS: usize, CAP: MemoryAllocationCapability + 'static> Component
 
         let pwm = static_buffer
             .0
-            .write(capsules_extra::pwm::Pwm::new(static_buffer.1, grant_adc));
+            .write(crate::capsules_extra::pwm::Pwm::new(static_buffer.1, grant_adc));
 
         pwm
     }

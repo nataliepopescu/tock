@@ -16,17 +16,17 @@
 //! -----
 //!
 //! ```rust,ignore
-//! # use kernel::static_init;
+//! # use crate::kernel::static_init;
 //!
 //! let gpio_pins = static_init!(
-//!     [Option<&'static sam4l::gpio::GPIOPin>; 4],
-//!     [Option<&sam4l::gpio::PB[14]>,
-//!      Option<&sam4l::gpio::PB[15]>,
-//!      Option<&sam4l::gpio::PB[11]>,
-//!      Option<&sam4l::gpio::PB[12]>]);
+//!     [Option<&'static crate::sam4l::gpio::GPIOPin>; 4],
+//!     [Option<&crate::sam4l::gpio::PB[14]>,
+//!      Option<&crate::sam4l::gpio::PB[15]>,
+//!      Option<&crate::sam4l::gpio::PB[11]>,
+//!      Option<&crate::sam4l::gpio::PB[12]>]);
 //! let gpio = static_init!(
-//!     capsules_core::gpio::GPIO<'static, sam4l::gpio::GPIOPin>,
-//!     capsules_core::gpio::GPIO::new(gpio_pins));
+//!     crate::capsules_core::gpio::GPIO<'static, crate::sam4l::gpio::GPIOPin>,
+//!     crate::capsules_core::gpio::GPIO::new(gpio_pins));
 //! for maybe_pin in gpio_pins.iter() {
 //!     if let Some(pin) = maybe_pin {
 //!         pin.set_client(gpio);
@@ -55,11 +55,11 @@
 use crate::capsules_core::driver;
 pub const DRIVER_NUM: usize = driver::NUM::Gpio as usize;
 
-use kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
-use kernel::hil::gpio;
-use kernel::hil::gpio::{Configure, Input, InterruptWithValue, Output};
-use kernel::syscall::{CommandReturn, SyscallDriver};
-use kernel::{ErrorCode, ProcessId};
+use crate::kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
+use crate::kernel::hil::gpio;
+use crate::kernel::hil::gpio::{Configure, Input, InterruptWithValue, Output};
+use crate::kernel::syscall::{CommandReturn, SyscallDriver};
+use crate::kernel::{ErrorCode, ProcessId};
 
 /// ### `subscribe_num`
 ///
@@ -357,7 +357,7 @@ impl<'a, IP: gpio::InterruptPin<'a>> SyscallDriver for GPIO<'a, IP> {
         }
     }
 
-    fn allocate_grant(&self, processid: ProcessId) -> Result<(), kernel::process::Error> {
+    fn allocate_grant(&self, processid: ProcessId) -> Result<(), crate::kernel::process::Error> {
         self.apps.enter(processid, |_, _| {})
     }
 }

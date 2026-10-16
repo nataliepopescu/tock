@@ -39,20 +39,20 @@
 //! of the kernel loop.
 //!
 //! ```rust
-//! use kernel::deferred_call::{DeferredCall, DeferredCallClient};
-//! use kernel::static_init;
+//! use crate::kernel::deferred_call::{DeferredCall, DeferredCallClient};
+//! use crate::kernel::static_init;
 //!
 //! // Don't use this! Use the actual `ThreadIdProvider` from your arch crate.
 //! struct DummyThreadIdProvider {}
-//! unsafe impl kernel::platform::chip::ThreadIdProvider for DummyThreadIdProvider {
+//! unsafe impl crate::kernel::platform::chip::ThreadIdProvider for DummyThreadIdProvider {
 //!     fn running_thread_id() -> usize { 0 }
 //! }
 //!
 //! // Initialize the deferred call mechanism.
 //! #[cfg(target_has_atomic = "ptr")]
-//! kernel::deferred_call::initialize_deferred_call_state::<DummyThreadIdProvider>();
+//! crate::kernel::deferred_call::initialize_deferred_call_state::<DummyThreadIdProvider>();
 //! #[cfg(not(target_has_atomic = "ptr"))]
-//! unsafe { kernel::deferred_call::initialize_deferred_call_state_unsafe::<DummyThreadIdProvider>(); }
+//! unsafe { crate::kernel::deferred_call::initialize_deferred_call_state_unsafe::<DummyThreadIdProvider>(); }
 //!
 //!
 //! struct SomeCapsule {

@@ -27,7 +27,7 @@
 //! Creating an object that expresses a capability is straightforward:
 //!
 //! ```
-//! use kernel::capabilities::ProcessManagementCapability;
+//! use crate::kernel::capabilities::ProcessManagementCapability;
 //!
 //! struct ProcessMgmtCap;
 //! unsafe impl ProcessManagementCapability for ProcessMgmtCap {}

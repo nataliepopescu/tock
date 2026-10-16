@@ -6,14 +6,14 @@
 //! processes.
 
 use core::mem::MaybeUninit;
-use kernel::component::Component;
+use crate::kernel::component::Component;
 
 #[macro_export]
 macro_rules! app_checker_null_component_static {
-    () => {{ kernel::static_buf!(capsules_system::process_checker::basic::AppCheckerNull) }};
+    () => {{ crate::kernel::static_buf!(crate::capsules_system::process_checker::basic::AppCheckerNull) }};
 }
 
-pub type AppCheckerNullComponentType = capsules_system::process_checker::basic::AppCheckerNull;
+pub type AppCheckerNullComponentType = crate::capsules_system::process_checker::basic::AppCheckerNull;
 
 pub struct AppCheckerNullComponent {}
 
@@ -25,10 +25,10 @@ impl AppCheckerNullComponent {
 
 impl Component for AppCheckerNullComponent {
     type StaticInput =
-        &'static mut MaybeUninit<capsules_system::process_checker::basic::AppCheckerNull>;
-    type Output = &'static capsules_system::process_checker::basic::AppCheckerNull;
+        &'static mut MaybeUninit<crate::capsules_system::process_checker::basic::AppCheckerNull>;
+    type Output = &'static crate::capsules_system::process_checker::basic::AppCheckerNull;
 
     fn finalize(self, s: Self::StaticInput) -> Self::Output {
-        s.write(capsules_system::process_checker::basic::AppCheckerNull::new())
+        s.write(crate::capsules_system::process_checker::basic::AppCheckerNull::new())
     }
 }

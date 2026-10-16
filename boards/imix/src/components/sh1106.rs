@@ -8,26 +8,26 @@
 //! -----
 //! ```rust
 //!
-//! let oled_i2c = components::i2c::I2CComponent::new(i2c_bus, 0x3c)
-//!     .finalize(components::i2c_component_static!(nrf52840::i2c::TWI));
+//! let oled_i2c = crate::components::i2c::I2CComponent::new(i2c_bus, 0x3c)
+//!     .finalize(crate::components::i2c_component_static!(nrf52840::i2c::TWI));
 //!
-//! let sh1106 = components::sh1106::Sh1106Component::new(oled_i2c, true)
-//!     .finalize(components::sh1106_component_static!(nrf52840::i2c::TWI));
+//! let sh1106 = crate::components::sh1106::Sh1106Component::new(oled_i2c, true)
+//!     .finalize(crate::components::sh1106_component_static!(nrf52840::i2c::TWI));
 //! ```
 
 use core::mem::MaybeUninit;
-use kernel::component::Component;
-use kernel::hil;
+use crate::kernel::component::Component;
+use crate::kernel::hil;
 
 // Setup static space for the objects.
 #[macro_export]
 macro_rules! sh1106_component_static {
     ($I: ty $(,)?) => {{
-        let buffer = kernel::static_buf!([u8; capsules_extra::sh1106::BUFFER_SIZE]);
-        let sh1106 = kernel::static_buf!(
-            capsules_extra::sh1106::Sh1106<
+        let buffer = crate::kernel::static_buf!([u8; crate::capsules_extra::sh1106::BUFFER_SIZE]);
+        let sh1106 = crate::kernel::static_buf!(
+            crate::capsules_extra::sh1106::Sh1106<
                 'static,
-                capsules_core::virtualizers::virtual_i2c::I2CDevice<'static, $I>,
+                crate::capsules_core::virtualizers::virtual_i2c::I2CDevice<'static, $I>,
             >
         );
 
@@ -35,19 +35,19 @@ macro_rules! sh1106_component_static {
     }};
 }
 
-pub type Sh1106ComponentType<I> = capsules_extra::sh1106::Sh1106<
+pub type Sh1106ComponentType<I> = crate::capsules_extra::sh1106::Sh1106<
     'static,
-    capsules_core::virtualizers::virtual_i2c::I2CDevice<'static, I>,
+    crate::capsules_core::virtualizers::virtual_i2c::I2CDevice<'static, I>,
 >;
 
 pub struct Sh1106Component<I: hil::i2c::I2CMaster<'static> + 'static> {
-    i2c_device: &'static capsules_core::virtualizers::virtual_i2c::I2CDevice<'static, I>,
+    i2c_device: &'static crate::capsules_core::virtualizers::virtual_i2c::I2CDevice<'static, I>,
     use_charge_pump: bool,
 }
 
 impl<I: hil::i2c::I2CMaster<'static> + 'static> Sh1106Component<I> {
     pub fn new(
-        i2c_device: &'static capsules_core::virtualizers::virtual_i2c::I2CDevice<'static, I>,
+        i2c_device: &'static crate::capsules_core::virtualizers::virtual_i2c::I2CDevice<'static, I>,
         use_charge_pump: bool,
     ) -> Sh1106Component<I> {
         Sh1106Component {
@@ -59,25 +59,25 @@ impl<I: hil::i2c::I2CMaster<'static> + 'static> Sh1106Component<I> {
 
 impl<I: hil::i2c::I2CMaster<'static> + 'static> Component for Sh1106Component<I> {
     type StaticInput = (
-        &'static mut MaybeUninit<[u8; capsules_extra::sh1106::BUFFER_SIZE]>,
+        &'static mut MaybeUninit<[u8; crate::capsules_extra::sh1106::BUFFER_SIZE]>,
         &'static mut MaybeUninit<
-            capsules_extra::sh1106::Sh1106<
+            crate::capsules_extra::sh1106::Sh1106<
                 'static,
-                capsules_core::virtualizers::virtual_i2c::I2CDevice<'static, I>,
+                crate::capsules_core::virtualizers::virtual_i2c::I2CDevice<'static, I>,
             >,
         >,
     );
-    type Output = &'static capsules_extra::sh1106::Sh1106<
+    type Output = &'static crate::capsules_extra::sh1106::Sh1106<
         'static,
-        capsules_core::virtualizers::virtual_i2c::I2CDevice<'static, I>,
+        crate::capsules_core::virtualizers::virtual_i2c::I2CDevice<'static, I>,
     >;
 
     fn finalize(self, static_buffer: Self::StaticInput) -> Self::Output {
         let buffer = static_buffer
             .0
-            .write([0; capsules_extra::sh1106::BUFFER_SIZE]);
+            .write([0; crate::capsules_extra::sh1106::BUFFER_SIZE]);
 
-        let sh1106 = static_buffer.1.write(capsules_extra::sh1106::Sh1106::new(
+        let sh1106 = static_buffer.1.write(crate::capsules_extra::sh1106::Sh1106::new(
             self.i2c_device,
             buffer,
             self.use_charge_pump,

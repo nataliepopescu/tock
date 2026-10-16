@@ -49,21 +49,21 @@ use crate::capsules_extra::net::thread::thread_utils::{
 use crate::capsules_extra::net::udp::udp_port_table::UdpPortManager;
 use crate::capsules_extra::net::udp::udp_recv::UDPRecvClient;
 use crate::capsules_extra::net::udp::udp_send::{UDPSendClient, UDPSender};
-use capsules_core::driver;
+use crate::capsules_core::driver;
 
 use core::cell::Cell;
 
-use kernel::capabilities::UdpDriverCapability;
-use kernel::errorcode::into_statuscode;
-use kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
-use kernel::hil::symmetric_encryption::CCMClient;
-use kernel::hil::symmetric_encryption::{AES128, AESCCM};
-use kernel::hil::time;
-use kernel::processbuffer::ReadableProcessBuffer;
-use kernel::syscall::{CommandReturn, SyscallDriver};
-use kernel::utilities::cells::MapCell;
-use kernel::utilities::leasable_buffer::SubSliceMut;
-use kernel::{ErrorCode, ProcessId};
+use crate::kernel::capabilities::UdpDriverCapability;
+use crate::kernel::errorcode::into_statuscode;
+use crate::kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
+use crate::kernel::hil::symmetric_encryption::CCMClient;
+use crate::kernel::hil::symmetric_encryption::{AES128, AESCCM};
+use crate::kernel::hil::time;
+use crate::kernel::processbuffer::ReadableProcessBuffer;
+use crate::kernel::syscall::{CommandReturn, SyscallDriver};
+use crate::kernel::utilities::cells::MapCell;
+use crate::kernel::utilities::leasable_buffer::SubSliceMut;
+use crate::kernel::{ErrorCode, ProcessId};
 
 const SECURITY_SUITE_ENCRYP: u8 = 0;
 pub const DRIVER_NUM: usize = driver::NUM::Thread as usize;
@@ -187,7 +187,7 @@ impl<'a, A: time::Alarm<'a>> ThreadNetworkDriver<'a, A> {
 
     fn send_parent_req(&self) {
         // UNCOMMENT TO DEBUG THREAD //
-        // kernel::debug!("[Thread] Sending parent request...");
+        // crate::kernel::debug!("[Thread] Sending parent request...");
 
         // Panicking on unwrap indicates the state was taken without replacement
         // (unreachable with proper state machine implementation)
@@ -209,7 +209,7 @@ impl<'a, A: time::Alarm<'a>> ThreadNetworkDriver<'a, A> {
                         self.state.replace(ThreadState::Detached);
 
                         // UNCOMMENT TO DEBUG THREAD //
-                        // kernel::debug!(
+                        // crate::kernel::debug!(
                         //     "[Thread] Failed sending MLE parent request - crypto operation error."
                         // );
                         self.terminate_child_join(Err(code));
@@ -275,8 +275,8 @@ impl<'a, A: time::Alarm<'a>> ThreadNetworkDriver<'a, A> {
                     // Received Parent Response -> form Child ID Request
 
                     // UNCOMMENT TO DEBUG THREAD //
-                    // kernel::debug!("[Thread] Received Parent Response.");
-                    // kernel::debug!("[Thread] Sending Child ID Request...");
+                    // crate::kernel::debug!("[Thread] Received Parent Response.");
+                    // crate::kernel::debug!("[Thread] Sending Child ID Request...");
 
                     let src_ipv6 = generate_src_ipv6(&self.src_mac_addr);
 
@@ -336,7 +336,7 @@ impl<'a, A: time::Alarm<'a>> ThreadNetworkDriver<'a, A> {
         let frame_counter = security.frame_counter;
         if frame_counter.is_none() {
             // UNCOMMENT TO DEBUG THREAD //
-            // kernel::debug!("[Thread] Malformed auxiliary security header");
+            // crate::kernel::debug!("[Thread] Malformed auxiliary security header");
             return Err((ErrorCode::INVAL, buf));
         }
 
@@ -354,13 +354,13 @@ impl<'a, A: time::Alarm<'a>> ThreadNetworkDriver<'a, A> {
                     || self.aes_crypto.set_nonce(&nonce).is_err()
                 {
                     // UNCOMMENT TO DEBUG THREAD //
-                    // kernel::debug!("[Thread] Failure setting networkkey and/or nonce.");
+                    // crate::kernel::debug!("[Thread] Failure setting networkkey and/or nonce.");
                     return Err((ErrorCode::FAIL, buf));
                 }
             }
             None => {
                 // UNCOMMENT TO DEBUG THREAD //
-                // kernel::debug!("[Thread] Attempt to access networkkey when no networkkey set.");
+                // crate::kernel::debug!("[Thread] Attempt to access networkkey when no networkkey set.");
                 return Err((ErrorCode::NOSUPPORT, buf));
             }
         }
@@ -395,7 +395,7 @@ impl<'a, A: time::Alarm<'a>> ThreadNetworkDriver<'a, A> {
         // Error check on result from encoding, failure likely means buf was not large enough
         if encode_res.is_none() {
             // UNCOMMENT TO DEBUG THREAD //
-            // kernel::debug!("[Thread] Error encoding cryptographic data into buffer");
+            // crate::kernel::debug!("[Thread] Error encoding cryptographic data into buffer");
             return Err((ErrorCode::FAIL, buf));
         }
 
@@ -419,7 +419,7 @@ impl<'a, A: time::Alarm<'a>> ThreadNetworkDriver<'a, A> {
         // is underway. If the sizelock is not empty, return error
         if self.crypto_sizelock.is_some() {
             // UNCOMMENT TO DEBUG THREAD //
-            // kernel::debug!(
+            // crate::kernel::debug!(
             //     "[Thread] Error - cryptographic resources in use; crypto_sizelock occupied"
             // );
             return Err((ErrorCode::BUSY, buf));
@@ -518,7 +518,7 @@ impl<'a, A: time::Alarm<'a>> SyscallDriver for ThreadNetworkDriver<'a, A> {
         }
     }
 
-    fn allocate_grant(&self, processid: ProcessId) -> Result<(), kernel::process::Error> {
+    fn allocate_grant(&self, processid: ProcessId) -> Result<(), crate::kernel::process::Error> {
         self.apps.enter(processid, |_, _| {})
     }
 }
@@ -538,7 +538,7 @@ impl<'a, A: time::Alarm<'a>> UDPSendClient for ThreadNetworkDriver<'a, A> {
             ThreadState::SendChildIdReq(_) => ThreadState::WaitingChildRsp,
             ThreadState::SendParentReq => {
                 // UNCOMMENT TO DEBUG THREAD //
-                // kernel::debug!("[Thread] Completed sending parent request to multicast IP");
+                // crate::kernel::debug!("[Thread] Completed sending parent request to multicast IP");
                 ThreadState::WaitingParentRsp
             }
             _ => panic!("Thread state machine diverged"),
@@ -586,7 +586,7 @@ impl<'a, A: time::Alarm<'a>> UDPRecvClient for ThreadNetworkDriver<'a, A> {
             // is due to the Thread spec stating "Except for when specifically indicated, incoming
             // messages that are not secured with either MLE or link-layer security SHOULD be ignored." (v.1.3.0 sect 4.10)
             // UNCOMMENT TO DEBUG THREAD //
-            // kernel::debug!("[Thread] DROPPED PACKET - Received unencrypted MLE packet.");
+            // crate::kernel::debug!("[Thread] DROPPED PACKET - Received unencrypted MLE packet.");
         }
 
         // decode aux security header from packet into Security data type
@@ -595,7 +595,7 @@ impl<'a, A: time::Alarm<'a>> UDPRecvClient for ThreadNetworkDriver<'a, A> {
         // Guard statement for improperly formated aux sec header
         if sec_res.is_none() {
             // UNCOMMENT TO DEBUG THREAD //
-            // kernel::debug!("[Thread] DROPPED PACKET - Malformed auxiliary security header.");
+            // crate::kernel::debug!("[Thread] DROPPED PACKET - Malformed auxiliary security header.");
             return;
         }
 
@@ -607,7 +607,7 @@ impl<'a, A: time::Alarm<'a>> UDPRecvClient for ThreadNetworkDriver<'a, A> {
         self.recv_buffer.take().map_or_else(
             || {
                 // UNCOMMENT TO DEBUG THREAD //
-                // kernel::debug!("[Thread] DROPPED PACKET - Receive buffer not available")
+                // crate::kernel::debug!("[Thread] DROPPED PACKET - Receive buffer not available")
             },
             |recv_buf| {
                 self.perform_crypt_op(
@@ -620,7 +620,7 @@ impl<'a, A: time::Alarm<'a>> UDPRecvClient for ThreadNetworkDriver<'a, A> {
                 )
                 .unwrap_or_else(|(_code, buf)| {
                     // UNCOMMENT TO DEBUG THREAD alter _code to code//
-                    // kernel::debug!(
+                    // crate::kernel::debug!(
                     //     "[Thread] DROPPED PACKET - Crypto Operation Error *{:?}",
                     //     code
                     // );

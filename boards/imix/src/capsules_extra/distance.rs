@@ -52,29 +52,29 @@
 //! Here is an example of how to set up a distance sensor with the HC-SR04.
 //!
 //! ```rust,ignore
-//! use components::hcsr04::HcSr04Component;
+//! use crate::components::hcsr04::HcSr04Component;
 
 //! let trig_pin = peripherals.pins.get_pin(RPGpio::GPIO4);
 //! let echo_pin = peripherals.pins.get_pin(RPGpio::GPIO5);
 //!
-//! let distance_sensor = components::hcsr04::HcSr04Component::new(
+//! let distance_sensor = crate::components::hcsr04::HcSr04Component::new(
 //!     mux_alarm,
 //!     trig_pin,
 //!     echo_pin
-//! ).finalize(components::hcsr04_component_static!());
+//! ).finalize(crate::components::hcsr04_component_static!());
 //!
 //! distance_sensor.set_client(distance_sensor_client);
 //! ```
 
 use core::cell::Cell;
 
-use kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
-use kernel::hil;
-use kernel::syscall::{CommandReturn, SyscallDriver};
-use kernel::{ErrorCode, ProcessId};
+use crate::kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
+use crate::kernel::hil;
+use crate::kernel::syscall::{CommandReturn, SyscallDriver};
+use crate::kernel::{ErrorCode, ProcessId};
 
 /// Syscall driver number.
-use capsules_core::driver;
+use crate::capsules_core::driver;
 pub const DRIVER_NUM: usize = driver::NUM::Distance as usize;
 
 #[derive(Default)]
@@ -185,7 +185,7 @@ impl<'a, T: hil::sensors::Distance<'a>> SyscallDriver for DistanceSensor<'a, T> 
         }
     }
 
-    fn allocate_grant(&self, process_id: ProcessId) -> Result<(), kernel::process::Error> {
+    fn allocate_grant(&self, process_id: ProcessId) -> Result<(), crate::kernel::process::Error> {
         self.apps.enter(process_id, |_, _| {})
     }
 }

@@ -24,7 +24,7 @@
 //! |                  kernel                    |     |  userspace   |
 //! |                                            |     |              |
 //! +--------------------------------------------+     +--------------+
-//!  hil::nonvolatile_storage::NonvolatileStorage       kernel::Driver
+//!  hil::nonvolatile_storage::NonvolatileStorage       crate::kernel::Driver
 //! +-----------------------------------------------------------------+
 //! |                                                                 |
 //! | capsules::nonvolatile_storage_driver::NonvolatileStorage (this) |
@@ -41,7 +41,7 @@
 //! Example instantiation:
 //!
 //! ```rust,ignore
-//! # use kernel::static_init;
+//! # use crate::kernel::static_init;
 //!
 //! let nonvolatile_storage = static_init!(
 //!     capsules::nonvolatile_storage_driver::NonvolatileStorage<'static>,
@@ -61,15 +61,15 @@
 use core::cell::Cell;
 use core::cmp;
 
-use kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
-use kernel::hil;
-use kernel::processbuffer::{ReadableProcessBuffer, WriteableProcessBuffer};
-use kernel::syscall::{CommandReturn, SyscallDriver};
-use kernel::utilities::cells::{OptionalCell, TakeCell};
-use kernel::{ErrorCode, ProcessId};
+use crate::kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
+use crate::kernel::hil;
+use crate::kernel::processbuffer::{ReadableProcessBuffer, WriteableProcessBuffer};
+use crate::kernel::syscall::{CommandReturn, SyscallDriver};
+use crate::kernel::utilities::cells::{OptionalCell, TakeCell};
+use crate::kernel::{ErrorCode, ProcessId};
 
 /// Syscall driver number.
-use capsules_core::driver;
+use crate::capsules_core::driver;
 pub const DRIVER_NUM: usize = driver::NUM::NvmStorage as usize;
 
 /// IDs for subscribed upcalls.
@@ -617,7 +617,7 @@ impl SyscallDriver for NonvolatileStorage<'_> {
         }
     }
 
-    fn allocate_grant(&self, processid: ProcessId) -> Result<(), kernel::process::Error> {
+    fn allocate_grant(&self, processid: ProcessId) -> Result<(), crate::kernel::process::Error> {
         self.apps.enter(processid, |_, _| {})
     }
 }

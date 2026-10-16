@@ -6,10 +6,10 @@
 //!
 //! Support Single Sample for now.
 
-use kernel::ErrorCode;
-use kernel::collections::list::{List, ListLink, ListNode};
-use kernel::hil;
-use kernel::utilities::cells::OptionalCell;
+use crate::kernel::ErrorCode;
+use crate::kernel::collections::list::{List, ListLink, ListNode};
+use crate::kernel::hil;
+use crate::kernel::utilities::cells::OptionalCell;
 
 /// ADC Mux
 pub struct MuxAdc<'a, A: hil::adc::Adc<'a>> {

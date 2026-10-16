@@ -17,16 +17,16 @@
 //! -----
 //!
 //! ```rust,ignore
-//! # use kernel::static_init;
+//! # use crate::kernel::static_init;
 //!
 //! let led_pins = static_init!(
-//!     [(&'static sam4l::gpio::GPIOPin, kernel::hil::gpio::ActivationMode); 3],
-//!     [(&sam4l::gpio::PA[13], kernel::hil::gpio::ActivationMode::ActiveLow),   // Red
-//!      (&sam4l::gpio::PA[15], kernel::hil::gpio::ActivationMode::ActiveLow),   // Green
-//!      (&sam4l::gpio::PA[14], kernel::hil::gpio::ActivationMode::ActiveLow)]); // Blue
+//!     [(&'static crate::sam4l::gpio::GPIOPin, crate::kernel::hil::gpio::ActivationMode); 3],
+//!     [(&crate::sam4l::gpio::PA[13], crate::kernel::hil::gpio::ActivationMode::ActiveLow),   // Red
+//!      (&crate::sam4l::gpio::PA[15], crate::kernel::hil::gpio::ActivationMode::ActiveLow),   // Green
+//!      (&crate::sam4l::gpio::PA[14], crate::kernel::hil::gpio::ActivationMode::ActiveLow)]); // Blue
 //! let led = static_init!(
-//!     capsules_core::led::LED<'static, sam4l::gpio::GPIOPin>,
-//!     capsules_core::led::LED::new(led_pins));
+//!     crate::capsules_core::led::LED<'static, crate::sam4l::gpio::GPIOPin>,
+//!     crate::capsules_core::led::LED::new(led_pins));
 //! ```
 //!
 //! Syscall Interface
@@ -58,9 +58,9 @@
 //!   - Return: `INVAL` if the LED index was invalid, `Ok(0u32)` if the LED is
 //!     off, `Ok(1u32)` if the LED is on.
 
-use kernel::hil::led;
-use kernel::syscall::{CommandReturn, SyscallDriver};
-use kernel::{ErrorCode, ProcessId};
+use crate::kernel::hil::led;
+use crate::kernel::syscall::{CommandReturn, SyscallDriver};
+use crate::kernel::{ErrorCode, ProcessId};
 
 /// Syscall driver number.
 use crate::capsules_core::driver;
@@ -152,7 +152,7 @@ impl<L: led::Led, const NUM_LEDS: usize> SyscallDriver for LedDriver<'_, L, NUM_
         }
     }
 
-    fn allocate_grant(&self, _processid: ProcessId) -> Result<(), kernel::process::Error> {
+    fn allocate_grant(&self, _processid: ProcessId) -> Result<(), crate::kernel::process::Error> {
         Ok(())
     }
 }

@@ -11,24 +11,24 @@
 //!     .finalize(sound_pressure_component_static!());
 //! ```
 
-use capsules_extra::sound_pressure::SoundPressureSensor;
+use crate::capsules_extra::sound_pressure::SoundPressureSensor;
 use core::mem::MaybeUninit;
-use kernel::capabilities::MemoryAllocationCapability;
-use kernel::component::Component;
-use kernel::hil;
+use crate::kernel::capabilities::MemoryAllocationCapability;
+use crate::kernel::component::Component;
+use crate::kernel::hil;
 
 #[macro_export]
 macro_rules! sound_pressure_component_static {
-    () => {{ kernel::static_buf!(capsules_extra::sound_pressure::SoundPressureSensor<'static>) }};
+    () => {{ crate::kernel::static_buf!(crate::capsules_extra::sound_pressure::SoundPressureSensor<'static>) }};
 }
 
-pub type SoundPressureComponentType = capsules_extra::sound_pressure::SoundPressureSensor<'static>;
+pub type SoundPressureComponentType = crate::capsules_extra::sound_pressure::SoundPressureSensor<'static>;
 
 pub struct SoundPressureComponent<
     S: 'static + hil::sensors::SoundPressure<'static>,
     CAP: MemoryAllocationCapability + 'static,
 > {
-    board_kernel: &'static kernel::Kernel,
+    board_kernel: &'static crate::kernel::Kernel,
     driver_num: usize,
     sound_sensor: &'static S,
     mem_cap: CAP,
@@ -38,7 +38,7 @@ impl<S: 'static + hil::sensors::SoundPressure<'static>, CAP: MemoryAllocationCap
     SoundPressureComponent<S, CAP>
 {
     pub fn new(
-        board_kernel: &'static kernel::Kernel,
+        board_kernel: &'static crate::kernel::Kernel,
         driver_num: usize,
         sound_sensor: &'static S,
         mem_cap: CAP,

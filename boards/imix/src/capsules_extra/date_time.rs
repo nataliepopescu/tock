@@ -20,7 +20,7 @@
 //!     capsules::date_time::DateTime<'static>,
 //!     capsules::date_time::DateTime::new(&peripherals.rtc, grant_date_time)
 //!  );
-//!  kernel::hil::date_time::DateTime::set_client(&peripherals.rtc, date_time);
+//!  crate::kernel::hil::date_time::DateTime::set_client(&peripherals.rtc, date_time);
 //! ```
 //!
 //! A DateTimeValues structure can be transformed to and from a u32 tuple in the following way:
@@ -34,14 +34,14 @@
 //!                 -previous 5 store the hour
 //!                 -previous 3 store the day_of_the_week
 
-use capsules_core::driver::NUM;
-use kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
-use kernel::hil::date_time;
+use crate::capsules_core::driver::NUM;
+use crate::kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
+use crate::kernel::hil::date_time;
 
-use kernel::errorcode::into_statuscode;
-use kernel::syscall::{CommandReturn, SyscallDriver};
-use kernel::utilities::cells::OptionalCell;
-use kernel::{ErrorCode, ProcessId};
+use crate::kernel::errorcode::into_statuscode;
+use crate::kernel::syscall::{CommandReturn, SyscallDriver};
+use crate::kernel::utilities::cells::OptionalCell;
+use crate::kernel::{ErrorCode, ProcessId};
 
 pub const DRIVER_NUM: usize = NUM::DateTime as usize;
 
@@ -340,7 +340,7 @@ impl<'a, DateTime: date_time::DateTime<'a>> SyscallDriver for DateTimeCapsule<'a
         }
     }
 
-    fn allocate_grant(&self, processid: ProcessId) -> Result<(), kernel::process::Error> {
+    fn allocate_grant(&self, processid: ProcessId) -> Result<(), crate::kernel::process::Error> {
         self.apps.enter(processid, |_, _| {})
     }
 }

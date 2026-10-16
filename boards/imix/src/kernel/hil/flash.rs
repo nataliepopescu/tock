@@ -10,8 +10,8 @@
 //! ```rust
 //! use core::ops::{Index, IndexMut};
 //!
-//! use kernel::hil;
-//! use kernel::ErrorCode;
+//! use crate::kernel::hil;
+//! use crate::kernel::ErrorCode;
 //!
 //! // Size in bytes
 //! const PAGE_SIZE: u32 = 1024;
@@ -70,8 +70,8 @@
 //! A user of this flash interface might look like:
 //!
 //! ```rust
-//! use kernel::utilities::cells::TakeCell;
-//! use kernel::hil;
+//! use crate::kernel::utilities::cells::TakeCell;
+//! use crate::kernel::hil;
 //!
 //! pub struct FlashUser<'a, F: hil::flash::Flash + 'static> {
 //!     driver: &'a F,

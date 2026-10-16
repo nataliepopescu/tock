@@ -9,25 +9,25 @@
 //! Usage
 //! -----
 //! ```rust
-//! let scheduler = components::cooperative::CooperativeComponent::new(&PROCESSES)
-//!     .finalize(components::cooperative_component_static!(NUM_PROCS));
+//! let scheduler = crate::components::cooperative::CooperativeComponent::new(&PROCESSES)
+//!     .finalize(crate::components::cooperative_component_static!(NUM_PROCS));
 //! ```
 
 // Author: Hudson Ayers <hayers@stanford.edu>
 
-use capsules_system::scheduler::cooperative::{CoopProcessNode, CooperativeSched};
+use crate::capsules_system::scheduler::cooperative::{CoopProcessNode, CooperativeSched};
 use core::mem::MaybeUninit;
-use kernel::component::Component;
-use kernel::process::ProcessArray;
+use crate::kernel::component::Component;
+use crate::kernel::process::ProcessArray;
 
 #[macro_export]
 macro_rules! cooperative_component_static {
     ($N:expr $(,)?) => {{
         let coop_sched =
-            kernel::static_buf!(capsules_system::scheduler::cooperative::CooperativeSched<'static>);
-        let coop_nodes = kernel::static_buf!(
+            crate::kernel::static_buf!(crate::capsules_system::scheduler::cooperative::CooperativeSched<'static>);
+        let coop_nodes = crate::kernel::static_buf!(
             [core::mem::MaybeUninit<
-                capsules_system::scheduler::cooperative::CoopProcessNode<'static>,
+                crate::capsules_system::scheduler::cooperative::CoopProcessNode<'static>,
             >; $N]
         );
 
@@ -36,7 +36,7 @@ macro_rules! cooperative_component_static {
 }
 
 pub type CooperativeComponentType =
-    capsules_system::scheduler::cooperative::CooperativeSched<'static>;
+    crate::capsules_system::scheduler::cooperative::CooperativeSched<'static>;
 
 pub struct CooperativeComponent<const NUM_PROCS: usize> {
     processes: &'static ProcessArray<NUM_PROCS>,

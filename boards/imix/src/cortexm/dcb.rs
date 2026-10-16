@@ -8,9 +8,9 @@
 //!
 //! Implementation matches `ARM DDI 0403E.e`
 
-use kernel::utilities::StaticRef;
-use kernel::utilities::registers::interfaces::ReadWriteable;
-use kernel::utilities::registers::{ReadWrite, WriteOnly, register_bitfields, register_structs};
+use crate::kernel::utilities::StaticRef;
+use crate::kernel::utilities::registers::interfaces::ReadWriteable;
+use crate::kernel::utilities::registers::{ReadWrite, WriteOnly, register_bitfields, register_structs};
 
 register_structs! {
     DcbRegisters {

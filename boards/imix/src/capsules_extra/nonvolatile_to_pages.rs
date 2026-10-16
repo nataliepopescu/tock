@@ -25,27 +25,27 @@
 //! -----
 //!
 //! ```rust,ignore
-//! # use kernel::{hil, static_init};
+//! # use crate::kernel::{hil, static_init};
 
-//! sam4l::flashcalw::FLASH_CONTROLLER.configure();
+//! crate::sam4l::flashcalw::FLASH_CONTROLLER.configure();
 //! let page_buffer = static_init!(
-//!     sam4l::flashcalw::Sam4lPage,
-//!     sam4l::flashcalw::Sam4lPage::default()
+//!     crate::sam4l::flashcalw::Sam4lPage,
+//!     crate::sam4l::flashcalw::Sam4lPage::default()
 //! );
 //! let nv_to_page = static_init!(
-//!     capsules::nonvolatile_to_pages::NonvolatileToPages<'static, sam4l::flashcalw::FLASHCALW>,
+//!     capsules::nonvolatile_to_pages::NonvolatileToPages<'static, crate::sam4l::flashcalw::FLASHCALW>,
 //!     capsules::nonvolatile_to_pages::NonvolatileToPages::new(
-//!         &mut sam4l::flashcalw::FLASH_CONTROLLER,
+//!         &mut crate::sam4l::flashcalw::FLASH_CONTROLLER,
 //!         page_buffer));
-//! hil::flash::HasClient::set_client(&sam4l::flashcalw::FLASH_CONTROLLER, nv_to_page);
+//! hil::flash::HasClient::set_client(&crate::sam4l::flashcalw::FLASH_CONTROLLER, nv_to_page);
 //! ```
 
 use core::cell::Cell;
 use core::cmp;
-use kernel::ErrorCode;
-use kernel::hil;
-use kernel::utilities::cells::NumericCellExt;
-use kernel::utilities::cells::{OptionalCell, TakeCell};
+use crate::kernel::ErrorCode;
+use crate::kernel::hil;
+use crate::kernel::utilities::cells::NumericCellExt;
+use crate::kernel::utilities::cells::{OptionalCell, TakeCell};
 
 /// This module is either waiting to do something, or handling a read/write.
 #[derive(Clone, Copy, Debug, PartialEq)]

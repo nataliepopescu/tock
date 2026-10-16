@@ -7,19 +7,19 @@
 //! Usage
 //! -----
 //! ```rust
-//! let servo = components::servo::ServosComponent::new().finalize(components::servo_component_static!(
+//! let servo = crate::components::servo::ServosComponent::new().finalize(crate::components::servo_component_static!(
 //!     servo1, servo2,
 //! ));
 //! ```
-use capsules_extra::servo::Servo as ServoDriver;
+use crate::capsules_extra::servo::Servo as ServoDriver;
 use core::mem::MaybeUninit;
-use kernel::component::Component;
+use crate::kernel::component::Component;
 
 #[macro_export]
 macro_rules! servo_component_static {
     ($($S:expr),+ $(,)?) => {{
-        use kernel::count_expressions;
-        use kernel::static_init;
+        use crate::kernel::count_expressions;
+        use crate::kernel::static_init;
         const SERVO_COUNT: usize = count_expressions!($($S),+);
         let arr = static_init!(
             [&'static dyn Servo; SERVO_COUNT],
@@ -32,7 +32,7 @@ macro_rules! servo_component_static {
             ]
         );
 
-        let servo = kernel::static_buf!( capsules_extra::servo::Servo<'static, SERVO_COUNT>);
+        let servo = crate::kernel::static_buf!( crate::capsules_extra::servo::Servo<'static, SERVO_COUNT>);
         (servo, arr)
     }};
 }
@@ -50,7 +50,7 @@ impl<const SERVO_COUNT: usize> ServosComponent<SERVO_COUNT> {
 impl<const SERVO_COUNT: usize> Component for ServosComponent<SERVO_COUNT> {
     type StaticInput = (
         &'static mut MaybeUninit<ServoDriver<'static, SERVO_COUNT>>,
-        &'static mut [&'static dyn kernel::hil::servo::Servo<'static>; SERVO_COUNT],
+        &'static mut [&'static dyn crate::kernel::hil::servo::Servo<'static>; SERVO_COUNT],
     );
     type Output = &'static ServoDriver<'static, SERVO_COUNT>;
 

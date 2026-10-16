@@ -11,21 +11,21 @@
 //! trait.
 //!
 //! ```rust,ignore
-//! let text_screen = components::text_screen::TextScreenComponent::new(board_kernel, lcd)
-//!         .finalize(components::screen_buffer_size!(64));
+//! let text_screen = crate::components::text_screen::TextScreenComponent::new(board_kernel, lcd)
+//!         .finalize(crate::components::screen_buffer_size!(64));
 //! ```
 
 use core::cmp;
 
-use kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
-use kernel::hil;
-use kernel::processbuffer::ReadableProcessBuffer;
-use kernel::syscall::{CommandReturn, SyscallDriver};
-use kernel::utilities::cells::{OptionalCell, TakeCell};
-use kernel::{ErrorCode, ProcessId};
+use crate::kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
+use crate::kernel::hil;
+use crate::kernel::processbuffer::ReadableProcessBuffer;
+use crate::kernel::syscall::{CommandReturn, SyscallDriver};
+use crate::kernel::utilities::cells::{OptionalCell, TakeCell};
+use crate::kernel::{ErrorCode, ProcessId};
 
 /// Syscall driver number.
-use capsules_core::driver;
+use crate::capsules_core::driver;
 pub const DRIVER_NUM: usize = driver::NUM::TextScreen as usize;
 
 /// Ids for read-only allow buffers
@@ -152,7 +152,7 @@ impl<'a> TextScreen<'a> {
                         let (x, y) = self.text_screen.get_size();
                         app.pending_command = false;
                         let _ = kernel_data
-                            .schedule_upcall(0, (kernel::errorcode::into_statuscode(Ok(())), x, y));
+                            .schedule_upcall(0, (crate::kernel::errorcode::into_statuscode(Ok(())), x, y));
                         run_next = true;
                         Ok(())
                     }
@@ -282,20 +282,20 @@ impl SyscallDriver for TextScreen<'_> {
         }
     }
 
-    fn allocate_grant(&self, processid: ProcessId) -> Result<(), kernel::process::Error> {
+    fn allocate_grant(&self, processid: ProcessId) -> Result<(), crate::kernel::process::Error> {
         self.apps.enter(processid, |_, _| {})
     }
 }
 
 impl hil::text_screen::TextScreenClient for TextScreen<'_> {
     fn command_complete(&self, r: Result<(), ErrorCode>) {
-        self.schedule_callback(kernel::errorcode::into_statuscode(r), 0, 0);
+        self.schedule_callback(crate::kernel::errorcode::into_statuscode(r), 0, 0);
         self.run_next_command();
     }
 
     fn write_complete(&self, buffer: &'static mut [u8], len: usize, r: Result<(), ErrorCode>) {
         self.buffer.replace(buffer);
-        self.schedule_callback(kernel::errorcode::into_statuscode(r), len, 0);
+        self.schedule_callback(crate::kernel::errorcode::into_statuscode(r), len, 0);
         self.run_next_command();
     }
 }

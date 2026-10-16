@@ -85,18 +85,18 @@ pub trait KernelResources<C: Chip> {
 /// ```ignore
 /// struct Hail {
 ///     console: &'static capsules::console::Console<'static>,
-///     ipc: kernel::ipc::IPC,
+///     ipc: crate::kernel::ipc::IPC,
 ///     dac: &'static capsules::dac::Dac<'static>,
 /// }
 ///
 /// impl SyscallDriverLookup for Hail {
 ///     fn with_driver<F, R>(&self, driver_num: usize, f: F) -> R
 ///     where
-///         F: FnOnce(Option<&dyn kernel::SyscallDriver>) -> R,
+///         F: FnOnce(Option<&dyn crate::kernel::SyscallDriver>) -> R,
 ///     {
 ///         match driver_num {
 ///             capsules::console::DRIVER_NUM => f(Some(self.console)),
-///             kernel::ipc::DRIVER_NUM => f(Some(&self.ipc)),
+///             crate::kernel::ipc::DRIVER_NUM => f(Some(&self.ipc)),
 ///             capsules::dac::DRIVER_NUM => f(Some(self.dac)),
 ///
 ///             _ => f(None),

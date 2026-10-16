@@ -6,9 +6,9 @@
 
 use core::cell::Cell;
 use core::ptr::addr_of_mut;
-use kernel::debug;
-use kernel::hil;
-use kernel::hil::i2c::{Error, I2CMaster};
+use crate::kernel::debug;
+use crate::kernel::hil;
+use crate::kernel::hil::i2c::{Error, I2CMaster};
 
 // ===========================================
 // Scan for I2C Slaves
@@ -56,7 +56,7 @@ pub fn i2c_scan_slaves(i2c_master: &'static dyn I2CMaster<'static>) {
 
     let dev = i2c_master;
 
-    let i2c_client = unsafe { kernel::static_init!(ScanClient, ScanClient::new(dev)) };
+    let i2c_client = unsafe { crate::kernel::static_init!(ScanClient, ScanClient::new(dev)) };
     dev.set_master_client(i2c_client);
 
     dev.enable();
@@ -157,7 +157,7 @@ pub fn i2c_accel_test(i2c_master: &'static dyn I2CMaster<'static>) {
 
     let dev = i2c_master;
 
-    let i2c_client = unsafe { kernel::static_init!(AccelClient, AccelClient::new(dev)) };
+    let i2c_client = unsafe { crate::kernel::static_init!(AccelClient, AccelClient::new(dev)) };
     dev.set_master_client(i2c_client);
     dev.enable();
 
@@ -223,13 +223,13 @@ impl hil::i2c::I2CHwMasterClient for LiClient {
 pub fn i2c_li_test(i2c_master: &'static dyn I2CMaster<'static>) {
     static mut DATA: [u8; 255] = [0; 255];
 
-    let pin = sam4l::gpio::GPIOPin::new(sam4l::gpio::Pin::PA16);
+    let pin = crate::sam4l::gpio::GPIOPin::new(crate::sam4l::gpio::Pin::PA16);
     pin.enable_output();
     pin.set();
 
     let dev = i2c_master;
 
-    let i2c_client = unsafe { kernel::static_init!(LiClient, LiClient::new(dev)) };
+    let i2c_client = unsafe { crate::kernel::static_init!(LiClient, LiClient::new(dev)) };
     dev.set_master_client(i2c_client);
     dev.enable();
 

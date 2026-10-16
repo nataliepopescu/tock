@@ -4,10 +4,10 @@
 
 // Virtualizer for the RNG
 use core::cell::Cell;
-use kernel::ErrorCode;
-use kernel::collections::list::{List, ListLink, ListNode};
-use kernel::hil::rng::{Client, Continue, Rng};
-use kernel::utilities::cells::OptionalCell;
+use crate::kernel::ErrorCode;
+use crate::kernel::collections::list::{List, ListLink, ListNode};
+use crate::kernel::hil::rng::{Client, Continue, Rng};
+use crate::kernel::utilities::cells::OptionalCell;
 
 #[derive(Copy, Clone, PartialEq)]
 enum Op {

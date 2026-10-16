@@ -37,10 +37,10 @@
 //!   └───────────────────────────────────────┘
 //! ```
 
-use kernel::ErrorCode;
-use kernel::hil;
-use kernel::utilities::cells::MapCell;
-use kernel::utilities::cells::OptionalCell;
+use crate::kernel::ErrorCode;
+use crate::kernel::hil;
+use crate::kernel::utilities::cells::MapCell;
+use crate::kernel::utilities::cells::OptionalCell;
 
 pub struct SignatureVerifyInMemoryKeys<
     'a,
@@ -58,7 +58,7 @@ pub struct SignatureVerifyInMemoryKeys<
 
     client_key_select: OptionalCell<&'a dyn hil::public_key_crypto::keys::SelectKeyClient>,
 
-    deferred_call: kernel::deferred_call::DeferredCall,
+    deferred_call: crate::kernel::deferred_call::DeferredCall,
 }
 
 impl<
@@ -77,7 +77,7 @@ impl<
             keys: [const { MapCell::empty() }; NUM_KEYS],
             active_key: OptionalCell::empty(),
             client_key_select: OptionalCell::empty(),
-            deferred_call: kernel::deferred_call::DeferredCall::new(),
+            deferred_call: crate::kernel::deferred_call::DeferredCall::new(),
         }
     }
 
@@ -113,7 +113,7 @@ impl<
     ) -> Result<
         (),
         (
-            kernel::ErrorCode,
+            crate::kernel::ErrorCode,
             &'static mut [u8; HL],
             &'static mut [u8; SL],
         ),
@@ -200,7 +200,7 @@ impl<
     const KL: usize,
     const HL: usize,
     const SL: usize,
-> kernel::deferred_call::DeferredCallClient
+> crate::kernel::deferred_call::DeferredCallClient
     for SignatureVerifyInMemoryKeys<'a, S, NUM_KEYS, KL, HL, SL>
 {
     fn handle_deferred_call(&self) {

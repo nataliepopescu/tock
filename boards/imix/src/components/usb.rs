@@ -10,27 +10,27 @@
 //! Usage
 //! -----
 //! ```rust
-//! let usb_driver = components::usb::UsbComponent::new(
+//! let usb_driver = crate::components::usb::UsbComponent::new(
 //!     board_kernel,
-//!     capsules_extra::usb::usb_user::DRIVER_NUM,
+//!     crate::capsules_extra::usb::usb_user::DRIVER_NUM,
 //!     &peripherals.usbc,
 //! )
-//! .finalize(components::usb_component_static!(sam4l::usbc::Usbc));
+//! .finalize(crate::components::usb_component_static!(crate::sam4l::usbc::Usbc));
 //! ```
 
 use core::mem::MaybeUninit;
-use kernel::capabilities::MemoryAllocationCapability;
-use kernel::component::Component;
-use kernel::hil::usb::UsbController;
+use crate::kernel::capabilities::MemoryAllocationCapability;
+use crate::kernel::component::Component;
+use crate::kernel::hil::usb::UsbController;
 
 #[macro_export]
 macro_rules! usb_component_static {
     ($U:ty $(,)?) => {{
-        let usb_client = kernel::static_buf!(capsules_extra::usb::usbc_client::Client<'static, $U>);
-        let usb_driver = kernel::static_buf!(
-            capsules_extra::usb::usb_user::UsbSyscallDriver<
+        let usb_client = crate::kernel::static_buf!(crate::capsules_extra::usb::usbc_client::Client<'static, $U>);
+        let usb_driver = crate::kernel::static_buf!(
+            crate::capsules_extra::usb::usb_user::UsbSyscallDriver<
                 'static,
-                capsules_extra::usb::usbc_client::Client<'static, $U>,
+                crate::capsules_extra::usb::usbc_client::Client<'static, $U>,
             >
         );
         (usb_client, usb_driver)
@@ -41,7 +41,7 @@ pub struct UsbComponent<
     U: UsbController<'static> + 'static,
     CAP: MemoryAllocationCapability + 'static,
 > {
-    board_kernel: &'static kernel::Kernel,
+    board_kernel: &'static crate::kernel::Kernel,
     driver_num: usize,
     usbc: &'static U,
     mem_cap: CAP,
@@ -51,7 +51,7 @@ impl<U: UsbController<'static> + 'static, CAP: MemoryAllocationCapability + 'sta
     UsbComponent<U, CAP>
 {
     pub fn new(
-        board_kernel: &'static kernel::Kernel,
+        board_kernel: &'static crate::kernel::Kernel,
         driver_num: usize,
         usbc: &'static U,
         mem_cap: CAP,
@@ -69,30 +69,30 @@ impl<U: UsbController<'static> + 'static, CAP: MemoryAllocationCapability + 'sta
     for UsbComponent<U, CAP>
 {
     type StaticInput = (
-        &'static mut MaybeUninit<capsules_extra::usb::usbc_client::Client<'static, U>>,
+        &'static mut MaybeUninit<crate::capsules_extra::usb::usbc_client::Client<'static, U>>,
         &'static mut MaybeUninit<
-            capsules_extra::usb::usb_user::UsbSyscallDriver<
+            crate::capsules_extra::usb::usb_user::UsbSyscallDriver<
                 'static,
-                capsules_extra::usb::usbc_client::Client<'static, U>,
+                crate::capsules_extra::usb::usbc_client::Client<'static, U>,
             >,
         >,
     );
-    type Output = &'static capsules_extra::usb::usb_user::UsbSyscallDriver<
+    type Output = &'static crate::capsules_extra::usb::usb_user::UsbSyscallDriver<
         'static,
-        capsules_extra::usb::usbc_client::Client<'static, U>,
+        crate::capsules_extra::usb::usbc_client::Client<'static, U>,
     >;
 
     fn finalize(self, s: Self::StaticInput) -> Self::Output {
         // Configure the USB controller
-        let usb_client = s.0.write(capsules_extra::usb::usbc_client::Client::new(
+        let usb_client = s.0.write(crate::capsules_extra::usb::usbc_client::Client::new(
             self.usbc,
-            capsules_extra::usb::usbc_client::MAX_CTRL_PACKET_SIZE_SAM4L,
+            crate::capsules_extra::usb::usbc_client::MAX_CTRL_PACKET_SIZE_SAM4L,
         ));
         self.usbc.set_client(usb_client);
 
         // Configure the USB userspace driver
         let usb_driver =
-            s.1.write(capsules_extra::usb::usb_user::UsbSyscallDriver::new(
+            s.1.write(crate::capsules_extra::usb::usb_user::UsbSyscallDriver::new(
                 usb_client,
                 self.board_kernel
                     .create_grant(self.driver_num, &self.mem_cap),

@@ -4,7 +4,7 @@
 
 //! Basic implementation of a thread ID provider for Cortex-M.
 
-use kernel::platform::chip::ThreadIdProvider;
+use crate::kernel::platform::chip::ThreadIdProvider;
 
 /// Implement the [`ThreadIdProvider`] trait for Cortex-M platforms.
 ///

@@ -15,12 +15,12 @@
 //! SPI example
 //!
 //! ```rust,ignore
-//! let tft = components::st77xx::ST77XXComponent::new(mux_alarm,
+//! let tft = crate::components::st77xx::ST77XXComponent::new(mux_alarm,
 //!                                                    bus,
 //!                                                    Some(&nrf52840::gpio::PORT[GPIO_D3]),
 //!                                                    Some(&nrf52840::gpio::PORT[GPIO_D2]),
 //!                                                    &capsules::st77xx::ST7735).finalize(
-//!     components::st77xx_component_static!(
+//!     crate::components::st77xx_component_static!(
 //!         // bus type
 //!         capsules::bus::SpiMasterBus<
 //!             'static,
@@ -36,14 +36,14 @@
 
 use crate::capsules_extra::bus::{self, Bus, BusAddr8, DataWidth};
 use core::cell::Cell;
-use kernel::ErrorCode;
-use kernel::hil::gpio::Pin;
-use kernel::hil::screen::{
+use crate::kernel::ErrorCode;
+use crate::kernel::hil::gpio::Pin;
+use crate::kernel::hil::screen::{
     self, ScreenClient, ScreenPixelFormat, ScreenRotation, ScreenSetupClient,
 };
-use kernel::hil::time::{self, Alarm, ConvertTicks};
-use kernel::utilities::cells::{OptionalCell, TakeCell};
-use kernel::utilities::leasable_buffer::SubSliceMut;
+use crate::kernel::hil::time::{self, Alarm, ConvertTicks};
+use crate::kernel::utilities::cells::{OptionalCell, TakeCell};
+use crate::kernel::utilities::leasable_buffer::SubSliceMut;
 
 pub const BUFFER_SIZE: usize = 24;
 

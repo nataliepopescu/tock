@@ -9,7 +9,7 @@
 //! ```rust
 //! let height: u8 = 2;
 //! let width: u8 = 16;
-//! let lcd = components::hd44780::HD44780Component::new(mux_alarm,
+//! let lcd = crate::components::hd44780::HD44780Component::new(mux_alarm,
 //!                                                      width,
 //!                                                      height,
 //!                                                      // rs pin
@@ -25,7 +25,7 @@
 //!                                                      // data 7 pin
 //!                                                      gpio_ports.pins[6][14].as_ref().unwrap())
 //!     .finalize(
-//!     components::hd44780_component_static!(
+//!     crate::components::hd44780_component_static!(
 //!         stm32f429zi::tim2::Tim2,
 //!
 //!
@@ -33,27 +33,27 @@
 //! );
 //! ```
 
-use capsules_core::virtualizers::virtual_alarm::{MuxAlarm, VirtualMuxAlarm};
-use capsules_extra::hd44780::HD44780;
+use crate::capsules_core::virtualizers::virtual_alarm::{MuxAlarm, VirtualMuxAlarm};
+use crate::capsules_extra::hd44780::HD44780;
 use core::mem::MaybeUninit;
-use kernel::component::Component;
-use kernel::hil::time;
-use kernel::hil::time::Alarm;
+use crate::kernel::component::Component;
+use crate::kernel::hil::time;
+use crate::kernel::hil::time::Alarm;
 
 // Setup static space for the objects.
 #[macro_export]
 macro_rules! hd44780_component_static {
     ($A:ty $(,)?) => {{
-        let alarm = kernel::static_buf!(
-            capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, $A>
+        let alarm = crate::kernel::static_buf!(
+            crate::capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, $A>
         );
-        let hd44780 = kernel::static_buf!(
-            capsules_extra::hd44780::HD44780<
+        let hd44780 = crate::kernel::static_buf!(
+            crate::capsules_extra::hd44780::HD44780<
                 'static,
-                capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, $A>,
+                crate::capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, $A>,
             >
         );
-        let buffer = kernel::static_buf!([u8; capsules_extra::hd44780::BUF_LEN]);
+        let buffer = crate::kernel::static_buf!([u8; crate::capsules_extra::hd44780::BUF_LEN]);
 
         (alarm, hd44780, buffer)
     }};
@@ -63,12 +63,12 @@ pub struct HD44780Component<A: 'static + time::Alarm<'static>> {
     alarm_mux: &'static MuxAlarm<'static, A>,
     width: u8,
     height: u8,
-    rs: &'static dyn kernel::hil::gpio::Pin,
-    en: &'static dyn kernel::hil::gpio::Pin,
-    data_4_pin: &'static dyn kernel::hil::gpio::Pin,
-    data_5_pin: &'static dyn kernel::hil::gpio::Pin,
-    data_6_pin: &'static dyn kernel::hil::gpio::Pin,
-    data_7_pin: &'static dyn kernel::hil::gpio::Pin,
+    rs: &'static dyn crate::kernel::hil::gpio::Pin,
+    en: &'static dyn crate::kernel::hil::gpio::Pin,
+    data_4_pin: &'static dyn crate::kernel::hil::gpio::Pin,
+    data_5_pin: &'static dyn crate::kernel::hil::gpio::Pin,
+    data_6_pin: &'static dyn crate::kernel::hil::gpio::Pin,
+    data_7_pin: &'static dyn crate::kernel::hil::gpio::Pin,
 }
 
 impl<A: 'static + time::Alarm<'static>> HD44780Component<A> {
@@ -76,12 +76,12 @@ impl<A: 'static + time::Alarm<'static>> HD44780Component<A> {
         alarm_mux: &'static MuxAlarm<'static, A>,
         width: u8,
         height: u8,
-        rs: &'static dyn kernel::hil::gpio::Pin,
-        en: &'static dyn kernel::hil::gpio::Pin,
-        data_4_pin: &'static dyn kernel::hil::gpio::Pin,
-        data_5_pin: &'static dyn kernel::hil::gpio::Pin,
-        data_6_pin: &'static dyn kernel::hil::gpio::Pin,
-        data_7_pin: &'static dyn kernel::hil::gpio::Pin,
+        rs: &'static dyn crate::kernel::hil::gpio::Pin,
+        en: &'static dyn crate::kernel::hil::gpio::Pin,
+        data_4_pin: &'static dyn crate::kernel::hil::gpio::Pin,
+        data_5_pin: &'static dyn crate::kernel::hil::gpio::Pin,
+        data_6_pin: &'static dyn crate::kernel::hil::gpio::Pin,
+        data_7_pin: &'static dyn crate::kernel::hil::gpio::Pin,
     ) -> HD44780Component<A> {
         HD44780Component {
             alarm_mux,
@@ -101,7 +101,7 @@ impl<A: 'static + time::Alarm<'static>> Component for HD44780Component<A> {
     type StaticInput = (
         &'static mut MaybeUninit<VirtualMuxAlarm<'static, A>>,
         &'static mut MaybeUninit<HD44780<'static, VirtualMuxAlarm<'static, A>>>,
-        &'static mut MaybeUninit<[u8; capsules_extra::hd44780::BUF_LEN]>,
+        &'static mut MaybeUninit<[u8; crate::capsules_extra::hd44780::BUF_LEN]>,
     );
     type Output = &'static HD44780<'static, VirtualMuxAlarm<'static, A>>;
 
@@ -109,9 +109,9 @@ impl<A: 'static + time::Alarm<'static>> Component for HD44780Component<A> {
         let lcd_alarm = static_buffer.0.write(VirtualMuxAlarm::new(self.alarm_mux));
         lcd_alarm.setup();
 
-        let buffer = static_buffer.2.write([0; capsules_extra::hd44780::BUF_LEN]);
+        let buffer = static_buffer.2.write([0; crate::capsules_extra::hd44780::BUF_LEN]);
 
-        let hd44780 = static_buffer.1.write(capsules_extra::hd44780::HD44780::new(
+        let hd44780 = static_buffer.1.write(crate::capsules_extra::hd44780::HD44780::new(
             self.rs,
             self.en,
             self.data_4_pin,

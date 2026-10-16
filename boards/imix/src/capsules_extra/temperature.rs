@@ -42,7 +42,7 @@
 //! You need a device that provides the `hil::sensors::TemperatureDriver` trait.
 //!
 //! ```rust,ignore
-//! # use kernel::static_init;
+//! # use crate::kernel::static_init;
 //!
 //! let grant_cap = create_capability!(capabilities::MemoryAllocationCapability);
 //! let grant_temperature = board_kernel.create_grant(&grant_cap);
@@ -52,18 +52,18 @@
 //!        capsules::temperature::TemperatureSensor::new(si7021,
 //!                                                 board_kernel.create_grant(&grant_cap)));
 //!
-//! kernel::hil::sensors::TemperatureDriver::set_client(si7021, temp);
+//! crate::kernel::hil::sensors::TemperatureDriver::set_client(si7021, temp);
 //! ```
 
 use core::cell::Cell;
 
-use kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
-use kernel::hil;
-use kernel::syscall::{CommandReturn, SyscallDriver};
-use kernel::{ErrorCode, ProcessId};
+use crate::kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
+use crate::kernel::hil;
+use crate::kernel::syscall::{CommandReturn, SyscallDriver};
+use crate::kernel::{ErrorCode, ProcessId};
 
 /// Syscall driver number.
-use capsules_core::driver;
+use crate::capsules_core::driver;
 pub const DRIVER_NUM: usize = driver::NUM::Temperature as usize;
 
 #[derive(Default)]
@@ -154,7 +154,7 @@ impl<'a, T: hil::sensors::TemperatureDriver<'a>> SyscallDriver for TemperatureSe
         }
     }
 
-    fn allocate_grant(&self, processid: ProcessId) -> Result<(), kernel::process::Error> {
+    fn allocate_grant(&self, processid: ProcessId) -> Result<(), crate::kernel::process::Error> {
         self.apps.enter(processid, |_, _| {})
     }
 }

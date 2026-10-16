@@ -12,13 +12,13 @@
 //! -----
 //!
 //! ```rust,ignore
-//! let mux_i2c = components::i2c::I2CMuxComponent::new(&stm32f4xx::i2c::I2C1)
-//!     .finalize(components::i2c_mux_component_helper!());
+//! let mux_i2c = crate::components::i2c::I2CMuxComponent::new(&stm32f4xx::i2c::I2C1)
+//!     .finalize(crate::components::i2c_mux_component_helper!());
 //!
-//! let ft6x06 = components::ft6x06::Ft6x06Component::new(
+//! let ft6x06 = crate::components::ft6x06::Ft6x06Component::new(
 //!     stm32f412g::gpio::PinId::PG05.get_pin().as_ref().unwrap(),
 //! )
-//! .finalize(components::ft6x06_i2c_component_helper!(mux_i2c));
+//! .finalize(crate::components::ft6x06_i2c_component_helper!(mux_i2c));
 //!
 //! Author: Alexandru Radovici <msg4alex@gmail.com>
 
@@ -27,11 +27,11 @@
 use core::cell::Cell;
 use enum_primitive::cast::FromPrimitive;
 use enum_primitive::enum_from_primitive;
-use kernel::ErrorCode;
-use kernel::hil::gpio;
-use kernel::hil::i2c;
-use kernel::hil::touch::{self, GestureEvent, TouchEvent, TouchStatus};
-use kernel::utilities::cells::{OptionalCell, TakeCell};
+use crate::kernel::ErrorCode;
+use crate::kernel::hil::gpio;
+use crate::kernel::hil::i2c;
+use crate::kernel::hil::touch::{self, GestureEvent, TouchEvent, TouchStatus};
+use crate::kernel::utilities::cells::{OptionalCell, TakeCell};
 
 pub static NO_TOUCH: TouchEvent = TouchEvent {
     id: 0,

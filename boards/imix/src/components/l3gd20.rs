@@ -9,32 +9,32 @@
 //! Usage
 //! -----
 //! ```rust
-//! let l3gd20 = components::l3gd20::L3gd20Component::new(spi_mux, stm32f429zi::gpio::PinId::PE03).finalize(
-//!     components::l3gd20_component_static!(stm32f429zi::spi::Spi));
+//! let l3gd20 = crate::components::l3gd20::L3gd20Component::new(spi_mux, stm32f429zi::gpio::PinId::PE03).finalize(
+//!     crate::components::l3gd20_component_static!(stm32f429zi::spi::Spi));
 //! ```
 
-use capsules_core::virtualizers::virtual_spi::{MuxSpiMaster, VirtualSpiMasterDevice};
-use capsules_extra::l3gd20::L3gd20Spi;
+use crate::capsules_core::virtualizers::virtual_spi::{MuxSpiMaster, VirtualSpiMasterDevice};
+use crate::capsules_extra::l3gd20::L3gd20Spi;
 use core::mem::MaybeUninit;
-use kernel::capabilities::MemoryAllocationCapability;
-use kernel::component::Component;
-use kernel::hil::spi;
-use kernel::hil::spi::SpiMasterDevice;
+use crate::kernel::capabilities::MemoryAllocationCapability;
+use crate::kernel::component::Component;
+use crate::kernel::hil::spi;
+use crate::kernel::hil::spi::SpiMasterDevice;
 
 // Setup static space for the objects.
 #[macro_export]
 macro_rules! l3gd20_component_static {
     ($S:ty $(,)?) => {{
-        let txbuffer = kernel::static_buf!([u8; capsules_extra::l3gd20::TX_BUF_LEN]);
-        let rxbuffer = kernel::static_buf!([u8; capsules_extra::l3gd20::RX_BUF_LEN]);
+        let txbuffer = crate::kernel::static_buf!([u8; crate::capsules_extra::l3gd20::TX_BUF_LEN]);
+        let rxbuffer = crate::kernel::static_buf!([u8; crate::capsules_extra::l3gd20::RX_BUF_LEN]);
 
-        let spi = kernel::static_buf!(
-            capsules_core::virtualizers::virtual_spi::VirtualSpiMasterDevice<'static, $S>
+        let spi = crate::kernel::static_buf!(
+            crate::capsules_core::virtualizers::virtual_spi::VirtualSpiMasterDevice<'static, $S>
         );
-        let l3gd20spi = kernel::static_buf!(
-            capsules_extra::l3gd20::L3gd20Spi<
+        let l3gd20spi = crate::kernel::static_buf!(
+            crate::capsules_extra::l3gd20::L3gd20Spi<
                 'static,
-                capsules_core::virtualizers::virtual_spi::VirtualSpiMasterDevice<'static, $S>,
+                crate::capsules_core::virtualizers::virtual_spi::VirtualSpiMasterDevice<'static, $S>,
             >
         );
 
@@ -42,7 +42,7 @@ macro_rules! l3gd20_component_static {
     }};
 }
 
-pub type L3gd20ComponentType<S> = capsules_extra::l3gd20::L3gd20Spi<'static, S>;
+pub type L3gd20ComponentType<S> = crate::capsules_extra::l3gd20::L3gd20Spi<'static, S>;
 
 pub struct L3gd20Component<
     S: 'static + spi::SpiMaster<'static>,
@@ -51,7 +51,7 @@ pub struct L3gd20Component<
 > {
     spi_mux: &'static MuxSpiMaster<'static, S>,
     chip_select: CS,
-    board_kernel: &'static kernel::Kernel,
+    board_kernel: &'static crate::kernel::Kernel,
     driver_num: usize,
     mem_cap: CAP,
 }
@@ -65,7 +65,7 @@ impl<
     pub fn new(
         spi_mux: &'static MuxSpiMaster<'static, S>,
         chip_select: CS,
-        board_kernel: &'static kernel::Kernel,
+        board_kernel: &'static crate::kernel::Kernel,
         driver_num: usize,
         mem_cap: CAP,
     ) -> Self {
@@ -88,8 +88,8 @@ impl<
     type StaticInput = (
         &'static mut MaybeUninit<VirtualSpiMasterDevice<'static, S>>,
         &'static mut MaybeUninit<L3gd20Spi<'static, VirtualSpiMasterDevice<'static, S>>>,
-        &'static mut MaybeUninit<[u8; capsules_extra::l3gd20::TX_BUF_LEN]>,
-        &'static mut MaybeUninit<[u8; capsules_extra::l3gd20::RX_BUF_LEN]>,
+        &'static mut MaybeUninit<[u8; crate::capsules_extra::l3gd20::TX_BUF_LEN]>,
+        &'static mut MaybeUninit<[u8; crate::capsules_extra::l3gd20::RX_BUF_LEN]>,
     );
     type Output = &'static L3gd20Spi<'static, VirtualSpiMasterDevice<'static, S>>;
 
@@ -106,10 +106,10 @@ impl<
 
         let txbuffer = static_buffer
             .2
-            .write([0; capsules_extra::l3gd20::TX_BUF_LEN]);
+            .write([0; crate::capsules_extra::l3gd20::TX_BUF_LEN]);
         let rxbuffer = static_buffer
             .3
-            .write([0; capsules_extra::l3gd20::RX_BUF_LEN]);
+            .write([0; crate::capsules_extra::l3gd20::RX_BUF_LEN]);
 
         let l3gd20 = static_buffer
             .1

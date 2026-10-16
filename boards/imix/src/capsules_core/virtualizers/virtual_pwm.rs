@@ -11,23 +11,23 @@
 //! -----
 //!
 //! ```rust,ignore
-//! # use kernel::static_init;
+//! # use crate::kernel::static_init;
 //!
 //! let mux_pwm = static_init!(
-//!     capsules_core::virtual_pwm::MuxPwm<'static, nrf52::pwm::Pwm>,
-//!     capsules_core::virtual_pwm::MuxPwm::new(&base_peripherals.pwm0)
+//!     crate::capsules_core::virtual_pwm::MuxPwm<'static, nrf52::pwm::Pwm>,
+//!     crate::capsules_core::virtual_pwm::MuxPwm::new(&base_peripherals.pwm0)
 //! );
 //! let virtual_pwm_buzzer = static_init!(
-//!     capsules_core::virtual_pwm::PwmPinUser<'static, nrf52::pwm::Pwm>,
-//!     capsules_core::virtual_pwm::PwmPinUser::new(mux_pwm, nrf5x::pinmux::Pinmux::new(31))
+//!     crate::capsules_core::virtual_pwm::PwmPinUser<'static, nrf52::pwm::Pwm>,
+//!     crate::capsules_core::virtual_pwm::PwmPinUser::new(mux_pwm, nrf5x::pinmux::Pinmux::new(31))
 //! );
 //! virtual_pwm_buzzer.add_to_mux();
 //! ```
 
-use kernel::ErrorCode;
-use kernel::collections::list::{List, ListLink, ListNode};
-use kernel::hil;
-use kernel::utilities::cells::OptionalCell;
+use crate::kernel::ErrorCode;
+use crate::kernel::collections::list::{List, ListLink, ListNode};
+use crate::kernel::hil;
+use crate::kernel::utilities::cells::OptionalCell;
 
 pub struct MuxPwm<'a, P: hil::pwm::Pwm> {
     pwm: &'a P,

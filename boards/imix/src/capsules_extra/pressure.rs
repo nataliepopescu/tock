@@ -43,25 +43,25 @@
 //! You need a device that provides the `hil::sensors::PressureDriver` trait.
 //!
 //! ```rust,ignore
-//! # use kernel::static_init;
+//! # use crate::kernel::static_init;
 //!
 //! let pressure = static_init!(
 //!        capsules::temperature::PressureSensor<'static>,
 //!        capsules::temperature::PressureSensor::new(si7021,
 //!                                                 board_kernel.create_grant(&grant_cap)));
 //!
-//! kernel::hil::sensors::PressureDriver::set_client(si7021, pressure);
+//! crate::kernel::hil::sensors::PressureDriver::set_client(si7021, pressure);
 //! ```
 
 use core::cell::Cell;
 
-use kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
-use kernel::hil;
-use kernel::syscall::{CommandReturn, SyscallDriver};
-use kernel::{ErrorCode, ProcessId};
+use crate::kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
+use crate::kernel::hil;
+use crate::kernel::syscall::{CommandReturn, SyscallDriver};
+use crate::kernel::{ErrorCode, ProcessId};
 
 /// Syscall driver number.
-use capsules_core::driver;
+use crate::capsules_core::driver;
 pub const DRIVER_NUM: usize = driver::NUM::Pressure as usize;
 
 #[derive(Default)]
@@ -118,11 +118,11 @@ impl<'a, T: hil::sensors::PressureDriver<'a>> hil::sensors::PressureClient
                     app.subscribed = false;
                     let result = match pressure {
                         Ok(pressure_value) => (
-                            kernel::errorcode::into_statuscode(Ok(())),
+                            crate::kernel::errorcode::into_statuscode(Ok(())),
                             pressure_value as usize,
                             0,
                         ),
-                        Err(err) => (kernel::errorcode::into_statuscode(Err(err)), 0, 0),
+                        Err(err) => (crate::kernel::errorcode::into_statuscode(Err(err)), 0, 0),
                     };
                     let _ = upcalls.schedule_upcall(0, result);
                 }
@@ -146,7 +146,7 @@ impl<'a, T: hil::sensors::PressureDriver<'a>> SyscallDriver for PressureSensor<'
         }
     }
 
-    fn allocate_grant(&self, process_id: ProcessId) -> Result<(), kernel::process::Error> {
+    fn allocate_grant(&self, process_id: ProcessId) -> Result<(), crate::kernel::process::Error> {
         self.apps.enter(process_id, |_, _| {})
     }
 }

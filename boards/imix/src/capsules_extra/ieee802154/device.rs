@@ -17,7 +17,7 @@
 
 use crate::capsules_extra::ieee802154::framer::Frame;
 use crate::capsules_extra::net::ieee802154::{Header, KeyId, MacAddress, PanID, SecurityLevel};
-use kernel::ErrorCode;
+use crate::kernel::ErrorCode;
 
 pub trait MacDevice<'a> {
     /// Sets the transmission client of this MAC device

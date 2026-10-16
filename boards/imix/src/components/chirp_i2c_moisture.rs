@@ -9,35 +9,35 @@
 //! -----
 //! ```rust
 //!    let chirp_moisture =
-//!        components::chirp_i2c_moisture::ChirpI2cMoistureComponent::new(mux_i2c, 0x20).finalize(
-//!            components::chirp_i2c_moisture_component_static!(apollo3::iom::Iom<'static>),
+//!        crate::components::chirp_i2c_moisture::ChirpI2cMoistureComponent::new(mux_i2c, 0x20).finalize(
+//!            crate::components::chirp_i2c_moisture_component_static!(apollo3::iom::Iom<'static>),
 //!        );
 //!
-//!    let moisture = components::moisture::MoistureComponent::new(
+//!    let moisture = crate::components::moisture::MoistureComponent::new(
 //!        board_kernel,
-//!        capsules_extra::moisture::DRIVER_NUM,
+//!        crate::capsules_extra::moisture::DRIVER_NUM,
 //!        chirp_moisture,
 //!    )
-//!    .finalize(components::moisture_component_static!(ChirpI2cMoistureType));
+//!    .finalize(crate::components::moisture_component_static!(ChirpI2cMoistureType));
 //! ```
 
-use capsules_core::virtualizers::virtual_i2c::{I2CDevice, MuxI2C};
-use capsules_extra::chirp_i2c_moisture::{BUFFER_SIZE, ChirpI2cMoisture};
+use crate::capsules_core::virtualizers::virtual_i2c::{I2CDevice, MuxI2C};
+use crate::capsules_extra::chirp_i2c_moisture::{BUFFER_SIZE, ChirpI2cMoisture};
 use core::mem::MaybeUninit;
-use kernel::component::Component;
-use kernel::hil::i2c;
+use crate::kernel::component::Component;
+use crate::kernel::hil::i2c;
 
 // Setup static space for the objects.
 #[macro_export]
 macro_rules! chirp_i2c_moisture_component_static {
     ($I:ty $(,)?) => {{
         let i2c_device =
-            kernel::static_buf!(capsules_core::virtualizers::virtual_i2c::I2CDevice<'static, $I>);
-        let i2c_buffer = kernel::static_buf!([u8; capsules_extra::chirp_i2c_moisture::BUFFER_SIZE]);
-        let chirp_i2c_moisture = kernel::static_buf!(
-            capsules_extra::chirp_i2c_moisture::ChirpI2cMoisture<
+            crate::kernel::static_buf!(crate::capsules_core::virtualizers::virtual_i2c::I2CDevice<'static, $I>);
+        let i2c_buffer = crate::kernel::static_buf!([u8; crate::capsules_extra::chirp_i2c_moisture::BUFFER_SIZE]);
+        let chirp_i2c_moisture = crate::kernel::static_buf!(
+            crate::capsules_extra::chirp_i2c_moisture::ChirpI2cMoisture<
                 'static,
-                capsules_core::virtualizers::virtual_i2c::I2CDevice<$I>,
+                crate::capsules_core::virtualizers::virtual_i2c::I2CDevice<$I>,
             >
         );
 
@@ -46,7 +46,7 @@ macro_rules! chirp_i2c_moisture_component_static {
 }
 
 pub type ChirpI2cMoistureComponentType<I> =
-    capsules_extra::chirp_i2c_moisture::ChirpI2cMoisture<'static, I>;
+    crate::capsules_extra::chirp_i2c_moisture::ChirpI2cMoisture<'static, I>;
 
 pub struct ChirpI2cMoistureComponent<I: 'static + i2c::I2CMaster<'static>> {
     i2c_mux: &'static MuxI2C<'static, I>,

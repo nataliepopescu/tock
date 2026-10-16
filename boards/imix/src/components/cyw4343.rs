@@ -14,56 +14,56 @@
 //!
 //! ```rust
 //! // Bus component
-//! let cyw4343_spi_bus = components::cyw4343::CYW4343xSpiBusComponent::new(
+//! let cyw4343_spi_bus = crate::components::cyw4343::CYW4343xSpiBusComponent::new(
 //!     mux_alarm, // Mux alarm
 //!     pio_gspi,  // Should implement the `SpiMasterDevice` interface
 //!     fw, nvram, // Firmware buffers
 //! )
-//! .finalize(!components::cyw4343x_spi_bus_component_static!(
+//! .finalize(!crate::components::cyw4343x_spi_bus_component_static!(
 //!     PioGSpi<'static>, // Type of the Spi peripheral
 //!     RPTimer           // Underlying alarm peripheral
 //! ));
 //! // ...
 //!
 //! // Driver component
-//! let cyw4343_device = components::cyw4343::CYW4343xComponent::new(
+//! let cyw4343_device = crate::components::cyw4343::CYW4343xComponent::new(
 //!     pwr,             // Power pin
 //!     mux_alarm,       // Mux alarm
 //!     cyw4343_spi_bus, // Bus
 //!     clm,             // CLM (Country-Locale Matrix) buffer
 //! )
-//! .finalize(components::cyw4343_component_static!(
+//! .finalize(crate::components::cyw4343_component_static!(
 //!     RPGpioPin,
 //!     RPTimer,
 //!     CYW4343xSpiBus
 //! ));
 //! ```
 
-use capsules_core::virtualizers::virtual_alarm::{MuxAlarm, VirtualMuxAlarm};
-use capsules_extra::cyw4343::CYW4343x;
-use capsules_extra::cyw4343::CYW4343xBus;
-use capsules_extra::cyw4343::spi_bus;
+use crate::capsules_core::virtualizers::virtual_alarm::{MuxAlarm, VirtualMuxAlarm};
+use crate::capsules_extra::cyw4343::CYW4343x;
+use crate::capsules_extra::cyw4343::CYW4343xBus;
+use crate::capsules_extra::cyw4343::spi_bus;
 use core::mem::MaybeUninit;
-use kernel::component::Component;
-use kernel::hil::{gpio, spi, time};
+use crate::kernel::component::Component;
+use crate::kernel::hil::{gpio, spi, time};
 use time::Alarm;
 
 // Setup static space for the objects.
 #[macro_export]
 macro_rules! cyw4343_component_static {
     ($P:ty, $A:ty, $B:ty $(,)?) => {{
-        let alarm = kernel::static_buf!(
-            capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, $A>
+        let alarm = crate::kernel::static_buf!(
+            crate::capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, $A>
         );
-        let driver = kernel::static_buf!(
-            capsules_extra::cyw4343::CYW4343x<
+        let driver = crate::kernel::static_buf!(
+            crate::capsules_extra::cyw4343::CYW4343x<
                 'static,
                 $P,
-                capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, $A>,
+                crate::capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, $A>,
                 $B,
             >
         );
-        let buffer = kernel::static_buf!([u8; 1600]);
+        let buffer = crate::kernel::static_buf!([u8; 1600]);
 
         (alarm, driver, buffer)
     }};
@@ -124,16 +124,16 @@ impl<P: 'static + gpio::Pin, A: 'static + time::Alarm<'static>, B: 'static + CYW
 #[macro_export]
 macro_rules! cyw4343x_spi_bus_component_static {
     ($S:ty, $A:ty) => {{
-        let extra = kernel::static_buf!([u8; capsules_extra::cyw4343::spi_bus::WORD_SIZE]);
-        let buffer = kernel::static_buf!([u8; capsules_extra::cyw4343::spi_bus::MAX_PACKET_SIZE]);
-        let alarm = kernel::static_buf!(
-            capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, $A>
+        let extra = crate::kernel::static_buf!([u8; crate::capsules_extra::cyw4343::spi_bus::WORD_SIZE]);
+        let buffer = crate::kernel::static_buf!([u8; crate::capsules_extra::cyw4343::spi_bus::MAX_PACKET_SIZE]);
+        let alarm = crate::kernel::static_buf!(
+            crate::capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, $A>
         );
-        let bus = kernel::static_buf!(
-            capsules_extra::cyw4343::spi_bus::CYW4343xSpiBus<
+        let bus = crate::kernel::static_buf!(
+            crate::capsules_extra::cyw4343::spi_bus::CYW4343xSpiBus<
                 'static,
                 $S,
-                capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, $A>,
+                crate::capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, $A>,
             >
         );
 

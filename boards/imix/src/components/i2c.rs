@@ -13,41 +13,41 @@
 //! Usage
 //! -----
 //! ```rust
-//! let mux_i2c = components::i2c::I2CMuxComponent::new(&stm32f3xx::i2c::I2C1, None, dynamic_deferred_caller)
-//!     .finalize(components::i2c_mux_component_static!());
-//! let client_i2c = components::i2c::I2CComponent::new(mux_i2c, 0x19)
-//!     .finalize(components::i2c_component_static!());
+//! let mux_i2c = crate::components::i2c::I2CMuxComponent::new(&stm32f3xx::i2c::I2C1, None, dynamic_deferred_caller)
+//!     .finalize(crate::components::i2c_mux_component_static!());
+//! let client_i2c = crate::components::i2c::I2CComponent::new(mux_i2c, 0x19)
+//!     .finalize(crate::components::i2c_component_static!());
 //! ```
 
 // Author: Alexandru Radovici <msg4alex@gmail.com>
 
-use capsules_core::virtualizers::virtual_i2c::{I2CDevice, MuxI2C};
+use crate::capsules_core::virtualizers::virtual_i2c::{I2CDevice, MuxI2C};
 use core::mem::MaybeUninit;
-use kernel::capabilities::MemoryAllocationCapability;
-use kernel::component::Component;
-use kernel::hil::i2c::{self, NoSMBus};
+use crate::kernel::capabilities::MemoryAllocationCapability;
+use crate::kernel::component::Component;
+use crate::kernel::hil::i2c::{self, NoSMBus};
 
 // Setup static space for the objects.
 #[macro_export]
 macro_rules! i2c_mux_component_static {
-    ($I:ty $(,)?) => {{ kernel::static_buf!(capsules_core::virtualizers::virtual_i2c::MuxI2C<'static, $I>) }};
-    ($I:ty, $S:ty $(,)?) => {{ kernel::static_buf!(capsules::virtual_i2c::MuxI2C<'static, $I, $S>) }};
+    ($I:ty $(,)?) => {{ crate::kernel::static_buf!(crate::capsules_core::virtualizers::virtual_i2c::MuxI2C<'static, $I>) }};
+    ($I:ty, $S:ty $(,)?) => {{ crate::kernel::static_buf!(capsules::virtual_i2c::MuxI2C<'static, $I, $S>) }};
 }
 
 #[macro_export]
 macro_rules! i2c_component_static {
-    ($I:ty $(,)?) => {{ kernel::static_buf!(capsules_core::virtualizers::virtual_i2c::I2CDevice<'static, $I>) }};
+    ($I:ty $(,)?) => {{ crate::kernel::static_buf!(crate::capsules_core::virtualizers::virtual_i2c::I2CDevice<'static, $I>) }};
 }
 
 #[macro_export]
 macro_rules! i2c_master_slave_component_static {
     ($I:ty $(,)?) => {{
-        let i2c_master_buffer = kernel::static_buf!([u8; 32]);
-        let i2c_slave_buffer1 = kernel::static_buf!([u8; 32]);
-        let i2c_slave_buffer2 = kernel::static_buf!([u8; 32]);
+        let i2c_master_buffer = crate::kernel::static_buf!([u8; 32]);
+        let i2c_slave_buffer1 = crate::kernel::static_buf!([u8; 32]);
+        let i2c_slave_buffer2 = crate::kernel::static_buf!([u8; 32]);
 
-        let driver = kernel::static_buf!(
-            capsules_core::i2c_master_slave_driver::I2CMasterSlaveDriver<'static, $I>
+        let driver = crate::kernel::static_buf!(
+            crate::capsules_core::i2c_master_slave_driver::I2CMasterSlaveDriver<'static, $I>
         );
 
         (
@@ -62,9 +62,9 @@ macro_rules! i2c_master_slave_component_static {
 #[macro_export]
 macro_rules! i2c_master_driver_component_static {
     ($I:ty $(,)?) => {{
-        let i2c_master_buffer = kernel::static_buf!([u8; 32]);
+        let i2c_master_buffer = crate::kernel::static_buf!([u8; 32]);
 
-        let driver = kernel::static_buf!(capsules_core::i2c_master::I2CMasterDriver<'static, $I>);
+        let driver = crate::kernel::static_buf!(crate::capsules_core::i2c_master::I2CMasterDriver<'static, $I>);
 
         (driver, i2c_master_buffer)
     }};
@@ -94,7 +94,7 @@ impl<I: 'static + i2c::I2CMaster<'static>, S: 'static + i2c::SMBusMaster<'static
 
     fn finalize(self, static_buffer: Self::StaticInput) -> Self::Output {
         let mux_i2c = static_buffer.write(MuxI2C::new(self.i2c, self.smbus));
-        kernel::deferred_call::DeferredCallClient::register(mux_i2c);
+        crate::kernel::deferred_call::DeferredCallClient::register(mux_i2c);
 
         self.i2c.set_master_client(mux_i2c);
 
@@ -128,13 +128,13 @@ impl<I: 'static + i2c::I2CMaster<'static>> Component for I2CComponent<I> {
 }
 
 pub type I2CMasterSlaveDriverComponentType<I> =
-    capsules_core::i2c_master_slave_driver::I2CMasterSlaveDriver<'static, I>;
+    crate::capsules_core::i2c_master_slave_driver::I2CMasterSlaveDriver<'static, I>;
 
 pub struct I2CMasterSlaveDriverComponent<
     I: 'static + i2c::I2CMasterSlave<'static>,
     CAP: MemoryAllocationCapability + 'static,
 > {
-    board_kernel: &'static kernel::Kernel,
+    board_kernel: &'static crate::kernel::Kernel,
     driver_num: usize,
     i2c: &'static I,
     mem_cap: CAP,
@@ -144,7 +144,7 @@ impl<I: 'static + i2c::I2CMasterSlave<'static>, CAP: MemoryAllocationCapability 
     I2CMasterSlaveDriverComponent<I, CAP>
 {
     pub fn new(
-        board_kernel: &'static kernel::Kernel,
+        board_kernel: &'static crate::kernel::Kernel,
         driver_num: usize,
         i2c: &'static I,
         mem_cap: CAP,
@@ -163,13 +163,13 @@ impl<I: 'static + i2c::I2CMasterSlave<'static>, CAP: MemoryAllocationCapability 
 {
     type StaticInput = (
         &'static mut MaybeUninit<
-            capsules_core::i2c_master_slave_driver::I2CMasterSlaveDriver<'static, I>,
+            crate::capsules_core::i2c_master_slave_driver::I2CMasterSlaveDriver<'static, I>,
         >,
         &'static mut MaybeUninit<[u8; 32]>,
         &'static mut MaybeUninit<[u8; 32]>,
         &'static mut MaybeUninit<[u8; 32]>,
     );
-    type Output = &'static capsules_core::i2c_master_slave_driver::I2CMasterSlaveDriver<'static, I>;
+    type Output = &'static crate::capsules_core::i2c_master_slave_driver::I2CMasterSlaveDriver<'static, I>;
 
     fn finalize(self, static_buffer: Self::StaticInput) -> Self::Output {
         let i2c_master_buffer = static_buffer.1.write([0; 32]);
@@ -177,7 +177,7 @@ impl<I: 'static + i2c::I2CMasterSlave<'static>, CAP: MemoryAllocationCapability 
         let i2c_slave_buffer2 = static_buffer.3.write([0; 32]);
 
         let i2c_master_slave_driver = static_buffer.0.write(
-            capsules_core::i2c_master_slave_driver::I2CMasterSlaveDriver::new(
+            crate::capsules_core::i2c_master_slave_driver::I2CMasterSlaveDriver::new(
                 self.i2c,
                 i2c_master_buffer,
                 i2c_slave_buffer1,
@@ -198,7 +198,7 @@ pub struct I2CMasterDriverComponent<
     I: 'static + i2c::I2CMaster<'static>,
     CAP: MemoryAllocationCapability + 'static,
 > {
-    board_kernel: &'static kernel::Kernel,
+    board_kernel: &'static crate::kernel::Kernel,
     driver_num: usize,
     i2c: &'static I,
     mem_cap: CAP,
@@ -208,7 +208,7 @@ impl<I: 'static + i2c::I2CMaster<'static>, CAP: MemoryAllocationCapability + 'st
     I2CMasterDriverComponent<I, CAP>
 {
     pub fn new(
-        board_kernel: &'static kernel::Kernel,
+        board_kernel: &'static crate::kernel::Kernel,
         driver_num: usize,
         i2c: &'static I,
         mem_cap: CAP,
@@ -225,10 +225,10 @@ impl<I: 'static + i2c::I2CMaster<'static>, CAP: MemoryAllocationCapability + 'st
     for I2CMasterDriverComponent<I, CAP>
 {
     type StaticInput = (
-        &'static mut MaybeUninit<capsules_core::i2c_master::I2CMasterDriver<'static, I>>,
+        &'static mut MaybeUninit<crate::capsules_core::i2c_master::I2CMasterDriver<'static, I>>,
         &'static mut MaybeUninit<[u8; 32]>,
     );
-    type Output = &'static capsules_core::i2c_master::I2CMasterDriver<'static, I>;
+    type Output = &'static crate::capsules_core::i2c_master::I2CMasterDriver<'static, I>;
 
     fn finalize(self, static_buffer: Self::StaticInput) -> Self::Output {
         let i2c_master_buffer = static_buffer.1.write([0; 32]);
@@ -236,7 +236,7 @@ impl<I: 'static + i2c::I2CMaster<'static>, CAP: MemoryAllocationCapability + 'st
         let i2c_master_driver =
             static_buffer
                 .0
-                .write(capsules_core::i2c_master::I2CMasterDriver::new(
+                .write(crate::capsules_core::i2c_master::I2CMasterDriver::new(
                     self.i2c,
                     i2c_master_buffer,
                     self.board_kernel

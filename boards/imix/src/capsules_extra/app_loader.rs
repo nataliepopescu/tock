@@ -21,14 +21,14 @@
 //! |                         userspace                               |
 //! |                                                                 |
 //! +-----------------------------------------------------------------+
-//!                         kernel::SyscallDriver
+//!                         crate::kernel::SyscallDriver
 //! +-----------------------------------------------------------------+
 //! |                                                                 |
 //! |               capsules::app_loader::AppLoader (this)            |
 //! |                                                                 |
 //! +-----------------------------------------------------------------+
-//!         kernel::dynamic_binary_storage::DynamicBinaryStore
-//!         kernel::dynamic_binary_storage::DynamicProcessLoad
+//!         crate::kernel::dynamic_binary_storage::DynamicBinaryStore
+//!         crate::kernel::dynamic_binary_storage::DynamicProcessLoad
 //! +-----------------------------------------------------------------+
 //! |                                     |                           |
 //! |  Physical Nonvolatile Storage       |           Kernel          |
@@ -40,24 +40,24 @@
 //! Example instantiation:
 //!
 //! ```rust, ignore
-//! # use kernel::static_init;
+//! # use crate::kernel::static_init;
 //!
-//! type NonVolatilePages = components::dynamic_binary_storage::NVPages<nrf52840::nvmc::Nvmc>;
-//! type DynamicBinaryStorage<'a> = kernel::dynamic_binary_storage::SequentialDynamicBinaryStorage<
+//! type NonVolatilePages = crate::components::dynamic_binary_storage::NVPages<nrf52840::nvmc::Nvmc>;
+//! type DynamicBinaryStorage<'a> = crate::kernel::dynamic_binary_storage::SequentialDynamicBinaryStorage<
 //! 'static,
 //! nrf52840::chip::NRF52<'a, Nrf52840DefaultPeripherals<'a>>,
-//! kernel::process::ProcessStandardDebugFull,
+//! crate::kernel::process::ProcessStandardDebugFull,
 //! NonVolatilePages,
 //! >;
 //!
-//! let dynamic_app_loader = components::app_loader::AppLoaderComponent::new(
+//! let dynamic_app_loader = crate::components::app_loader::AppLoaderComponent::new(
 //!     board_kernel,
-//!     capsules_extra::app_loader::DRIVER_NUM,
+//!     crate::capsules_extra::app_loader::DRIVER_NUM,
 //!     dynamic_binary_storage,
 //!     dynamic_binary_storage,
 //!     dynamic_binary_storage,
 //!     create_capability!(capabilities::MemoryAllocationCapability),
-//!     ).finalize(components::app_loader_component_static!(
+//!     ).finalize(crate::components::app_loader_component_static!(
 //!     DynamicBinaryStorage<'static>,
 //!     DynamicBinaryStorage<'static>,
 //!     DynamicBinaryStorage<'static>,
@@ -72,18 +72,18 @@ use core::cell::Cell;
 use core::cmp;
 use core::num::NonZeroU32;
 
-use kernel::dynamic_binary_storage;
-use kernel::errorcode::into_statuscode;
-use kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
-use kernel::process::{ProcessLoadError, ShortId};
-use kernel::processbuffer::ReadableProcessBuffer;
-use kernel::syscall::{CommandReturn, SyscallDriver};
-use kernel::utilities::cells::{OptionalCell, TakeCell};
-use kernel::utilities::leasable_buffer::SubSliceMut;
-use kernel::{ErrorCode, ProcessId};
+use crate::kernel::dynamic_binary_storage;
+use crate::kernel::errorcode::into_statuscode;
+use crate::kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
+use crate::kernel::process::{ProcessLoadError, ShortId};
+use crate::kernel::processbuffer::ReadableProcessBuffer;
+use crate::kernel::syscall::{CommandReturn, SyscallDriver};
+use crate::kernel::utilities::cells::{OptionalCell, TakeCell};
+use crate::kernel::utilities::leasable_buffer::SubSliceMut;
+use crate::kernel::{ErrorCode, ProcessId};
 
 /// Syscall driver number.
-use capsules_core::driver;
+use crate::capsules_core::driver;
 pub const DRIVER_NUM: usize = driver::NUM::AppLoader as usize;
 
 /// IDs for subscribed upcalls.
@@ -576,7 +576,7 @@ impl<
         }
     }
 
-    fn allocate_grant(&self, processid: ProcessId) -> Result<(), kernel::process::Error> {
+    fn allocate_grant(&self, processid: ProcessId) -> Result<(), crate::kernel::process::Error> {
         self.apps.enter(processid, |_, _| {})
     }
 }

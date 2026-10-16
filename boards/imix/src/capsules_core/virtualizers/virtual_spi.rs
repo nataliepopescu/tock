@@ -5,13 +5,13 @@
 //! Virtualize a SPI master bus to enable multiple users of the SPI bus.
 
 use core::cell::Cell;
-use kernel::ErrorCode;
-use kernel::collections::list::{List, ListLink, ListNode};
-use kernel::deferred_call::{DeferredCall, DeferredCallClient};
-use kernel::hil;
-use kernel::hil::spi::SpiMasterClient;
-use kernel::utilities::cells::{MapCell, OptionalCell};
-use kernel::utilities::leasable_buffer::SubSliceMut;
+use crate::kernel::ErrorCode;
+use crate::kernel::collections::list::{List, ListLink, ListNode};
+use crate::kernel::deferred_call::{DeferredCall, DeferredCallClient};
+use crate::kernel::hil;
+use crate::kernel::hil::spi::SpiMasterClient;
+use crate::kernel::utilities::cells::{MapCell, OptionalCell};
+use crate::kernel::utilities::leasable_buffer::SubSliceMut;
 
 /// The Mux struct manages multiple Spi clients. Each client may have
 /// at most one outstanding Spi request.

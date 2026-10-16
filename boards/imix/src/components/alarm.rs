@@ -11,12 +11,12 @@
 //! Usage
 //! -----
 //! ```rust
-//! let ast = &sam4l::ast::AST;
-//! let mux_alarm = components::alarm::AlarmMuxComponent::new(ast)
-//!     .finalize(components::alarm_mux_component_static!(sam4l::ast::Ast));
+//! let ast = &crate::sam4l::ast::AST;
+//! let mux_alarm = crate::components::alarm::AlarmMuxComponent::new(ast)
+//!     .finalize(crate::components::alarm_mux_component_static!(crate::sam4l::ast::Ast));
 //! ast.configure(mux_alarm);
-//! let alarm = components::alarm::AlarmDriverComponent::new(board_kernel, mux_alarm)
-//!     .finalize(components::alarm_component_static!(sam4l::ast::Ast));
+//! let alarm = crate::components::alarm::AlarmDriverComponent::new(board_kernel, mux_alarm)
+//!     .finalize(crate::components::alarm_component_static!(crate::sam4l::ast::Ast));
 //! ```
 
 // Author: Philip Levis <pal@cs.stanford.edu>
@@ -24,29 +24,29 @@
 
 use core::mem::MaybeUninit;
 
-use capsules_core::alarm::AlarmDriver;
-use capsules_core::virtualizers::virtual_alarm::{MuxAlarm, VirtualMuxAlarm};
-use kernel::capabilities::MemoryAllocationCapability;
-use kernel::component::Component;
-use kernel::hil::time::{self, Alarm};
+use crate::capsules_core::alarm::AlarmDriver;
+use crate::capsules_core::virtualizers::virtual_alarm::{MuxAlarm, VirtualMuxAlarm};
+use crate::kernel::capabilities::MemoryAllocationCapability;
+use crate::kernel::component::Component;
+use crate::kernel::hil::time::{self, Alarm};
 
 // Setup static space for the objects.
 #[macro_export]
 macro_rules! alarm_mux_component_static {
-    ($A:ty $(,)?) => {{ kernel::static_buf!(capsules_core::virtualizers::virtual_alarm::MuxAlarm<'static, $A>) }};
+    ($A:ty $(,)?) => {{ crate::kernel::static_buf!(crate::capsules_core::virtualizers::virtual_alarm::MuxAlarm<'static, $A>) }};
 }
 
 // Setup static space for the objects.
 #[macro_export]
 macro_rules! alarm_component_static {
     ($A:ty $(,)?) => {{
-        let mux_alarm = kernel::static_buf!(
-            capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, $A>
+        let mux_alarm = crate::kernel::static_buf!(
+            crate::capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, $A>
         );
-        let alarm_driver = kernel::static_buf!(
-            capsules_core::alarm::AlarmDriver<
+        let alarm_driver = crate::kernel::static_buf!(
+            crate::capsules_core::alarm::AlarmDriver<
                 'static,
-                capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, $A>,
+                crate::capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, $A>,
             >
         );
 
@@ -54,9 +54,9 @@ macro_rules! alarm_component_static {
     }};
 }
 
-pub type AlarmDriverComponentType<A> = capsules_core::alarm::AlarmDriver<
+pub type AlarmDriverComponentType<A> = crate::capsules_core::alarm::AlarmDriver<
     'static,
-    capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, A>,
+    crate::capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, A>,
 >;
 
 pub struct AlarmMuxComponent<A: 'static + time::Alarm<'static>> {
@@ -85,7 +85,7 @@ pub struct AlarmDriverComponent<
     A: 'static + time::Alarm<'static>,
     CAP: MemoryAllocationCapability + 'static,
 > {
-    board_kernel: &'static kernel::Kernel,
+    board_kernel: &'static crate::kernel::Kernel,
     driver_num: usize,
     alarm_mux: &'static MuxAlarm<'static, A>,
     mem_cap: CAP,
@@ -95,7 +95,7 @@ impl<A: 'static + time::Alarm<'static>, CAP: MemoryAllocationCapability + 'stati
     AlarmDriverComponent<A, CAP>
 {
     pub fn new(
-        board_kernel: &'static kernel::Kernel,
+        board_kernel: &'static crate::kernel::Kernel,
         driver_num: usize,
         mux: &'static MuxAlarm<'static, A>,
         mem_cap: CAP,

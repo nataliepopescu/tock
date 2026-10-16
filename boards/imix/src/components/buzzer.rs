@@ -11,36 +11,36 @@
 //! Usage
 //! -----
 //! ```rust
-//! let buzzer = components::buzzer::BuzzerComponent::new(
+//! let buzzer = crate::components::buzzer::BuzzerComponent::new(
 //!     board_kernel,
-//!     capsules_extra::buzzer_driver::DRIVER_NUM,
+//!     crate::capsules_extra::buzzer_driver::DRIVER_NUM,
 //!     mux_alarm,
 //!     virtual_pwm_buzzer,
 //! )
-//! .finalize(components::buzzer_component_static!(AlarmHw, PwmHw));
+//! .finalize(crate::components::buzzer_component_static!(AlarmHw, PwmHw));
 //! ```
 
-use capsules_core::virtualizers::virtual_alarm::{MuxAlarm, VirtualMuxAlarm};
-use capsules_core::virtualizers::virtual_pwm::PwmPinUser;
-use capsules_extra::buzzer_driver::Buzzer;
-use capsules_extra::buzzer_pwm::PwmBuzzer;
+use crate::capsules_core::virtualizers::virtual_alarm::{MuxAlarm, VirtualMuxAlarm};
+use crate::capsules_core::virtualizers::virtual_pwm::PwmPinUser;
+use crate::capsules_extra::buzzer_driver::Buzzer;
+use crate::capsules_extra::buzzer_pwm::PwmBuzzer;
 use core::mem::MaybeUninit;
-use kernel::capabilities::MemoryAllocationCapability;
-use kernel::component::Component;
-use kernel::hil;
+use crate::kernel::capabilities::MemoryAllocationCapability;
+use crate::kernel::component::Component;
+use crate::kernel::hil;
 
 #[macro_export]
 macro_rules! buzzer_component_static {
     ($A:ty, $P:ty $(,)?) => {{
-        use capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm;
-        use capsules_core::virtualizers::virtual_pwm::PwmPinUser;
-        use capsules_extra::buzzer_driver::Buzzer;
-        use capsules_extra::buzzer_pwm::PwmBuzzer;
-        let alarm = kernel::static_buf!(VirtualMuxAlarm<'static, $A>);
-        let pwm_buzzer = kernel::static_buf!(
+        use crate::capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm;
+        use crate::capsules_core::virtualizers::virtual_pwm::PwmPinUser;
+        use crate::capsules_extra::buzzer_driver::Buzzer;
+        use crate::capsules_extra::buzzer_pwm::PwmBuzzer;
+        let alarm = crate::kernel::static_buf!(VirtualMuxAlarm<'static, $A>);
+        let pwm_buzzer = crate::kernel::static_buf!(
             PwmBuzzer<'static, VirtualMuxAlarm<'static, $A>, PwmPinUser<'static, $P>>
         );
-        let buzzer = kernel::static_buf!(
+        let buzzer = crate::kernel::static_buf!(
             Buzzer<
                 'static,
                 PwmBuzzer<'static, VirtualMuxAlarm<'static, $A>, PwmPinUser<'static, $P>>,
@@ -50,12 +50,12 @@ macro_rules! buzzer_component_static {
     }};
 }
 
-pub type BuzzerComponentType<A, P> = capsules_extra::buzzer_driver::Buzzer<
+pub type BuzzerComponentType<A, P> = crate::capsules_extra::buzzer_driver::Buzzer<
     'static,
-    capsules_extra::buzzer_pwm::PwmBuzzer<
+    crate::capsules_extra::buzzer_pwm::PwmBuzzer<
         'static,
-        capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, A>,
-        capsules_core::virtualizers::virtual_pwm::PwmPinUser<'static, P>,
+        crate::capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, A>,
+        crate::capsules_core::virtualizers::virtual_pwm::PwmPinUser<'static, P>,
     >,
 >;
 
@@ -64,7 +64,7 @@ pub struct BuzzerComponent<
     P: 'static + hil::pwm::Pwm,
     CAP: MemoryAllocationCapability + 'static,
 > {
-    board_kernel: &'static kernel::Kernel,
+    board_kernel: &'static crate::kernel::Kernel,
     driver_num: usize,
     mux_alarm: &'static MuxAlarm<'static, A>,
     pwm_pin: &'static PwmPinUser<'static, P>,
@@ -78,7 +78,7 @@ impl<
 > BuzzerComponent<A, P, CAP>
 {
     pub fn new(
-        board_kernel: &'static kernel::Kernel,
+        board_kernel: &'static crate::kernel::Kernel,
         driver_num: usize,
         mux_alarm: &'static MuxAlarm<'static, A>,
         pwm_pin: &'static PwmPinUser<'static, P>,
@@ -124,12 +124,12 @@ impl<
         let pwm_buzzer = static_buffer.1.write(PwmBuzzer::new(
             self.pwm_pin,
             virtual_alarm_buzzer,
-            capsules_extra::buzzer_pwm::DEFAULT_MAX_BUZZ_TIME_MS,
+            crate::capsules_extra::buzzer_pwm::DEFAULT_MAX_BUZZ_TIME_MS,
         ));
 
         let buzzer = static_buffer.2.write(Buzzer::new(
             pwm_buzzer,
-            capsules_extra::buzzer_driver::DEFAULT_MAX_BUZZ_TIME_MS,
+            crate::capsules_extra::buzzer_driver::DEFAULT_MAX_BUZZ_TIME_MS,
             self.board_kernel
                 .create_grant(self.driver_num, &self.mem_cap),
         ));

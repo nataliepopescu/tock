@@ -16,7 +16,7 @@
 //! -----
 //!
 //! ```rust,ignore
-//! # use kernel::static_init;
+//! # use crate::kernel::static_init;
 //!
 //! let virtual_pwm_buzzer = static_init!(
 //!     capsules::virtual_pwm::PwmPinUser<'static, nrf52::pwm::Pwm>,
@@ -66,14 +66,14 @@
 
 use core::cmp;
 
-use kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
-use kernel::hil;
-use kernel::syscall::{CommandReturn, SyscallDriver};
-use kernel::utilities::cells::OptionalCell;
-use kernel::{ErrorCode, ProcessId};
+use crate::kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
+use crate::kernel::hil;
+use crate::kernel::syscall::{CommandReturn, SyscallDriver};
+use crate::kernel::utilities::cells::OptionalCell;
+use crate::kernel::{ErrorCode, ProcessId};
 
 /// Syscall driver number.
-use capsules_core::driver;
+use crate::capsules_core::driver;
 pub const DRIVER_NUM: usize = driver::NUM::Buzzer as usize;
 
 /// Standard max buzz time.
@@ -193,7 +193,7 @@ impl<'a, B: hil::buzzer::Buzzer<'a>> hil::buzzer::BuzzerClient for Buzzer<'a, B>
         self.active_app.take().map(|processid| {
             let _ = self.apps.enter(processid, |_app, upcalls| {
                 let _ =
-                    upcalls.schedule_upcall(0, (kernel::errorcode::into_statuscode(status), 0, 0));
+                    upcalls.schedule_upcall(0, (crate::kernel::errorcode::into_statuscode(status), 0, 0));
             });
         });
 
@@ -280,7 +280,7 @@ impl<'a, B: hil::buzzer::Buzzer<'a>> SyscallDriver for Buzzer<'a, B> {
         }
     }
 
-    fn allocate_grant(&self, processid: ProcessId) -> Result<(), kernel::process::Error> {
+    fn allocate_grant(&self, processid: ProcessId) -> Result<(), crate::kernel::process::Error> {
         self.apps.enter(processid, |_, _| {})
     }
 }

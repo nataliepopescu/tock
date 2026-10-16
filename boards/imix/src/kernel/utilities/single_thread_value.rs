@@ -80,12 +80,12 @@ enum BoundToThreadStage {
 ///
 /// ```
 /// use core::cell::Cell;
-/// use kernel::utilities::single_thread_value::SingleThreadValue;
+/// use crate::kernel::utilities::single_thread_value::SingleThreadValue;
 ///
 /// // Binding to a thread requires a "ThreadIdProvider", used to query the
 /// // thread ID of the currently running thread at runtime:
 /// enum DummyThreadIdProvider {}
-/// unsafe impl kernel::platform::chip::ThreadIdProvider for DummyThreadIdProvider {
+/// unsafe impl crate::kernel::platform::chip::ThreadIdProvider for DummyThreadIdProvider {
 ///     fn running_thread_id() -> usize {
 ///         // Return the current thread id. We return a constant for
 ///         // demonstration purposes, but doing so in practice is unsound:

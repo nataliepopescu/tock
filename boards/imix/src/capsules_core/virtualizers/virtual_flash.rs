@@ -16,26 +16,26 @@
 //! -----
 //!
 //! ```rust,ignore
-//! # use kernel::{hil, static_init};
+//! # use crate::kernel::{hil, static_init};
 //!
 //! // Create the mux.
 //! let mux_flash = static_init!(
-//!     capsules_core::virtual_flash::MuxFlash<'static, sam4l::flashcalw::FLASHCALW>,
-//!     capsules_core::virtual_flash::MuxFlash::new(&sam4l::flashcalw::FLASH_CONTROLLER));
-//! hil::flash::HasClient::set_client(&sam4l::flashcalw::FLASH_CONTROLLER, mux_flash);
+//!     crate::capsules_core::virtual_flash::MuxFlash<'static, crate::sam4l::flashcalw::FLASHCALW>,
+//!     crate::capsules_core::virtual_flash::MuxFlash::new(&crate::sam4l::flashcalw::FLASH_CONTROLLER));
+//! hil::flash::HasClient::set_client(&crate::sam4l::flashcalw::FLASH_CONTROLLER, mux_flash);
 //!
 //! // Everything that then uses the virtualized flash must use one of these.
 //! let virtual_flash = static_init!(
-//!     capsules_core::virtual_flash::FlashUser<'static, sam4l::flashcalw::FLASHCALW>,
-//!     capsules_core::virtual_flash::FlashUser::new(mux_flash));
+//!     crate::capsules_core::virtual_flash::FlashUser<'static, crate::sam4l::flashcalw::FLASHCALW>,
+//!     crate::capsules_core::virtual_flash::FlashUser::new(mux_flash));
 //! ```
 
 use core::cell::Cell;
 
-use kernel::ErrorCode;
-use kernel::collections::list::{List, ListLink, ListNode};
-use kernel::hil;
-use kernel::utilities::cells::{OptionalCell, TakeCell};
+use crate::kernel::ErrorCode;
+use crate::kernel::collections::list::{List, ListLink, ListNode};
+use crate::kernel::hil;
+use crate::kernel::utilities::cells::{OptionalCell, TakeCell};
 
 /// Handle keeping a list of active users of flash hardware and serialize their
 /// requests.

@@ -4,7 +4,7 @@
 
 //! Cortex-M synchronization implementation for Rust when using DMA.
 
-use kernel::platform::dma_fence::DmaFence;
+use crate::kernel::platform::dma_fence::DmaFence;
 
 #[derive(Debug, Copy, Clone)]
 pub struct CortexMDmaFence {

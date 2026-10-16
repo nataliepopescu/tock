@@ -67,11 +67,11 @@
 //! -----
 //!
 //! ```rust,ignore
-//! let mux_spi = components::spi::SpiMuxComponent::new(&stm32f3xx::spi::SPI1)
-//!     .finalize(components::spi_mux_component_helper!(stm32f3xx::spi::Spi));
+//! let mux_spi = crate::components::spi::SpiMuxComponent::new(&stm32f3xx::spi::SPI1)
+//!     .finalize(crate::components::spi_mux_component_helper!(stm32f3xx::spi::Spi));
 //!
-//! let l3gd20 = components::l3gd20::L3gd20SpiComponent::new()
-//!     .finalize(components::l3gd20_spi_component_helper!(stm32f3xx::spi::Spi, stm32f3xx::gpio::PinId::PE03, mux_spi));
+//! let l3gd20 = crate::components::l3gd20::L3gd20SpiComponent::new()
+//!     .finalize(crate::components::l3gd20_spi_component_helper!(stm32f3xx::spi::Spi, stm32f3xx::gpio::PinId::PE03, mux_spi));
 //!
 //! ```
 //!
@@ -99,7 +99,7 @@
 //! let temp = static_init!(
 //! capsules::temperature::TemperatureSensor<'static>,
 //!     capsules::temperature::TemperatureSensor::new(l3gd20, grant_temperature));
-//! kernel::hil::sensors::TemperatureDriver::set_client(l3gd20, temp);
+//! crate::kernel::hil::sensors::TemperatureDriver::set_client(l3gd20, temp);
 //!
 //! ```
 //!
@@ -108,15 +108,15 @@
 
 use core::cell::Cell;
 
-use kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
-use kernel::hil::sensors;
-use kernel::hil::spi;
-use kernel::syscall::{CommandReturn, SyscallDriver};
-use kernel::utilities::cells::{MapCell, OptionalCell};
-use kernel::utilities::leasable_buffer::SubSliceMut;
-use kernel::{ErrorCode, ProcessId};
+use crate::kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
+use crate::kernel::hil::sensors;
+use crate::kernel::hil::spi;
+use crate::kernel::syscall::{CommandReturn, SyscallDriver};
+use crate::kernel::utilities::cells::{MapCell, OptionalCell};
+use crate::kernel::utilities::leasable_buffer::SubSliceMut;
+use crate::kernel::{ErrorCode, ProcessId};
 
-use capsules_core::driver;
+use crate::capsules_core::driver;
 pub const DRIVER_NUM: usize = driver::NUM::L3gd20 as usize;
 
 /* Identification number */
@@ -424,7 +424,7 @@ impl<'a, S: spi::SpiMasterDevice<'a>> SyscallDriver for L3gd20Spi<'a, S> {
         }
     }
 
-    fn allocate_grant(&self, processid: ProcessId) -> Result<(), kernel::process::Error> {
+    fn allocate_grant(&self, processid: ProcessId) -> Result<(), crate::kernel::process::Error> {
         self.grants.enter(processid, |_, _| {})
     }
 }

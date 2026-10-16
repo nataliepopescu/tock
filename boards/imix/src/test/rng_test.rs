@@ -18,12 +18,12 @@
 //! different on each invocation. Rigorous entropy tests are outside
 //! the scope of this test.
 
-use capsules_core::rng;
-use capsules_core::test::rng::TestRng;
-use kernel::hil::entropy::{Entropy8, Entropy32};
-use kernel::hil::rng::Rng;
-use kernel::static_init;
-use sam4l::trng::Trng;
+use crate::capsules_core::rng;
+use crate::capsules_core::test::rng::TestRng;
+use crate::kernel::hil::entropy::{Entropy8, Entropy32};
+use crate::kernel::hil::rng::Rng;
+use crate::kernel::static_init;
+use crate::sam4l::trng::Trng;
 
 pub unsafe fn run_entropy32(trng: &'static Trng) {
     let t = static_init_test_entropy32(trng);

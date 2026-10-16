@@ -14,29 +14,29 @@
 //! example:
 //!
 //! ```rust,ignore
-//! # use kernel::static_init;
+//! # use crate::kernel::static_init;
 //!
 //! // Configure the USB controller
 //! let usb_client = static_init!(
-//!     capsules::usb::usbc_client::Client<'static, sam4l::usbc::Usbc<'static>>,
-//!     capsules::usb::usbc_client::Client::new(&sam4l::usbc::USBC));
-//! sam4l::usbc::USBC.set_client(usb_client);
+//!     capsules::usb::usbc_client::Client<'static, crate::sam4l::usbc::Usbc<'static>>,
+//!     capsules::usb::usbc_client::Client::new(&crate::sam4l::usbc::USBC));
+//! crate::sam4l::usbc::USBC.set_client(usb_client);
 //!
 //! // Configure the USB userspace driver
 //! let usb_driver = static_init!(
 //!     capsules::usb::usb_user::UsbSyscallDriver<'static,
-//!         capsules::usb::usbc_client::Client<'static, sam4l::usbc::Usbc<'static>>>,
+//!         capsules::usb::usbc_client::Client<'static, crate::sam4l::usbc::Usbc<'static>>>,
 //!     capsules::usb::usb_user::UsbSyscallDriver::new(
 //!         usb_client, board_kernel.create_grant(&grant_cap)));
 //! ```
 
-use kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
-use kernel::hil;
-use kernel::syscall::{CommandReturn, SyscallDriver};
-use kernel::utilities::cells::OptionalCell;
-use kernel::{ErrorCode, ProcessId};
+use crate::kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
+use crate::kernel::hil;
+use crate::kernel::syscall::{CommandReturn, SyscallDriver};
+use crate::kernel::utilities::cells::OptionalCell;
+use crate::kernel::{ErrorCode, ProcessId};
 
-use capsules_core::driver;
+use crate::capsules_core::driver;
 pub const DRIVER_NUM: usize = driver::NUM::UsbUser as usize;
 
 #[derive(Default)]
@@ -86,7 +86,7 @@ where
                             // Schedule a callback immediately
                             let _ = upcalls.schedule_upcall(
                                 0,
-                                (kernel::errorcode::into_statuscode(Ok(())), 0, 0),
+                                (crate::kernel::errorcode::into_statuscode(Ok(())), 0, 0),
                             );
                             app.awaiting = None;
                         }
@@ -152,7 +152,7 @@ where
         }
     }
 
-    fn allocate_grant(&self, processid: ProcessId) -> Result<(), kernel::process::Error> {
+    fn allocate_grant(&self, processid: ProcessId) -> Result<(), crate::kernel::process::Error> {
         self.apps.enter(processid, |_, _| {})
     }
 }

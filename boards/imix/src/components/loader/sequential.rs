@@ -9,21 +9,21 @@
 //! use.
 
 use core::mem::MaybeUninit;
-use kernel::capabilities::ProcessManagementCapability;
-use kernel::component::Component;
-use kernel::deferred_call::DeferredCallClient;
-use kernel::platform::chip::Chip;
-use kernel::process::ProcessLoadingAsync;
-use kernel::process::ProcessStandardDebug;
+use crate::kernel::capabilities::ProcessManagementCapability;
+use crate::kernel::component::Component;
+use crate::kernel::deferred_call::DeferredCallClient;
+use crate::kernel::platform::chip::Chip;
+use crate::kernel::process::ProcessLoadingAsync;
+use crate::kernel::process::ProcessStandardDebug;
 
 #[macro_export]
 macro_rules! process_loader_sequential_component_static {
     ($C:ty, $D:ty, $NUMPROCS:expr $(,)?) => {{
-        let loader = kernel::static_buf!(kernel::process::SequentialProcessLoaderMachine<
+        let loader = crate::kernel::static_buf!(crate::kernel::process::SequentialProcessLoaderMachine<
             $C, $D
         >);
-        let process_binary_array = kernel::static_buf!(
-            [Option<kernel::process::ProcessBinary>; $NUMPROCS]
+        let process_binary_array = crate::kernel::static_buf!(
+            [Option<crate::kernel::process::ProcessBinary>; $NUMPROCS]
         );
 
        (loader, process_binary_array)
@@ -31,7 +31,7 @@ macro_rules! process_loader_sequential_component_static {
 }
 
 pub type ProcessLoaderSequentialComponentType<C, D> =
-    kernel::process::SequentialProcessLoaderMachine<'static, C, D>;
+    crate::kernel::process::SequentialProcessLoaderMachine<'static, C, D>;
 
 pub struct ProcessLoaderSequentialComponent<
     C: Chip + 'static,
@@ -39,12 +39,12 @@ pub struct ProcessLoaderSequentialComponent<
     CAP: ProcessManagementCapability + 'static,
     const NUM_PROCS: usize,
 > {
-    checker: &'static kernel::process::ProcessCheckerMachine,
-    kernel: &'static kernel::Kernel,
+    checker: &'static crate::kernel::process::ProcessCheckerMachine,
+    kernel: &'static crate::kernel::Kernel,
     chip: &'static C,
-    fault_policy: &'static dyn kernel::process::ProcessFaultPolicy,
-    appid_policy: &'static dyn kernel::process_checker::AppIdPolicy,
-    storage_policy: &'static dyn kernel::process::ProcessStandardStoragePermissionsPolicy<C, D>,
+    fault_policy: &'static dyn crate::kernel::process::ProcessFaultPolicy,
+    appid_policy: &'static dyn crate::kernel::process_checker::AppIdPolicy,
+    storage_policy: &'static dyn crate::kernel::process::ProcessStandardStoragePermissionsPolicy<C, D>,
     app_flash: &'static [u8],
     app_memory: &'static mut [u8],
     proc_manage_cap: CAP,
@@ -58,12 +58,12 @@ impl<
 > ProcessLoaderSequentialComponent<C, D, CAP, NUM_PROCS>
 {
     pub fn new(
-        checker: &'static kernel::process::ProcessCheckerMachine,
-        kernel: &'static kernel::Kernel,
+        checker: &'static crate::kernel::process::ProcessCheckerMachine,
+        kernel: &'static crate::kernel::Kernel,
         chip: &'static C,
-        fault_policy: &'static dyn kernel::process::ProcessFaultPolicy,
-        appid_policy: &'static dyn kernel::process_checker::AppIdPolicy,
-        storage_policy: &'static dyn kernel::process::ProcessStandardStoragePermissionsPolicy<C, D>,
+        fault_policy: &'static dyn crate::kernel::process::ProcessFaultPolicy,
+        appid_policy: &'static dyn crate::kernel::process_checker::AppIdPolicy,
+        storage_policy: &'static dyn crate::kernel::process::ProcessStandardStoragePermissionsPolicy<C, D>,
         app_flash: &'static [u8],
         app_memory: &'static mut [u8],
         proc_manage_cap: CAP,
@@ -90,18 +90,18 @@ impl<
 > Component for ProcessLoaderSequentialComponent<C, D, CAP, NUM_PROCS>
 {
     type StaticInput = (
-        &'static mut MaybeUninit<kernel::process::SequentialProcessLoaderMachine<'static, C, D>>,
-        &'static mut MaybeUninit<[Option<kernel::process::ProcessBinary>; NUM_PROCS]>,
+        &'static mut MaybeUninit<crate::kernel::process::SequentialProcessLoaderMachine<'static, C, D>>,
+        &'static mut MaybeUninit<[Option<crate::kernel::process::ProcessBinary>; NUM_PROCS]>,
     );
 
-    type Output = &'static kernel::process::SequentialProcessLoaderMachine<'static, C, D>;
+    type Output = &'static crate::kernel::process::SequentialProcessLoaderMachine<'static, C, D>;
 
     fn finalize(self, s: Self::StaticInput) -> Self::Output {
-        const ARRAY_REPEAT_VALUE: Option<kernel::process::ProcessBinary> = None;
+        const ARRAY_REPEAT_VALUE: Option<crate::kernel::process::ProcessBinary> = None;
         let process_binary_array = s.1.write([ARRAY_REPEAT_VALUE; NUM_PROCS]);
 
         let loader =
-            s.0.write(kernel::process::SequentialProcessLoaderMachine::new(
+            s.0.write(crate::kernel::process::SequentialProcessLoaderMachine::new(
                 self.checker,
                 process_binary_array,
                 self.kernel,

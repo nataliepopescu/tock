@@ -9,39 +9,39 @@
 //! -----
 //! ```rust
 //!     let dfrobot_rainfall =
-//!         components::dfrobot_rainfall_sensor::DFRobotRainFallSensorComponent::new(mux_i2c, 0x1D)
-//!             .finalize(components::dfrobot_rainfall_sensor_component_static!(
+//!         crate::components::dfrobot_rainfall_sensor::DFRobotRainFallSensorComponent::new(mux_i2c, 0x1D)
+//!             .finalize(crate::components::dfrobot_rainfall_sensor_component_static!(
 //!                 apollo3::iom::Iom<'static>
 //!             ));
 //! ```
 
-use capsules_core::virtualizers::virtual_alarm::MuxAlarm;
-use capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm;
-use capsules_core::virtualizers::virtual_i2c::{I2CDevice, MuxI2C};
-use capsules_extra::dfrobot_rainfall_sensor::{BUFFER_SIZE, DFRobotRainFall};
+use crate::capsules_core::virtualizers::virtual_alarm::MuxAlarm;
+use crate::capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm;
+use crate::capsules_core::virtualizers::virtual_i2c::{I2CDevice, MuxI2C};
+use crate::capsules_extra::dfrobot_rainfall_sensor::{BUFFER_SIZE, DFRobotRainFall};
 use core::mem::MaybeUninit;
-use kernel::component::Component;
-use kernel::hil::i2c;
-use kernel::hil::time;
-use kernel::hil::time::Alarm;
+use crate::kernel::component::Component;
+use crate::kernel::hil::i2c;
+use crate::kernel::hil::time;
+use crate::kernel::hil::time::Alarm;
 
 // Setup static space for the objects.
 #[macro_export]
 macro_rules! dfrobot_rainfall_sensor_component_static {
     ($A:ty, $I:ty $(,)?) => {{
         let i2c_device =
-            kernel::static_buf!(capsules_core::virtualizers::virtual_i2c::I2CDevice<'static, $I>);
+            crate::kernel::static_buf!(crate::capsules_core::virtualizers::virtual_i2c::I2CDevice<'static, $I>);
         let i2c_buffer =
-            kernel::static_buf!([u8; capsules_extra::dfrobot_rainfall_sensor::BUFFER_SIZE]);
-        let dfrobot_rainfall_sensor = kernel::static_buf!(
-            capsules_extra::dfrobot_rainfall_sensor::DFRobotRainFall<
+            crate::kernel::static_buf!([u8; crate::capsules_extra::dfrobot_rainfall_sensor::BUFFER_SIZE]);
+        let dfrobot_rainfall_sensor = crate::kernel::static_buf!(
+            crate::capsules_extra::dfrobot_rainfall_sensor::DFRobotRainFall<
                 'static,
                 VirtualMuxAlarm<'static, $A>,
-                capsules_core::virtualizers::virtual_i2c::I2CDevice<$I>,
+                crate::capsules_core::virtualizers::virtual_i2c::I2CDevice<$I>,
             >
         );
-        let alarm = kernel::static_buf!(
-            capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, $A>
+        let alarm = crate::kernel::static_buf!(
+            crate::capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, $A>
         );
 
         (i2c_device, i2c_buffer, dfrobot_rainfall_sensor, alarm)
@@ -49,7 +49,7 @@ macro_rules! dfrobot_rainfall_sensor_component_static {
 }
 
 pub type DFRobotRainFallSensorComponentType<A, I> =
-    capsules_extra::dfrobot_rainfall_sensor::DFRobotRainFall<'static, A, I>;
+    crate::capsules_extra::dfrobot_rainfall_sensor::DFRobotRainFall<'static, A, I>;
 
 pub struct DFRobotRainFallSensorComponent<
     A: 'static + time::Alarm<'static>,

@@ -9,8 +9,8 @@
 //! Author: Philip Levis <plevis@google.com>
 //! Last Modified: 6/17/2020
 use core::cell::Cell;
-use kernel::debug;
-use kernel::hil::time::{Alarm, AlarmClient, ConvertTicks, Ticks};
+use crate::kernel::debug;
+use crate::kernel::hil::time::{Alarm, AlarmClient, ConvertTicks, Ticks};
 
 pub struct TestAlarmEdgeCases<'a, A: 'a> {
     alarm: &'a A,

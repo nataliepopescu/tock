@@ -6,31 +6,31 @@
 //! access to their own stored state.
 //!
 //! ```rust
-//! kernel::create_typed_capability!(app_store_cap, AppStoreCap: kernel::capabilities::ApplicationStorageCapability);
+//! crate::kernel::create_typed_capability!(app_store_cap, AppStoreCap: crate::kernel::capabilities::ApplicationStorageCapability);
 //! let storage_permissions_policy =
-//!     components::storage_permissions::individual::StoragePermissionsIndividualComponent::new(
+//!     crate::components::storage_permissions::individual::StoragePermissionsIndividualComponent::new(
 //!         app_store_cap,
 //!     )
 //!     .finalize(
-//!         components::storage_permissions_individual_component_static!(
+//!         crate::components::storage_permissions_individual_component_static!(
 //!             nrf52840dk_lib::Chip,
-//!             kernel::process::ProcessStandardDebugFull,
+//!             crate::kernel::process::ProcessStandardDebugFull,
 //!             AppStoreCap,
 //!         ),
 //!     );
 //! ```
 
 use core::mem::MaybeUninit;
-use kernel::capabilities::ApplicationStorageCapability;
-use kernel::component::Component;
-use kernel::platform::chip::Chip;
-use kernel::process::ProcessStandardDebug;
+use crate::kernel::capabilities::ApplicationStorageCapability;
+use crate::kernel::component::Component;
+use crate::kernel::platform::chip::Chip;
+use crate::kernel::process::ProcessStandardDebug;
 
 #[macro_export]
 macro_rules! storage_permissions_individual_component_static {
     ($C:ty, $D:ty, $CAP:ty $(,)?) => {{
-        kernel::static_buf!(
-            capsules_system::storage_permissions::individual::IndividualStoragePermissions<
+        crate::kernel::static_buf!(
+            crate::capsules_system::storage_permissions::individual::IndividualStoragePermissions<
                 $C,
                 $D,
                 $CAP,
@@ -40,7 +40,7 @@ macro_rules! storage_permissions_individual_component_static {
 }
 
 pub type StoragePermissionsIndividualComponentType<C, D, CAP> =
-    capsules_system::storage_permissions::individual::IndividualStoragePermissions<C, D, CAP>;
+    crate::capsules_system::storage_permissions::individual::IndividualStoragePermissions<C, D, CAP>;
 
 pub struct StoragePermissionsIndividualComponent<
     C: Chip,
@@ -71,10 +71,10 @@ impl<
 > Component for StoragePermissionsIndividualComponent<C, D, CAP>
 {
     type StaticInput = &'static mut MaybeUninit<
-        capsules_system::storage_permissions::individual::IndividualStoragePermissions<C, D, CAP>,
+        crate::capsules_system::storage_permissions::individual::IndividualStoragePermissions<C, D, CAP>,
     >;
     type Output =
-        &'static capsules_system::storage_permissions::individual::IndividualStoragePermissions<
+        &'static crate::capsules_system::storage_permissions::individual::IndividualStoragePermissions<
             C,
             D,
             CAP,
@@ -82,7 +82,7 @@ impl<
 
     fn finalize(self, s: Self::StaticInput) -> Self::Output {
         s.write(
-            capsules_system::storage_permissions::individual::IndividualStoragePermissions::new(
+            crate::capsules_system::storage_permissions::individual::IndividualStoragePermissions::new(
                 self.cap,
             ),
         )

@@ -10,24 +10,24 @@
 //! -----
 //!
 //! ```rust,ignore
-//! # use kernel::static_init;
+//! # use crate::kernel::static_init;
 //! # use capsules::virtual_alarm::VirtualMuxAlarm;
-//! # use kernel::hil::spi::SpiMasterDevice;
+//! # use crate::kernel::hil::spi::SpiMasterDevice;
 //!
-//! let spi_mux = components::spi::SpiMuxComponent::new(
+//! let spi_mux = crate::components::spi::SpiMuxComponent::new(
 //!         &base_peripherals.spim0,
 //!         dynamic_deferred_caller
-//!     ).finalize(components::spi_mux_component_helper!(nrf52833::spi::SPIM));
+//!     ).finalize(crate::components::spi_mux_component_helper!(nrf52833::spi::SPIM));
 //! base_peripherals.spim0.configure(
 //!     nrf52833::pinmux::Pinmux::new(SPI_MOSI_PIN as u32), // SD MOSI
 //!     nrf52833::pinmux::Pinmux::new(SPI_MISO_PIN as u32), // SD MISO
 //!     nrf52833::pinmux::Pinmux::new(SPI_SCK_PIN as u32),  // SD SCK
 //! );
 //!
-//! let sdcard_spi = components::spi::SpiComponent::new(
+//! let sdcard_spi = crate::components::spi::SpiComponent::new(
 //!         spi_mux,
 //!         &nrf52833_peripherals.gpio_port[SPI_CS_PIN]
-//!     ).finalize(components::spi_component_helper!(nrf52833::spi::SPIM));
+//!     ).finalize(crate::components::spi_component_helper!(nrf52833::spi::SPIM));
 //!
 //! let sdcard_virtual_alarm = static_init!(
 //!      capsules::virtual_alarm::VirtualMuxAlarm<'static, nrf52833::rtc::Rtc>,
@@ -77,17 +77,17 @@
 use core::cell::Cell;
 use core::cmp;
 
-use kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
-use kernel::hil;
-use kernel::hil::time::ConvertTicks;
-use kernel::processbuffer::{ReadableProcessBuffer, WriteableProcessBuffer};
-use kernel::syscall::{CommandReturn, SyscallDriver};
-use kernel::utilities::cells::{OptionalCell, TakeCell};
-use kernel::utilities::leasable_buffer::SubSliceMut;
-use kernel::{ErrorCode, ProcessId};
+use crate::kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
+use crate::kernel::hil;
+use crate::kernel::hil::time::ConvertTicks;
+use crate::kernel::processbuffer::{ReadableProcessBuffer, WriteableProcessBuffer};
+use crate::kernel::syscall::{CommandReturn, SyscallDriver};
+use crate::kernel::utilities::cells::{OptionalCell, TakeCell};
+use crate::kernel::utilities::leasable_buffer::SubSliceMut;
+use crate::kernel::{ErrorCode, ProcessId};
 
 /// Syscall driver number.
-use capsules_core::driver;
+use crate::capsules_core::driver;
 pub const DRIVER_NUM: usize = driver::NUM::SdCard as usize;
 
 /// Ids for read-only allow buffers
@@ -1674,7 +1674,7 @@ impl<'a, A: hil::time::Alarm<'a>> SyscallDriver for SDCardDriver<'a, A> {
         }
     }
 
-    fn allocate_grant(&self, processid: ProcessId) -> Result<(), kernel::process::Error> {
+    fn allocate_grant(&self, processid: ProcessId) -> Result<(), crate::kernel::process::Error> {
         self.grants.enter(processid, |_, _| {})
     }
 }

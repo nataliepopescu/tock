@@ -20,34 +20,34 @@
 //! -----
 //!
 //! ```rust,ignore
-//! let i2cmux = I2CMuxComponent::new(i2c0, None).finalize(components::i2c_mux_component_static!());
+//! let i2cmux = I2CMuxComponent::new(i2c0, None).finalize(crate::components::i2c_mux_component_static!());
 //!
 //! let at24c_buffer = static_init!([u8; 34], [0; 34]);
 //!
 //! let at24c_i2c_device = static_init!(I2CDevice, I2CDevice::new(i2cmux, 0x50));
-//! let at24c_capsule = static_init!(capsules_extra::at24c_eeprom::AT24C,capsules_extra::at24c_eeprom::AT24C::new(
+//! let at24c_capsule = static_init!(crate::capsules_extra::at24c_eeprom::AT24C,crate::capsules_extra::at24c_eeprom::AT24C::new(
 //!             at24c_i2c_device,
 //!             at24c_buffer,
 //!         ) );
 //! at24c_i2c_device.set_client(at24c_capsule);
 //!
-//! let nonvolatile_storage = components::nonvolatile_storage::NonvolatileStorageComponent::new(
+//! let nonvolatile_storage = crate::components::nonvolatile_storage::NonvolatileStorageComponent::new(
 //!         board_kernel,
-//!         capsules_extra::nonvolatile_storage_driver::DRIVER_NUM,
+//!         crate::capsules_extra::nonvolatile_storage_driver::DRIVER_NUM,
 //!         at24c_capsule,
 //!         0x0,
 //!         0x10000,
 //!         0x0,
 //!         0x0,
-//!     ).finalize(components::nonvolatile_storage_component_static!(capsules_extra::at24c_eeprom::AT24C));
+//!     ).finalize(crate::components::nonvolatile_storage_component_static!(crate::capsules_extra::at24c_eeprom::AT24C));
 //! ```
 
 use core::cell::Cell;
 use core::cmp;
 
-use kernel::hil::i2c::{Error, I2CClient, I2CDevice};
-use kernel::utilities::cells::{OptionalCell, TakeCell};
-use kernel::{ErrorCode, hil};
+use crate::kernel::hil::i2c::{Error, I2CClient, I2CDevice};
+use crate::kernel::utilities::cells::{OptionalCell, TakeCell};
+use crate::kernel::{ErrorCode, hil};
 
 const PAGE_SIZE: usize = 32;
 

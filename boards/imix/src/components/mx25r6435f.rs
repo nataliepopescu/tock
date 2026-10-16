@@ -7,58 +7,58 @@
 //! Usage
 //! -----
 //! ```rust
-//! let mx25r6435f = components::mx25r6435f::Mx25r6435fComponent::new(
+//! let mx25r6435f = crate::components::mx25r6435f::Mx25r6435fComponent::new(
 //!     &gpio_port[driver.write_protect_pin],
 //!     &gpio_port[driver.hold_pin],
-//!     &gpio_port[driver.chip_select] as &dyn kernel::hil::gpio::Pin,
+//!     &gpio_port[driver.chip_select] as &dyn crate::kernel::hil::gpio::Pin,
 //!     mux_alarm,
 //!     mux_spi,
 //! )
-//! .finalize(components::mx25r6435f_component_static!(
+//! .finalize(crate::components::mx25r6435f_component_static!(
 //!     nrf52::spi::SPIM,
 //!     nrf52::gpio::GPIOPin,
 //!     nrf52::rtc::Rtc
 //! ));
 //! ```
 
-use capsules_core::virtualizers::virtual_alarm::{MuxAlarm, VirtualMuxAlarm};
-use capsules_core::virtualizers::virtual_spi::{MuxSpiMaster, VirtualSpiMasterDevice};
-use capsules_extra::mx25r6435f::MX25R6435F;
+use crate::capsules_core::virtualizers::virtual_alarm::{MuxAlarm, VirtualMuxAlarm};
+use crate::capsules_core::virtualizers::virtual_spi::{MuxSpiMaster, VirtualSpiMasterDevice};
+use crate::capsules_extra::mx25r6435f::MX25R6435F;
 use core::mem::MaybeUninit;
-use kernel::component::Component;
-use kernel::hil;
-use kernel::hil::spi::SpiMasterDevice;
-use kernel::hil::time::Alarm;
+use crate::kernel::component::Component;
+use crate::kernel::hil;
+use crate::kernel::hil::spi::SpiMasterDevice;
+use crate::kernel::hil::time::Alarm;
 
 // Setup static space for the objects.
 #[macro_export]
 macro_rules! mx25r6435f_component_static {
     ($S:ty, $P:ty, $A:ty $(,)?) => {{
-        let spi_device = kernel::static_buf!(
-            capsules_core::virtualizers::virtual_spi::VirtualSpiMasterDevice<'static, $S>
+        let spi_device = crate::kernel::static_buf!(
+            crate::capsules_core::virtualizers::virtual_spi::VirtualSpiMasterDevice<'static, $S>
         );
-        let alarm = kernel::static_buf!(
-            capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, $A>
+        let alarm = crate::kernel::static_buf!(
+            crate::capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, $A>
         );
-        let mx25r6435f = kernel::static_buf!(
-            capsules_extra::mx25r6435f::MX25R6435F<
+        let mx25r6435f = crate::kernel::static_buf!(
+            crate::capsules_extra::mx25r6435f::MX25R6435F<
                 'static,
-                capsules_core::virtualizers::virtual_spi::VirtualSpiMasterDevice<'static, $S>,
+                crate::capsules_core::virtualizers::virtual_spi::VirtualSpiMasterDevice<'static, $S>,
                 $P,
-                capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, $A>,
+                crate::capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, $A>,
             >
         );
 
-        let tx_buf = kernel::static_buf!([u8; capsules_extra::mx25r6435f::TX_BUF_LEN]);
-        let rx_buf = kernel::static_buf!([u8; capsules_extra::mx25r6435f::RX_BUF_LEN]);
+        let tx_buf = crate::kernel::static_buf!([u8; crate::capsules_extra::mx25r6435f::TX_BUF_LEN]);
+        let rx_buf = crate::kernel::static_buf!([u8; crate::capsules_extra::mx25r6435f::RX_BUF_LEN]);
 
         (spi_device, alarm, mx25r6435f, tx_buf, rx_buf)
     }};
 }
 
-pub type Mx25r6435fComponentType<S, P, A> = capsules_extra::mx25r6435f::MX25R6435F<
+pub type Mx25r6435fComponentType<S, P, A> = crate::capsules_extra::mx25r6435f::MX25R6435F<
     'static,
-    capsules_core::virtualizers::virtual_spi::VirtualSpiMasterDevice<'static, S>,
+    crate::capsules_core::virtualizers::virtual_spi::VirtualSpiMasterDevice<'static, S>,
     P,
     VirtualMuxAlarm<'static, A>,
 >;
@@ -81,7 +81,7 @@ impl<
     A: 'static + hil::time::Alarm<'static>,
 > Mx25r6435fComponent<S, P, A>
 {
-    pub fn new<CS: kernel::hil::spi::cs::IntoChipSelect<S::ChipSelect, hil::spi::cs::ActiveLow>>(
+    pub fn new<CS: crate::kernel::hil::spi::cs::IntoChipSelect<S::ChipSelect, hil::spi::cs::ActiveLow>>(
         write_protect_pin: Option<&'static P>,
         hold_pin: Option<&'static P>,
         chip_select: CS,
@@ -110,8 +110,8 @@ impl<
         &'static mut MaybeUninit<
             MX25R6435F<'static, VirtualSpiMasterDevice<'static, S>, P, VirtualMuxAlarm<'static, A>>,
         >,
-        &'static mut MaybeUninit<[u8; capsules_extra::mx25r6435f::TX_BUF_LEN]>,
-        &'static mut MaybeUninit<[u8; capsules_extra::mx25r6435f::RX_BUF_LEN]>,
+        &'static mut MaybeUninit<[u8; crate::capsules_extra::mx25r6435f::TX_BUF_LEN]>,
+        &'static mut MaybeUninit<[u8; crate::capsules_extra::mx25r6435f::RX_BUF_LEN]>,
     );
     type Output = &'static MX25R6435F<
         'static,
@@ -130,14 +130,14 @@ impl<
 
         let tx_buf = static_buffer
             .3
-            .write([0; capsules_extra::mx25r6435f::TX_BUF_LEN]);
+            .write([0; crate::capsules_extra::mx25r6435f::TX_BUF_LEN]);
         let rx_buf = static_buffer
             .4
-            .write([0; capsules_extra::mx25r6435f::RX_BUF_LEN]);
+            .write([0; crate::capsules_extra::mx25r6435f::RX_BUF_LEN]);
 
         let mx25r6435f = static_buffer
             .2
-            .write(capsules_extra::mx25r6435f::MX25R6435F::new(
+            .write(crate::capsules_extra::mx25r6435f::MX25R6435F::new(
                 mx25r6435f_spi,
                 mx25r6435f_virtual_alarm,
                 tx_buf,

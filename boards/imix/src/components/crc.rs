@@ -10,33 +10,33 @@
 //! Usage
 //! -----
 //! ```rust
-//! let crc = components::crc::CrcComponent::new(board_kernel, &sam4l::crccu::CrcCU)
-//!     .finalize(components::crc_component_static!(sam4l::crccu::Crccu));
+//! let crc = crate::components::crc::CrcComponent::new(board_kernel, &crate::sam4l::crccu::CrcCU)
+//!     .finalize(crate::components::crc_component_static!(crate::sam4l::crccu::Crccu));
 //! ```
 
 // Author: Philip Levis <pal@cs.stanford.edu>
 // Author: Leon Schuermann  <leon@is.currently.online>
 // Last modified: 6/2/2021
 
-use capsules_extra::crc::CrcDriver;
+use crate::capsules_extra::crc::CrcDriver;
 use core::mem::MaybeUninit;
-use kernel::capabilities::MemoryAllocationCapability;
-use kernel::component::Component;
-use kernel::hil::crc::Crc;
+use crate::kernel::capabilities::MemoryAllocationCapability;
+use crate::kernel::component::Component;
+use crate::kernel::hil::crc::Crc;
 
 // Setup static space for the objects.
 #[macro_export]
 macro_rules! crc_component_static {
     ($C:ty $(,)?) => {{
-        let buffer = kernel::static_buf!([u8; capsules_extra::crc::DEFAULT_CRC_BUF_LENGTH]);
-        let crc = kernel::static_buf!(capsules_extra::crc::CrcDriver<'static, $C>);
+        let buffer = crate::kernel::static_buf!([u8; crate::capsules_extra::crc::DEFAULT_CRC_BUF_LENGTH]);
+        let crc = crate::kernel::static_buf!(crate::capsules_extra::crc::CrcDriver<'static, $C>);
 
         (crc, buffer)
     }};
 }
 
 pub struct CrcComponent<C: 'static + Crc<'static>, CAP: MemoryAllocationCapability + 'static> {
-    board_kernel: &'static kernel::Kernel,
+    board_kernel: &'static crate::kernel::Kernel,
     driver_num: usize,
     crc: &'static C,
     mem_cap: CAP,
@@ -44,7 +44,7 @@ pub struct CrcComponent<C: 'static + Crc<'static>, CAP: MemoryAllocationCapabili
 
 impl<C: 'static + Crc<'static>, CAP: MemoryAllocationCapability + 'static> CrcComponent<C, CAP> {
     pub fn new(
-        board_kernel: &'static kernel::Kernel,
+        board_kernel: &'static crate::kernel::Kernel,
         driver_num: usize,
         crc: &'static C,
         mem_cap: CAP,
@@ -63,14 +63,14 @@ impl<C: 'static + Crc<'static>, CAP: MemoryAllocationCapability + 'static> Compo
 {
     type StaticInput = (
         &'static mut MaybeUninit<CrcDriver<'static, C>>,
-        &'static mut MaybeUninit<[u8; capsules_extra::crc::DEFAULT_CRC_BUF_LENGTH]>,
+        &'static mut MaybeUninit<[u8; crate::capsules_extra::crc::DEFAULT_CRC_BUF_LENGTH]>,
     );
     type Output = &'static CrcDriver<'static, C>;
 
     fn finalize(self, static_buffer: Self::StaticInput) -> Self::Output {
         let crc_buf = static_buffer
             .1
-            .write([0; capsules_extra::crc::DEFAULT_CRC_BUF_LENGTH]);
+            .write([0; crate::capsules_extra::crc::DEFAULT_CRC_BUF_LENGTH]);
 
         let crc = static_buffer.0.write(CrcDriver::new(
             self.crc,

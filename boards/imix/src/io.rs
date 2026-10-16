@@ -4,10 +4,10 @@
 
 use core::fmt::Write;
 use core::panic::PanicInfo;
-use kernel::debug;
-use kernel::hil::led;
-use kernel::hil::uart::{self, Configure};
-use kernel::utilities::io_write::IoWrite;
+use crate::kernel::debug;
+use crate::kernel::hil::led;
+use crate::kernel::hil::uart::{self, Configure};
+use crate::kernel::utilities::io_write::IoWrite;
 
 struct Writer {
     initialized: bool,
@@ -27,8 +27,8 @@ impl IoWrite for Writer {
         // Here, we create a second instance of the USART3 struct.
         // This is okay because we only call this during a panic, and
         // we will never actually process the interrupts
-        let uart = unsafe { sam4l::usart::USART::new_usart3(crate::CHIP.unwrap().pm) };
-        let regs_manager = &sam4l::usart::USARTRegManager::panic_new(&uart);
+        let uart = unsafe { crate::sam4l::usart::USART::new_usart3(crate::CHIP.unwrap().pm) };
+        let regs_manager = &crate::sam4l::usart::USARTRegManager::panic_new(&uart);
         if !self.initialized {
             self.initialized = true;
             let _ = uart.configure(uart::Parameters {
@@ -57,14 +57,14 @@ impl IoWrite for Writer {
 pub unsafe fn panic_fmt(pi: &PanicInfo) -> ! {
     use core::ptr::addr_of_mut;
 
-    let led_pin = sam4l::gpio::GPIOPin::new(sam4l::gpio::Pin::PC22);
+    let led_pin = crate::sam4l::gpio::GPIOPin::new(crate::sam4l::gpio::Pin::PC22);
     let led = &mut led::LedLow::new(&led_pin);
     let writer = &mut *addr_of_mut!(WRITER);
     debug::panic_old(
         &mut [led],
         writer,
         pi,
-        &cortexm4::support::nop,
+        &crate::cortexm4::support::nop,
         crate::PANIC_RESOURCES.get(),
     )
 }

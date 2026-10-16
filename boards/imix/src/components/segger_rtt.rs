@@ -12,34 +12,34 @@
 //! Usage
 //! -----
 //! ```rust
-//! let rtt_memory = components::segger_rtt::SeggerRttMemoryComponent::new()
-//!     .finalize(components::segger_rtt_memory_component_static!());
-//! let rtt = components::segger_rtt::SeggerRttComponent::new(mux_alarm, rtt_memory)
-//!     .finalize(components::segger_rtt_component_static!(nrf52832::rtc::Rtc));
+//! let rtt_memory = crate::components::segger_rtt::SeggerRttMemoryComponent::new()
+//!     .finalize(crate::components::segger_rtt_memory_component_static!());
+//! let rtt = crate::components::segger_rtt::SeggerRttComponent::new(mux_alarm, rtt_memory)
+//!     .finalize(crate::components::segger_rtt_component_static!(nrf52832::rtc::Rtc));
 //! ```
 
 // Author: Guillaume Endignoux <guillaumee@google.com>
 // Last modified: 07/02/2020
 
-use capsules_core::virtualizers::virtual_alarm::{MuxAlarm, VirtualMuxAlarm};
+use crate::capsules_core::virtualizers::virtual_alarm::{MuxAlarm, VirtualMuxAlarm};
 use core::mem::MaybeUninit;
-use kernel::component::Component;
-use kernel::hil::time::{self, Alarm};
-use kernel::utilities::registers::InMemoryRegister;
-use segger::rtt::{SeggerRtt, SeggerRttMemory};
+use crate::kernel::component::Component;
+use crate::kernel::hil::time::{self, Alarm};
+use crate::kernel::utilities::registers::InMemoryRegister;
+use crate::segger::rtt::{SeggerRtt, SeggerRttMemory};
 
 // Setup static space for the objects.
 #[macro_export]
 macro_rules! segger_rtt_memory_component_static {
     () => {{
-        let rtt_memory = kernel::static_named_buf!(segger::rtt::SeggerRttMemory, "_SEGGER_RTT");
-        let up_buffer = kernel::static_buf!(
-            [kernel::utilities::registers::InMemoryRegister<u8>;
-                segger::rtt::DEFAULT_UP_BUFFER_LENGTH]
+        let rtt_memory = crate::kernel::static_named_buf!(crate::segger::rtt::SeggerRttMemory, "_SEGGER_RTT");
+        let up_buffer = crate::kernel::static_buf!(
+            [crate::kernel::utilities::registers::InMemoryRegister<u8>;
+                crate::segger::rtt::DEFAULT_UP_BUFFER_LENGTH]
         );
-        let down_buffer = kernel::static_buf!(
-            [kernel::utilities::registers::InMemoryRegister<u8>;
-                segger::rtt::DEFAULT_DOWN_BUFFER_LENGTH]
+        let down_buffer = crate::kernel::static_buf!(
+            [crate::kernel::utilities::registers::InMemoryRegister<u8>;
+                crate::segger::rtt::DEFAULT_DOWN_BUFFER_LENGTH]
         );
 
         (rtt_memory, up_buffer, down_buffer)
@@ -49,13 +49,13 @@ macro_rules! segger_rtt_memory_component_static {
 #[macro_export]
 macro_rules! segger_rtt_component_static {
     ($A:ty $(,)?) => {{
-        let alarm = kernel::static_buf!(
-            capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, $A>
+        let alarm = crate::kernel::static_buf!(
+            crate::capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, $A>
         );
-        let rtt = kernel::static_buf!(
-            segger::rtt::SeggerRtt<
+        let rtt = crate::kernel::static_buf!(
+            crate::segger::rtt::SeggerRtt<
                 'static,
-                capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, $A>,
+                crate::capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, $A>,
             >
         );
 
@@ -78,8 +78,8 @@ impl SeggerRttMemoryComponent {
 impl Component for SeggerRttMemoryComponent {
     type StaticInput = (
         &'static mut MaybeUninit<SeggerRttMemory<'static>>,
-        &'static mut MaybeUninit<[InMemoryRegister<u8>; segger::rtt::DEFAULT_UP_BUFFER_LENGTH]>,
-        &'static mut MaybeUninit<[InMemoryRegister<u8>; segger::rtt::DEFAULT_DOWN_BUFFER_LENGTH]>,
+        &'static mut MaybeUninit<[InMemoryRegister<u8>; crate::segger::rtt::DEFAULT_UP_BUFFER_LENGTH]>,
+        &'static mut MaybeUninit<[InMemoryRegister<u8>; crate::segger::rtt::DEFAULT_DOWN_BUFFER_LENGTH]>,
     );
     type Output = SeggerRttMemoryRefs<'static>;
 
@@ -88,10 +88,10 @@ impl Component for SeggerRttMemoryComponent {
         let up_buffer_name = name;
         let down_buffer_name = name;
         let up_buffer =
-            s.1.write([const { InMemoryRegister::new(0) }; segger::rtt::DEFAULT_UP_BUFFER_LENGTH]);
+            s.1.write([const { InMemoryRegister::new(0) }; crate::segger::rtt::DEFAULT_UP_BUFFER_LENGTH]);
         let down_buffer = s
             .2
-            .write([const { InMemoryRegister::new(0) }; segger::rtt::DEFAULT_DOWN_BUFFER_LENGTH]);
+            .write([const { InMemoryRegister::new(0) }; crate::segger::rtt::DEFAULT_DOWN_BUFFER_LENGTH]);
 
         let rtt_memory = s.0.write(SeggerRttMemory::new_raw(
             up_buffer_name,

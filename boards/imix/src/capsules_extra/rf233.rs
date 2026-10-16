@@ -19,13 +19,13 @@ use crate::capsules_extra::rf233_const::{
     ExternalState, InteruptFlags, RF233BusCommand, RF233Register, RF233TrxCmd,
 };
 use core::cell::Cell;
-use kernel::ErrorCode;
-use kernel::hil::gpio;
-use kernel::hil::radio;
-use kernel::hil::spi;
-use kernel::utilities::cells::MapCell;
-use kernel::utilities::cells::OptionalCell;
-use kernel::utilities::leasable_buffer::SubSliceMut;
+use crate::kernel::ErrorCode;
+use crate::kernel::hil::gpio;
+use crate::kernel::hil::radio;
+use crate::kernel::hil::spi;
+use crate::kernel::utilities::cells::MapCell;
+use crate::kernel::utilities::cells::OptionalCell;
+use crate::kernel::utilities::leasable_buffer::SubSliceMut;
 
 use crate::capsules_extra::rf233_const::CSMA_SEED_1;
 use crate::capsules_extra::rf233_const::IRQ_MASK;

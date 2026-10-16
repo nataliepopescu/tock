@@ -10,17 +10,17 @@
 //! and translating the output into big endian format.
 
 use core::cell::Cell;
-use kernel::deferred_call::{DeferredCall, DeferredCallClient};
+use crate::kernel::deferred_call::{DeferredCall, DeferredCallClient};
 
-use kernel::ErrorCode;
-use kernel::hil::digest::Sha256;
-use kernel::hil::digest::{Client, ClientData, ClientHash, ClientVerify};
-use kernel::hil::digest::{ClientDataHash, ClientDataVerify, DigestDataHash, DigestDataVerify};
-use kernel::hil::digest::{Digest, DigestData, DigestHash, DigestVerify};
-use kernel::utilities::cells::{MapCell, OptionalCell};
-use kernel::utilities::leasable_buffer::SubSlice;
-use kernel::utilities::leasable_buffer::SubSliceMut;
-use kernel::utilities::leasable_buffer::SubSliceMutImmut;
+use crate::kernel::ErrorCode;
+use crate::kernel::hil::digest::Sha256;
+use crate::kernel::hil::digest::{Client, ClientData, ClientHash, ClientVerify};
+use crate::kernel::hil::digest::{ClientDataHash, ClientDataVerify, DigestDataHash, DigestDataVerify};
+use crate::kernel::hil::digest::{Digest, DigestData, DigestHash, DigestVerify};
+use crate::kernel::utilities::cells::{MapCell, OptionalCell};
+use crate::kernel::utilities::leasable_buffer::SubSlice;
+use crate::kernel::utilities::leasable_buffer::SubSliceMut;
+use crate::kernel::utilities::leasable_buffer::SubSliceMutImmut;
 
 #[derive(Clone, Copy, PartialEq)]
 pub enum State {

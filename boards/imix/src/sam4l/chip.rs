@@ -7,12 +7,12 @@
 use crate::sam4l::pm;
 
 use core::fmt::Write;
-use cortexm4::{CortexM4, CortexMVariant};
-use kernel::platform::chip::{Chip, InterruptService};
+use crate::cortexm4::{CortexM4, CortexMVariant};
+use crate::kernel::platform::chip::{Chip, InterruptService};
 
 pub struct Sam4l<I: InterruptService + 'static> {
-    mpu: cortexm4::mpu::MPU,
-    userspace_kernel_boundary: cortexm4::syscall::SysCall,
+    mpu: crate::cortexm4::mpu::MPU,
+    userspace_kernel_boundary: crate::cortexm4::syscall::SysCall,
     pub pm: &'static crate::sam4l::pm::PowerManager,
     interrupt_service: &'static I,
 }
@@ -20,8 +20,8 @@ pub struct Sam4l<I: InterruptService + 'static> {
 impl<I: InterruptService + 'static> Sam4l<I> {
     pub unsafe fn new(pm: &'static crate::sam4l::pm::PowerManager, interrupt_service: &'static I) -> Self {
         Self {
-            mpu: cortexm4::mpu::new(),
-            userspace_kernel_boundary: cortexm4::syscall::SysCall::new(),
+            mpu: crate::cortexm4::mpu::new(),
+            userspace_kernel_boundary: crate::cortexm4::syscall::SysCall::new(),
             pm,
             interrupt_service,
         }
@@ -152,12 +152,12 @@ impl Sam4lDefaultPeripherals {
         self.dma_channels[13].initialize(&self.adc, dma::DMAWidth::Width16Bit);
 
         // REGISTER ALL PERIPHERALS WITH DEFERRED CALLS
-        kernel::deferred_call::DeferredCallClient::register(&self.crccu);
-        kernel::deferred_call::DeferredCallClient::register(&self.flash_controller);
-        kernel::deferred_call::DeferredCallClient::register(&self.usart0);
-        kernel::deferred_call::DeferredCallClient::register(&self.usart1);
-        kernel::deferred_call::DeferredCallClient::register(&self.usart2);
-        kernel::deferred_call::DeferredCallClient::register(&self.usart3);
+        crate::kernel::deferred_call::DeferredCallClient::register(&self.crccu);
+        crate::kernel::deferred_call::DeferredCallClient::register(&self.flash_controller);
+        crate::kernel::deferred_call::DeferredCallClient::register(&self.usart0);
+        crate::kernel::deferred_call::DeferredCallClient::register(&self.usart1);
+        crate::kernel::deferred_call::DeferredCallClient::register(&self.usart2);
+        crate::kernel::deferred_call::DeferredCallClient::register(&self.usart3);
     }
 }
 impl InterruptService for Sam4lDefaultPeripherals {
@@ -236,53 +236,53 @@ impl InterruptService for Sam4lDefaultPeripherals {
 }
 
 impl<I: InterruptService + 'static> Chip for Sam4l<I> {
-    type MPU = cortexm4::mpu::MPU;
-    type UserspaceKernelBoundary = cortexm4::syscall::SysCall;
-    type ThreadIdProvider = cortexm4::thread_id::CortexMThreadIdProvider;
+    type MPU = crate::cortexm4::mpu::MPU;
+    type UserspaceKernelBoundary = crate::cortexm4::syscall::SysCall;
+    type ThreadIdProvider = crate::cortexm4::thread_id::CortexMThreadIdProvider;
 
     fn init() {
-        cortexm4::nvic::disable_all();
-        cortexm4::nvic::clear_all_pending();
-        cortexm4::nvic::enable_all();
+        crate::cortexm4::nvic::disable_all();
+        crate::cortexm4::nvic::clear_all_pending();
+        crate::cortexm4::nvic::enable_all();
     }
 
     fn service_pending_interrupts(&self) {
-        while let Some(interrupt) = cortexm4::nvic::next_pending() {
+        while let Some(interrupt) = crate::cortexm4::nvic::next_pending() {
             match self.interrupt_service.service_interrupt(interrupt) {
                 true => {}
                 false => panic!("unhandled interrupt"),
             }
-            let n = cortexm4::nvic::Nvic::new(interrupt);
+            let n = crate::cortexm4::nvic::Nvic::new(interrupt);
             n.clear_pending();
             n.enable();
         }
     }
 
     fn has_pending_interrupts(&self) -> bool {
-        cortexm4::nvic::has_pending()
+        crate::cortexm4::nvic::has_pending()
     }
 
-    fn mpu(&self) -> &cortexm4::mpu::MPU {
+    fn mpu(&self) -> &crate::cortexm4::mpu::MPU {
         &self.mpu
     }
 
-    fn userspace_kernel_boundary(&self) -> &cortexm4::syscall::SysCall {
+    fn userspace_kernel_boundary(&self) -> &crate::cortexm4::syscall::SysCall {
         &self.userspace_kernel_boundary
     }
 
     fn sleep(&self) {
         if pm::deep_sleep_ready() {
             unsafe {
-                cortexm4::scb::set_sleepdeep();
+                crate::cortexm4::scb::set_sleepdeep();
             }
         } else {
             unsafe {
-                cortexm4::scb::unset_sleepdeep();
+                crate::cortexm4::scb::unset_sleepdeep();
             }
         }
 
         unsafe {
-            cortexm4::support::wfi();
+            crate::cortexm4::support::wfi();
         }
     }
 
@@ -290,7 +290,7 @@ impl<I: InterruptService + 'static> Chip for Sam4l<I> {
     where
         F: FnOnce() -> R,
     {
-        cortexm4::support::with_interrupts_disabled(f)
+        crate::cortexm4::support::with_interrupts_disabled(f)
     }
 
     unsafe fn print_state(_this: Option<&Self>, writer: &mut dyn Write) {

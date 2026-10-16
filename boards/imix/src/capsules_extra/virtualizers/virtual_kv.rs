@@ -32,14 +32,14 @@
 //!    hil::flash
 //! ```
 
-use kernel::collections::list::{List, ListLink, ListNode};
+use crate::kernel::collections::list::{List, ListLink, ListNode};
 
-use kernel::ErrorCode;
-use kernel::hil::kv;
-use kernel::hil::kv::KVPermissions;
-use kernel::storage_permissions::StoragePermissions;
-use kernel::utilities::cells::{MapCell, OptionalCell};
-use kernel::utilities::leasable_buffer::SubSliceMut;
+use crate::kernel::ErrorCode;
+use crate::kernel::hil::kv;
+use crate::kernel::hil::kv::KVPermissions;
+use crate::kernel::storage_permissions::StoragePermissions;
+use crate::kernel::utilities::cells::{MapCell, OptionalCell};
+use crate::kernel::utilities::leasable_buffer::SubSliceMut;
 
 #[derive(Clone, Copy, PartialEq, Debug)]
 enum Operation {

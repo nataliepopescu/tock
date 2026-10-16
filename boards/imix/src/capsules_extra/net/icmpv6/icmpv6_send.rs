@@ -18,9 +18,9 @@ use crate::capsules_extra::net::ipv6::ip_utils::IPAddr;
 use crate::capsules_extra::net::ipv6::ipv6_send::{IP6SendClient, IP6Sender};
 use crate::capsules_extra::net::network_capabilities::NetworkCapability;
 
-use kernel::ErrorCode;
-use kernel::utilities::cells::OptionalCell;
-use kernel::utilities::leasable_buffer::SubSliceMut;
+use crate::kernel::ErrorCode;
+use crate::kernel::utilities::cells::OptionalCell;
+use crate::kernel::utilities::leasable_buffer::SubSliceMut;
 
 /// A trait for a client of an `ICMP6Sender`.
 pub trait ICMP6SendClient {

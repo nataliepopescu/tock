@@ -8,39 +8,39 @@
 
 #![allow(dead_code)] // Components are intended to be conditionally included
 
-use capsules_core::virtualizers::virtual_alarm::{MuxAlarm, VirtualMuxAlarm};
-use capsules_extra::net::ipv6::ipv6_send::IP6SendStruct;
-use capsules_extra::net::network_capabilities::{NetworkCapability, UdpVisibilityCapability};
-use capsules_extra::net::udp::udp_port_table::UdpPortManager;
-use capsules_extra::net::udp::udp_recv::{MuxUdpReceiver, UDPReceiver};
-use capsules_extra::net::udp::udp_send::{MuxUdpSender, UDPSendStruct, UDPSender};
+use crate::capsules_core::virtualizers::virtual_alarm::{MuxAlarm, VirtualMuxAlarm};
+use crate::capsules_extra::net::ipv6::ipv6_send::IP6SendStruct;
+use crate::capsules_extra::net::network_capabilities::{NetworkCapability, UdpVisibilityCapability};
+use crate::capsules_extra::net::udp::udp_port_table::UdpPortManager;
+use crate::capsules_extra::net::udp::udp_recv::{MuxUdpReceiver, UDPReceiver};
+use crate::capsules_extra::net::udp::udp_send::{MuxUdpSender, UDPSendStruct, UDPSender};
 use core::mem::MaybeUninit;
-use kernel::component::Component;
-use kernel::hil::time::Alarm;
-use kernel::utilities::cells::TakeCell;
+use crate::kernel::component::Component;
+use crate::kernel::hil::time::Alarm;
+use crate::kernel::utilities::cells::TakeCell;
 
 #[macro_export]
 /// Macro for constructing a mock UDP capsule for tests.
 macro_rules! mock_udp_component_static {
     () => {{
-        use capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm;
-        use capsules_extra::net::udp::udp_recv::UDPReceiver;
-        use capsules_extra::net::udp::udp_send::UDPSendStruct;
-        let udp_send = kernel::static_buf!(
+        use crate::capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm;
+        use crate::capsules_extra::net::udp::udp_recv::UDPReceiver;
+        use crate::capsules_extra::net::udp::udp_send::UDPSendStruct;
+        let udp_send = crate::kernel::static_buf!(
             UDPSendStruct<
                 'static,
-                capsules_extra::net::ipv6::ipv6_send::IP6SendStruct<
+                crate::capsules_extra::net::ipv6::ipv6_send::IP6SendStruct<
                     'static,
-                    VirtualMuxAlarm<'static, sam4l::ast::Ast<'static>>,
+                    VirtualMuxAlarm<'static, crate::sam4l::ast::Ast<'static>>,
                 >,
             >
         );
 
-        let udp_recv = kernel::static_buf!(UDPReceiver<'static>);
-        let udp_alarm = kernel::static_buf!(VirtualMuxAlarm<'static, sam4l::ast::Ast>,);
+        let udp_recv = crate::kernel::static_buf!(UDPReceiver<'static>);
+        let udp_alarm = crate::kernel::static_buf!(VirtualMuxAlarm<'static, crate::sam4l::ast::Ast>,);
 
-        let mock_udp = kernel::static_buf!(
-            capsules_extra::test::udp::MockUdp<'static, VirtualMuxAlarm<'static, sam4l::ast::Ast>>,
+        let mock_udp = crate::kernel::static_buf!(
+            crate::capsules_extra::test::udp::MockUdp<'static, VirtualMuxAlarm<'static, crate::sam4l::ast::Ast>>,
         );
         (udp_send, udp_recv, udp_alarm, mock_udp)
     }};
@@ -49,11 +49,11 @@ macro_rules! mock_udp_component_static {
 pub struct MockUDPComponent {
     udp_send_mux: &'static MuxUdpSender<
         'static,
-        IP6SendStruct<'static, VirtualMuxAlarm<'static, sam4l::ast::Ast<'static>>>,
+        IP6SendStruct<'static, VirtualMuxAlarm<'static, crate::sam4l::ast::Ast<'static>>>,
     >,
     udp_recv_mux: &'static MuxUdpReceiver<'static>,
     bound_port_table: &'static UdpPortManager,
-    alarm_mux: &'static MuxAlarm<'static, sam4l::ast::Ast<'static>>,
+    alarm_mux: &'static MuxAlarm<'static, crate::sam4l::ast::Ast<'static>>,
     udp_payload: TakeCell<'static, [u8]>,
     id: u16,
     dst_port: u16,
@@ -65,11 +65,11 @@ impl MockUDPComponent {
     pub fn new(
         udp_send_mux: &'static MuxUdpSender<
             'static,
-            IP6SendStruct<'static, VirtualMuxAlarm<'static, sam4l::ast::Ast<'static>>>,
+            IP6SendStruct<'static, VirtualMuxAlarm<'static, crate::sam4l::ast::Ast<'static>>>,
         >,
         udp_recv_mux: &'static MuxUdpReceiver<'static>,
         bound_port_table: &'static UdpPortManager,
-        alarm: &'static MuxAlarm<'static, sam4l::ast::Ast<'static>>,
+        alarm: &'static MuxAlarm<'static, crate::sam4l::ast::Ast<'static>>,
         udp_payload: &'static mut [u8],
         id: u16,
         dst_port: u16,
@@ -95,24 +95,24 @@ impl Component for MockUDPComponent {
         &'static mut MaybeUninit<
             UDPSendStruct<
                 'static,
-                capsules_extra::net::ipv6::ipv6_send::IP6SendStruct<
+                crate::capsules_extra::net::ipv6::ipv6_send::IP6SendStruct<
                     'static,
-                    VirtualMuxAlarm<'static, sam4l::ast::Ast<'static>>,
+                    VirtualMuxAlarm<'static, crate::sam4l::ast::Ast<'static>>,
                 >,
             >,
         >,
         &'static mut MaybeUninit<UDPReceiver<'static>>,
-        &'static mut MaybeUninit<VirtualMuxAlarm<'static, sam4l::ast::Ast<'static>>>,
+        &'static mut MaybeUninit<VirtualMuxAlarm<'static, crate::sam4l::ast::Ast<'static>>>,
         &'static mut MaybeUninit<
-            capsules_extra::test::udp::MockUdp<
+            crate::capsules_extra::test::udp::MockUdp<
                 'static,
-                VirtualMuxAlarm<'static, sam4l::ast::Ast<'static>>,
+                VirtualMuxAlarm<'static, crate::sam4l::ast::Ast<'static>>,
             >,
         >,
     );
-    type Output = &'static capsules_extra::test::udp::MockUdp<
+    type Output = &'static crate::capsules_extra::test::udp::MockUdp<
         'static,
-        VirtualMuxAlarm<'static, sam4l::ast::Ast<'static>>,
+        VirtualMuxAlarm<'static, crate::sam4l::ast::Ast<'static>>,
     >;
 
     fn finalize(self, s: Self::StaticInput) -> Self::Output {
@@ -125,13 +125,13 @@ impl Component for MockUDPComponent {
         let udp_alarm = s.2.write(VirtualMuxAlarm::new(self.alarm_mux));
         udp_alarm.setup();
 
-        let mock_udp = s.3.write(capsules_extra::test::udp::MockUdp::new(
+        let mock_udp = s.3.write(crate::capsules_extra::test::udp::MockUdp::new(
             self.id,
             udp_alarm,
             udp_send,
             udp_recv,
             self.bound_port_table,
-            kernel::utilities::leasable_buffer::SubSliceMut::new(
+            crate::kernel::utilities::leasable_buffer::SubSliceMut::new(
                 self.udp_payload.take().expect("missing payload"),
             ),
             self.dst_port,

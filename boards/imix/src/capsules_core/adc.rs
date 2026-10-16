@@ -26,41 +26,41 @@
 //! -----
 //!
 //! ```rust,ignore
-//! # use kernel::static_init;
+//! # use crate::kernel::static_init;
 //!
 //! let adc_channels = static_init!(
-//!     [&'static sam4l::adc::AdcChannel; 6],
+//!     [&'static crate::sam4l::adc::AdcChannel; 6],
 //!     [
-//!         &sam4l::adc::CHANNEL_AD0, // A0
-//!         &sam4l::adc::CHANNEL_AD1, // A1
-//!         &sam4l::adc::CHANNEL_AD3, // A2
-//!         &sam4l::adc::CHANNEL_AD4, // A3
-//!         &sam4l::adc::CHANNEL_AD5, // A4
-//!         &sam4l::adc::CHANNEL_AD6, // A5
+//!         &crate::sam4l::adc::CHANNEL_AD0, // A0
+//!         &crate::sam4l::adc::CHANNEL_AD1, // A1
+//!         &crate::sam4l::adc::CHANNEL_AD3, // A2
+//!         &crate::sam4l::adc::CHANNEL_AD4, // A3
+//!         &crate::sam4l::adc::CHANNEL_AD5, // A4
+//!         &crate::sam4l::adc::CHANNEL_AD6, // A5
 //!     ]
 //! );
 //! let adc = static_init!(
-//!     capsules_core::adc::AdcDedicated<'static, sam4l::adc::Adc>,
-//!     capsules_core::adc::AdcDedicated::new(
-//!         &mut sam4l::adc::ADC0,
+//!     crate::capsules_core::adc::AdcDedicated<'static, crate::sam4l::adc::Adc>,
+//!     crate::capsules_core::adc::AdcDedicated::new(
+//!         &mut crate::sam4l::adc::ADC0,
 //!         adc_channels,
-//!         &mut capsules_core::adc::ADC_BUFFER1,
-//!         &mut capsules_core::adc::ADC_BUFFER2,
-//!         &mut capsules_core::adc::ADC_BUFFER3
+//!         &mut crate::capsules_core::adc::ADC_BUFFER1,
+//!         &mut crate::capsules_core::adc::ADC_BUFFER2,
+//!         &mut crate::capsules_core::adc::ADC_BUFFER3
 //!     )
 //! );
-//! sam4l::adc::ADC0.set_client(adc);
+//! crate::sam4l::adc::ADC0.set_client(adc);
 //! ```
 
 use core::cell::Cell;
 use core::cmp;
 
-use kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
-use kernel::hil;
-use kernel::processbuffer::{ReadableProcessBuffer, WriteableProcessBuffer};
-use kernel::syscall::{CommandReturn, SyscallDriver};
-use kernel::utilities::cells::{OptionalCell, TakeCell};
-use kernel::{ErrorCode, ProcessId};
+use crate::kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
+use crate::kernel::hil;
+use crate::kernel::processbuffer::{ReadableProcessBuffer, WriteableProcessBuffer};
+use crate::kernel::syscall::{CommandReturn, SyscallDriver};
+use crate::kernel::utilities::cells::{OptionalCell, TakeCell};
+use crate::kernel::{ErrorCode, ProcessId};
 
 /// Syscall driver number.
 use crate::capsules_core::driver;
@@ -345,8 +345,8 @@ impl<'a, A: hil::adc::Adc<'a> + hil::adc::AdcHighSpeed<'a>> AdcDedicated<'a, A> 
                     app_buf_length > 0
                 })
                 .map_err(|err| {
-                    if err == kernel::process::Error::NoSuchApp
-                        || err == kernel::process::Error::InactiveApp
+                    if err == crate::kernel::process::Error::NoSuchApp
+                        || err == crate::kernel::process::Error::InactiveApp
                     {
                         self.processid.clear();
                     }
@@ -399,8 +399,8 @@ impl<'a, A: hil::adc::Adc<'a> + hil::adc::AdcHighSpeed<'a>> AdcDedicated<'a, A> 
                     })
                 })
                 .map_err(|err| {
-                    if err == kernel::process::Error::NoSuchApp
-                        || err == kernel::process::Error::InactiveApp
+                    if err == crate::kernel::process::Error::NoSuchApp
+                        || err == crate::kernel::process::Error::InactiveApp
                     {
                         self.processid.clear();
                     }
@@ -418,8 +418,8 @@ impl<'a, A: hil::adc::Adc<'a> + hil::adc::AdcHighSpeed<'a>> AdcDedicated<'a, A> 
                         app.samples_outstanding.set(0);
                     })
                     .map_err(|err| {
-                        if err == kernel::process::Error::NoSuchApp
-                            || err == kernel::process::Error::InactiveApp
+                        if err == crate::kernel::process::Error::NoSuchApp
+                            || err == crate::kernel::process::Error::InactiveApp
                         {
                             self.processid.clear();
                         }
@@ -464,8 +464,8 @@ impl<'a, A: hil::adc::Adc<'a> + hil::adc::AdcHighSpeed<'a>> AdcDedicated<'a, A> 
                     app_buf_length > 0 && next_app_buf_length > 0
                 })
                 .map_err(|err| {
-                    if err == kernel::process::Error::NoSuchApp
-                        || err == kernel::process::Error::InactiveApp
+                    if err == crate::kernel::process::Error::NoSuchApp
+                        || err == crate::kernel::process::Error::InactiveApp
                     {
                         self.processid.clear();
                     }
@@ -538,8 +538,8 @@ impl<'a, A: hil::adc::Adc<'a> + hil::adc::AdcHighSpeed<'a>> AdcDedicated<'a, A> 
                     })
                 })
                 .map_err(|err| {
-                    if err == kernel::process::Error::NoSuchApp
-                        || err == kernel::process::Error::InactiveApp
+                    if err == crate::kernel::process::Error::NoSuchApp
+                        || err == crate::kernel::process::Error::InactiveApp
                     {
                         self.processid.clear();
                     }
@@ -557,8 +557,8 @@ impl<'a, A: hil::adc::Adc<'a> + hil::adc::AdcHighSpeed<'a>> AdcDedicated<'a, A> 
                         app.samples_outstanding.set(0);
                     })
                     .map_err(|err| {
-                        if err == kernel::process::Error::NoSuchApp
-                            || err == kernel::process::Error::InactiveApp
+                        if err == crate::kernel::process::Error::NoSuchApp
+                            || err == crate::kernel::process::Error::InactiveApp
                         {
                             self.processid.clear();
                         }
@@ -607,8 +607,8 @@ impl<'a, A: hil::adc::Adc<'a> + hil::adc::AdcHighSpeed<'a>> AdcDedicated<'a, A> 
                     }
                 })
                 .map_err(|err| {
-                    if err == kernel::process::Error::NoSuchApp
-                        || err == kernel::process::Error::InactiveApp
+                    if err == crate::kernel::process::Error::NoSuchApp
+                        || err == crate::kernel::process::Error::InactiveApp
                     {
                         self.processid.clear();
                     }
@@ -766,8 +766,8 @@ impl<'a, A: hil::adc::Adc<'a> + hil::adc::AdcHighSpeed<'a>> hil::adc::Client
                         );
                     })
                     .map_err(|err| {
-                        if err == kernel::process::Error::NoSuchApp
-                            || err == kernel::process::Error::InactiveApp
+                        if err == crate::kernel::process::Error::NoSuchApp
+                            || err == crate::kernel::process::Error::InactiveApp
                         {
                             self.processid.clear();
                         }
@@ -803,8 +803,8 @@ impl<'a, A: hil::adc::Adc<'a> + hil::adc::AdcHighSpeed<'a>> hil::adc::Client
                         );
                     })
                     .map_err(|err| {
-                        if err == kernel::process::Error::NoSuchApp
-                            || err == kernel::process::Error::InactiveApp
+                        if err == crate::kernel::process::Error::NoSuchApp
+                            || err == crate::kernel::process::Error::InactiveApp
                         {
                             self.processid.clear();
                         }
@@ -1104,8 +1104,8 @@ impl<'a, A: hil::adc::Adc<'a> + hil::adc::AdcHighSpeed<'a>> hil::adc::HighSpeedC
                         }
                     })
                     .map_err(|err| {
-                        if err == kernel::process::Error::NoSuchApp
-                            || err == kernel::process::Error::InactiveApp
+                        if err == crate::kernel::process::Error::NoSuchApp
+                            || err == crate::kernel::process::Error::InactiveApp
                         {
                             self.processid.clear();
                             unexpected_state = true;
@@ -1127,8 +1127,8 @@ impl<'a, A: hil::adc::Adc<'a> + hil::adc::AdcHighSpeed<'a>> hil::adc::HighSpeedC
                         app.app_buf_offset.set(0);
                     })
                     .map_err(|err| {
-                        if err == kernel::process::Error::NoSuchApp
-                            || err == kernel::process::Error::InactiveApp
+                        if err == crate::kernel::process::Error::NoSuchApp
+                            || err == crate::kernel::process::Error::InactiveApp
                         {
                             self.processid.clear();
                         }
@@ -1270,7 +1270,7 @@ impl<'a, A: hil::adc::Adc<'a> + hil::adc::AdcHighSpeed<'a>> SyscallDriver for Ad
         }
     }
 
-    fn allocate_grant(&self, processid: ProcessId) -> Result<(), kernel::process::Error> {
+    fn allocate_grant(&self, processid: ProcessId) -> Result<(), crate::kernel::process::Error> {
         self.apps.enter(processid, |_, _| {})
     }
 }
@@ -1333,7 +1333,7 @@ impl SyscallDriver for AdcVirtualized<'_> {
         }
     }
 
-    fn allocate_grant(&self, processid: ProcessId) -> Result<(), kernel::process::Error> {
+    fn allocate_grant(&self, processid: ProcessId) -> Result<(), crate::kernel::process::Error> {
         self.apps.enter(processid, |_, _| {})
     }
 }

@@ -21,7 +21,7 @@
 //! The bus should be responsible for handling interrupts from the chip and notify the clients of
 //! incoming data with the `packet_available` method or with the `State::Available` state.
 
-use kernel::utilities::leasable_buffer::SubSliceMut;
+use crate::kernel::utilities::leasable_buffer::SubSliceMut;
 
 mod common;
 pub mod spi;
@@ -75,43 +75,43 @@ pub trait CYW4343xBus<'a> {
     fn set_client(&self, client: &'a dyn CYW4343xBusClient);
 
     /// Initialise the bus
-    fn init(&self) -> Result<(), kernel::ErrorCode>;
+    fn init(&self) -> Result<(), crate::kernel::ErrorCode>;
 
     /// Write a WLAN (F2) packet
     fn write_bytes(
         &self,
         buffer: SubSliceMut<'static, u8>,
-    ) -> Result<(), (kernel::ErrorCode, SubSliceMut<'static, u8>)>;
+    ) -> Result<(), (crate::kernel::ErrorCode, SubSliceMut<'static, u8>)>;
 
     /// Read a WLAN (F2) packet if available.
     fn read_bytes(
         &self,
         buffer: SubSliceMut<'static, u8>,
         len: usize,
-    ) -> Result<(), (kernel::ErrorCode, SubSliceMut<'static, u8>)>;
+    ) -> Result<(), (crate::kernel::ErrorCode, SubSliceMut<'static, u8>)>;
 
     /// Get current bus state
-    fn state(&self) -> Result<State, kernel::ErrorCode>;
+    fn state(&self) -> Result<State, crate::kernel::ErrorCode>;
 }
 
 /// Client trait for defining callbacks on initialisation, transfer
 /// and F2 packet interrupts.
 pub trait CYW4343xBusClient {
     /// Initialisation process is done
-    fn init_done(&self, rval: Result<(), kernel::ErrorCode>);
+    fn init_done(&self, rval: Result<(), crate::kernel::ErrorCode>);
 
     /// WLAN write done
     fn write_bytes_done(
         &self,
         buffer: SubSliceMut<'static, u8>,
-        rval: Result<(), kernel::ErrorCode>,
+        rval: Result<(), crate::kernel::ErrorCode>,
     );
 
     /// WLAN read done
     fn read_bytes_done(
         &self,
         buffer: SubSliceMut<'static, u8>,
-        rval: Result<(), kernel::ErrorCode>,
+        rval: Result<(), crate::kernel::ErrorCode>,
     );
 
     /// An F2 (WLAN) packet is available

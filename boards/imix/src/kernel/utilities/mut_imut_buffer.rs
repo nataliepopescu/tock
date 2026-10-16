@@ -26,7 +26,7 @@
 //! -----
 //!
 //! ```rust
-//! use kernel::utilities::mut_imut_buffer::MutImutBuffer;
+//! use crate::kernel::utilities::mut_imut_buffer::MutImutBuffer;
 //!
 //! let mut mutable = ['a', 'b', 'c', 'd'];
 //! let immutable = ['e', 'f', 'g', 'h'];

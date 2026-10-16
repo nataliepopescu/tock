@@ -8,8 +8,8 @@
 //! Author: Philip Levis <plevis@google.com>
 //! Last Modified: 1/10/2020
 use core::cell::Cell;
-use kernel::debug;
-use kernel::hil::time::{Alarm, AlarmClient, Frequency, Ticks};
+use crate::kernel::debug;
+use crate::kernel::hil::time::{Alarm, AlarmClient, Frequency, Ticks};
 
 pub struct TestAlarm<'a, A: Alarm<'a>> {
     alarm: &'a A,

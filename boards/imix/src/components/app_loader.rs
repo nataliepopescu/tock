@@ -10,42 +10,42 @@
 //! Example instantiation:
 //!
 //! ```rust
-//! # use kernel::static_init;
+//! # use crate::kernel::static_init;
 //!
-//! type NonVolatilePages = components::dynamic_binary_storage::NVPages<nrf52840::nvmc::Nvmc>;
-//! type DynamicBinaryStorage<'a> = kernel::dynamic_binary_storage::SequentialDynamicBinaryStorage<
+//! type NonVolatilePages = crate::components::dynamic_binary_storage::NVPages<nrf52840::nvmc::Nvmc>;
+//! type DynamicBinaryStorage<'a> = crate::kernel::dynamic_binary_storage::SequentialDynamicBinaryStorage<
 //! 'static,
 //! nrf52840::chip::NRF52<'a, Nrf52840DefaultPeripherals<'a>>,
-//! kernel::process::ProcessStandardDebugFull,
+//! crate::kernel::process::ProcessStandardDebugFull,
 //! NonVolatilePages,
 //! >;
 //!
-//! let dynamic_app_loader = components::app_loader::AppLoaderComponent::new(
+//! let dynamic_app_loader = crate::components::app_loader::AppLoaderComponent::new(
 //!     board_kernel,
-//!     capsules_extra::app_loader::DRIVER_NUM,
+//!     crate::capsules_extra::app_loader::DRIVER_NUM,
 //!     dynamic_binary_storage,
 //!     dynamic_binary_storage,
 //!     dynamic_binary_storage,
 //!     create_capability!(capabilities::MemoryAllocationCapability),
-//!     ).finalize(components::app_loader_component_static!(
+//!     ).finalize(crate::components::app_loader_component_static!(
 //!     DynamicBinaryStorage<'static>,
 //!     DynamicBinaryStorage<'static>,
 //!     DynamicBinaryStorage<'static>,
 //!     ));
 //! ```
 
-use capsules_extra::app_loader::AppLoader;
+use crate::capsules_extra::app_loader::AppLoader;
 use core::mem::MaybeUninit;
-use kernel::capabilities::MemoryAllocationCapability;
-use kernel::component::Component;
-use kernel::dynamic_binary_storage;
+use crate::kernel::capabilities::MemoryAllocationCapability;
+use crate::kernel::component::Component;
+use crate::kernel::dynamic_binary_storage;
 
 // Setup static space for the objects.
 #[macro_export]
 macro_rules! app_loader_component_static {
     ($S:ty, $L:ty, $T:ty $(,)?) => {{
-        let al = kernel::static_buf!(capsules_extra::app_loader::AppLoader<$S, $L, $T>);
-        let buffer = kernel::static_buf!([u8; capsules_extra::app_loader::BUF_LEN]);
+        let al = crate::kernel::static_buf!(crate::capsules_extra::app_loader::AppLoader<$S, $L, $T>);
+        let buffer = crate::kernel::static_buf!([u8; crate::capsules_extra::app_loader::BUF_LEN]);
 
         (al, buffer)
     }};
@@ -57,7 +57,7 @@ pub struct AppLoaderComponent<
     T: dynamic_binary_storage::DynamicProcessUnload + 'static,
     CAP: MemoryAllocationCapability + 'static,
 > {
-    board_kernel: &'static kernel::Kernel,
+    board_kernel: &'static crate::kernel::Kernel,
     driver_num: usize,
     storage_driver: &'static S,
     load_driver: &'static L,
@@ -73,7 +73,7 @@ impl<
 > AppLoaderComponent<S, L, T, CAP>
 {
     pub fn new(
-        board_kernel: &'static kernel::Kernel,
+        board_kernel: &'static crate::kernel::Kernel,
         driver_num: usize,
         storage_driver: &'static S,
         load_driver: &'static L,
@@ -100,14 +100,14 @@ impl<
 {
     type StaticInput = (
         &'static mut MaybeUninit<AppLoader<S, L, T>>,
-        &'static mut MaybeUninit<[u8; capsules_extra::app_loader::BUF_LEN]>,
+        &'static mut MaybeUninit<[u8; crate::capsules_extra::app_loader::BUF_LEN]>,
     );
     type Output = &'static AppLoader<S, L, T>;
 
     fn finalize(self, static_buffer: Self::StaticInput) -> Self::Output {
         let buffer = static_buffer
             .1
-            .write([0; capsules_extra::app_loader::BUF_LEN]);
+            .write([0; crate::capsules_extra::app_loader::BUF_LEN]);
 
         let dynamic_app_loader = static_buffer.0.write(AppLoader::new(
             self.board_kernel

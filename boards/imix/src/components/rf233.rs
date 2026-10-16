@@ -10,7 +10,7 @@
 //! Usage
 //! -----
 //! ```rust
-//! let rf233 = components::rf233::RF233Component::new(
+//! let rf233 = crate::components::rf233::RF233Component::new(
 //!     rf233_spi,
 //!     &peripherals.pa[09], // reset
 //!     &peripherals.pa[10], // sleep
@@ -18,25 +18,25 @@
 //!     &peripherals.pa[08],
 //!     RADIO_CHANNEL,
 //! )
-//! .finalize(components::rf233_component_static!(sam4l::spi::SpiHw));
+//! .finalize(crate::components::rf233_component_static!(crate::sam4l::spi::SpiHw));
 //! ```
 
-use capsules_core::virtualizers::virtual_spi::VirtualSpiMasterDevice;
-use capsules_extra::rf233::RF233;
+use crate::capsules_core::virtualizers::virtual_spi::VirtualSpiMasterDevice;
+use crate::capsules_extra::rf233::RF233;
 use core::mem::MaybeUninit;
-use kernel::component::Component;
-use kernel::hil::radio::RadioConfig;
-use kernel::hil::spi::{SpiMaster, SpiMasterDevice};
-use kernel::hil::{self, radio};
+use crate::kernel::component::Component;
+use crate::kernel::hil::radio::RadioConfig;
+use crate::kernel::hil::spi::{SpiMaster, SpiMasterDevice};
+use crate::kernel::hil::{self, radio};
 
 // Setup static space for the objects.
 #[macro_export]
 macro_rules! rf233_component_static {
     ($S:ty $(,)?) => {{
-        let spi_device = kernel::static_buf!(
-            capsules_extra::rf233::RF233<
+        let spi_device = crate::kernel::static_buf!(
+            crate::capsules_extra::rf233::RF233<
                 'static,
-                capsules_core::virtualizers::virtual_spi::VirtualSpiMasterDevice<'static, $S>,
+                crate::capsules_core::virtualizers::virtual_spi::VirtualSpiMasterDevice<'static, $S>,
             >
         );
         // The RF233 radio stack requires four buffers for its SPI operations:
@@ -47,11 +47,11 @@ macro_rules! rf233_component_static {
         //   2. rx_buf: buffer to receive packets into
         //   3 + 4: two small buffers for performing registers
         //      operations (one read, one write).
-        let rf233_buf = kernel::static_buf!([u8; kernel::hil::radio::MAX_BUF_SIZE]);
+        let rf233_buf = crate::kernel::static_buf!([u8; crate::kernel::hil::radio::MAX_BUF_SIZE]);
         let rf233_reg_write =
-            kernel::static_buf!([u8; capsules_extra::rf233::SPI_REGISTER_TRANSACTION_LENGTH]);
+            crate::kernel::static_buf!([u8; crate::capsules_extra::rf233::SPI_REGISTER_TRANSACTION_LENGTH]);
         let rf233_reg_read =
-            kernel::static_buf!([u8; capsules_extra::rf233::SPI_REGISTER_TRANSACTION_LENGTH]);
+            crate::kernel::static_buf!([u8; crate::capsules_extra::rf233::SPI_REGISTER_TRANSACTION_LENGTH]);
 
         (spi_device, rf233_buf, rf233_reg_write, rf233_reg_read)
     }};
@@ -90,17 +90,17 @@ impl<S: SpiMaster<'static> + 'static> Component for RF233Component<S> {
     type StaticInput = (
         &'static mut MaybeUninit<RF233<'static, VirtualSpiMasterDevice<'static, S>>>,
         &'static mut MaybeUninit<[u8; hil::radio::MAX_BUF_SIZE]>,
-        &'static mut MaybeUninit<[u8; capsules_extra::rf233::SPI_REGISTER_TRANSACTION_LENGTH]>,
-        &'static mut MaybeUninit<[u8; capsules_extra::rf233::SPI_REGISTER_TRANSACTION_LENGTH]>,
+        &'static mut MaybeUninit<[u8; crate::capsules_extra::rf233::SPI_REGISTER_TRANSACTION_LENGTH]>,
+        &'static mut MaybeUninit<[u8; crate::capsules_extra::rf233::SPI_REGISTER_TRANSACTION_LENGTH]>,
     );
     type Output = &'static RF233<'static, VirtualSpiMasterDevice<'static, S>>;
 
     fn finalize(self, s: Self::StaticInput) -> Self::Output {
         let rf233_buf = s.1.write([0; hil::radio::MAX_BUF_SIZE]);
         let rf233_reg_write =
-            s.2.write([0; capsules_extra::rf233::SPI_REGISTER_TRANSACTION_LENGTH]);
+            s.2.write([0; crate::capsules_extra::rf233::SPI_REGISTER_TRANSACTION_LENGTH]);
         let rf233_reg_read =
-            s.3.write([0; capsules_extra::rf233::SPI_REGISTER_TRANSACTION_LENGTH]);
+            s.3.write([0; crate::capsules_extra::rf233::SPI_REGISTER_TRANSACTION_LENGTH]);
         let rf233 = s.0.write(RF233::new(
             self.spi,
             rf233_buf,

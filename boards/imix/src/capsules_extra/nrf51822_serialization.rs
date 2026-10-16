@@ -12,7 +12,7 @@
 //! -----
 //!
 //! ```rust,ignore
-//! # use kernel::{hil, static_init};
+//! # use crate::kernel::{hil, static_init};
 //! # use capsules::nrf51822_serialization;
 //! # use capsules::nrf51822_serialization::Nrf51822Serialization;
 //!
@@ -26,16 +26,16 @@
 
 use core::cmp;
 
-use kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
-use kernel::hil;
-use kernel::hil::uart;
-use kernel::processbuffer::{ReadableProcessBuffer, WriteableProcessBuffer};
-use kernel::syscall::{CommandReturn, SyscallDriver};
-use kernel::utilities::cells::{OptionalCell, TakeCell};
-use kernel::{ErrorCode, ProcessId};
+use crate::kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
+use crate::kernel::hil;
+use crate::kernel::hil::uart;
+use crate::kernel::processbuffer::{ReadableProcessBuffer, WriteableProcessBuffer};
+use crate::kernel::syscall::{CommandReturn, SyscallDriver};
+use crate::kernel::utilities::cells::{OptionalCell, TakeCell};
+use crate::kernel::{ErrorCode, ProcessId};
 
 /// Syscall driver number.
-use capsules_core::driver;
+use crate::capsules_core::driver;
 pub const DRIVER_NUM: usize = driver::NUM::Nrf51822Serialization as usize;
 
 /// IDs for subscribed upcalls.
@@ -217,7 +217,7 @@ impl SyscallDriver for Nrf51822Serialization<'_> {
                     },
                     |processid| {
                         // The app is set, check if it still exists.
-                        if let Err(kernel::process::Error::NoSuchApp) =
+                        if let Err(crate::kernel::process::Error::NoSuchApp) =
                             self.apps.enter(processid, |_, _| {})
                         {
                             // The app we had as active no longer exists.
@@ -261,7 +261,7 @@ impl SyscallDriver for Nrf51822Serialization<'_> {
         }
     }
 
-    fn allocate_grant(&self, processid: ProcessId) -> Result<(), kernel::process::Error> {
+    fn allocate_grant(&self, processid: ProcessId) -> Result<(), crate::kernel::process::Error> {
         self.apps.enter(processid, |_, _| {})
     }
 }

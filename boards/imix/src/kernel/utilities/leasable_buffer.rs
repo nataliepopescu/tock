@@ -144,7 +144,7 @@
 //! `reset()` will be called once the `SubSlice` is returned via a callback.
 //!
 //! ```rust
-//! # use kernel::utilities::leasable_buffer::SubSlice;
+//! # use crate::kernel::utilities::leasable_buffer::SubSlice;
 //! let mut internal = ['a', 'b', 'c', 'd'];
 //! let original_base_addr = internal.as_ptr();
 //!
@@ -359,7 +359,7 @@ impl<'a, T> SubSliceMut<'a, T> {
     /// ## Example
     ///
     /// ```
-    /// use kernel::utilities::leasable_buffer::SubSliceMut;
+    /// use crate::kernel::utilities::leasable_buffer::SubSliceMut;
     /// let mut buffer: [u8; 8] = [0, 1, 2, 3, 4, 5, 6, 7];
     ///
     /// // Construct a SubSliceMut and activate a window:
@@ -533,7 +533,7 @@ impl<'a, T> SubSlice<'a, T> {
     /// ## Example
     ///
     /// ```
-    /// use kernel::utilities::leasable_buffer::SubSlice;
+    /// use crate::kernel::utilities::leasable_buffer::SubSlice;
     /// let mut buffer: [u8; 8] = [0, 1, 2, 3, 4, 5, 6, 7];
     ///
     /// // Construct a SubSlice and activate a window:

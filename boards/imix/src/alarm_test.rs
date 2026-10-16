@@ -8,7 +8,7 @@
 //!    alarm_test::run_alarm(alarm);
 //! ```
 //! to the imix boot sequence, where `alarm` is a
-//! `kernel::hil::Alarm`. The test sets up a series of
+//! `crate::kernel::hil::Alarm`. The test sets up a series of
 //! alarms of different durations and prints out when
 //! they fire. They are large enough (and spaced out
 //! enough that you should be able to tell if things
@@ -16,11 +16,11 @@
 //! debug_gpio on pin XX so you can more precisely check
 //! the timings with a logic analyzer.
 
-use capsules_core::test::alarm_edge_cases::TestAlarmEdgeCases;
-use kernel::debug;
-use kernel::hil::time::Alarm;
-use kernel::static_init;
-use sam4l::ast::Ast;
+use crate::capsules_core::test::alarm_edge_cases::TestAlarmEdgeCases;
+use crate::kernel::debug;
+use crate::kernel::hil::time::Alarm;
+use crate::kernel::static_init;
+use crate::sam4l::ast::Ast;
 
 pub unsafe fn run_alarm(ast: &'static Ast) {
     debug!("Starting alarm test.");

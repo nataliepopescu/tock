@@ -9,7 +9,7 @@
 //!
 //!
 //! ```rust
-//! let adc_microphone = components::adc_microphone::AdcMicrophoneComponent::new(
+//! let adc_microphone = crate::components::adc_microphone::AdcMicrophoneComponent::new(
 //!     adc_mux,
 //!     nrf52833::adc::AdcChannelSetup::setup(
 //!         nrf52833::adc::AdcChannel::AnalogInput3,
@@ -20,7 +20,7 @@
 //!     ),
 //!     Some(&nrf52833_peripherals.gpio_port[LED_MICROPHONE_PIN]),
 //! )
-//! .finalize(components::adc_microphone_component_static!(
+//! .finalize(crate::components::adc_microphone_component_static!(
 //!     // adc
 //!     nrf52833::adc::Adc,
 //!     // buffer size
@@ -30,20 +30,20 @@
 //! ));
 //! ```
 
-use capsules_core::virtualizers::virtual_adc::AdcDevice;
-use capsules_extra::adc_microphone::AdcMicrophone;
+use crate::capsules_core::virtualizers::virtual_adc::AdcDevice;
+use crate::capsules_extra::adc_microphone::AdcMicrophone;
 use core::mem::MaybeUninit;
-use kernel::component::Component;
-use kernel::hil::adc::{self, AdcChannel};
-use kernel::hil::gpio;
+use crate::kernel::component::Component;
+use crate::kernel::hil::adc::{self, AdcChannel};
+use crate::kernel::hil::gpio;
 
 #[macro_export]
 macro_rules! adc_microphone_component_static {
     ($A:ty, $LEN:literal, $P: ty $(,)?) => {{
-        let adc_device = components::adc_component_static!($A);
-        let buffer = kernel::static_buf!([u16; $LEN]);
+        let adc_device = crate::components::adc_component_static!($A);
+        let buffer = crate::kernel::static_buf!([u16; $LEN]);
         let adc_microphone =
-            kernel::static_buf!(capsules_extra::adc_microphone::AdcMicrophone<'static, $P>);
+            crate::kernel::static_buf!(crate::capsules_extra::adc_microphone::AdcMicrophone<'static, $P>);
 
         (adc_device, buffer, adc_microphone)
     }};
@@ -54,7 +54,7 @@ pub struct AdcMicrophoneComponent<
     P: 'static + gpio::Pin,
     const BUF_LEN: usize,
 > {
-    adc_mux: &'static capsules_core::virtualizers::virtual_adc::MuxAdc<'static, A>,
+    adc_mux: &'static crate::capsules_core::virtualizers::virtual_adc::MuxAdc<'static, A>,
     adc_channel: A::Channel,
     pin: Option<&'static P>,
 }
@@ -63,7 +63,7 @@ impl<A: 'static + adc::Adc<'static>, P: 'static + gpio::Pin, const BUF_LEN: usiz
     AdcMicrophoneComponent<A, P, BUF_LEN>
 {
     pub fn new(
-        adc_mux: &'static capsules_core::virtualizers::virtual_adc::MuxAdc<'static, A>,
+        adc_mux: &'static crate::capsules_core::virtualizers::virtual_adc::MuxAdc<'static, A>,
         adc_channel: A::Channel,
         pin: Option<&'static P>,
     ) -> AdcMicrophoneComponent<A, P, BUF_LEN> {

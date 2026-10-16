@@ -7,7 +7,7 @@
 //! You need a device that provides the `hil::sensors::AmbientLight` trait.
 //!
 //! ```rust,ignore
-//! # use kernel::{hil, static_init};
+//! # use crate::kernel::{hil, static_init};
 //!
 //! let light = static_init!(
 //!     capsules::ambient_light::AmbientLight<'static>,
@@ -18,13 +18,13 @@
 
 use core::cell::Cell;
 
-use kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
-use kernel::hil;
-use kernel::syscall::{CommandReturn, SyscallDriver};
-use kernel::{ErrorCode, ProcessId};
+use crate::kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
+use crate::kernel::hil;
+use crate::kernel::syscall::{CommandReturn, SyscallDriver};
+use crate::kernel::{ErrorCode, ProcessId};
 
 /// Syscall driver number.
-use capsules_core::driver;
+use crate::capsules_core::driver;
 pub const DRIVER_NUM: usize = driver::NUM::AmbientLight as usize;
 
 /// IDs for subscribed upcalls.
@@ -109,7 +109,7 @@ impl SyscallDriver for AmbientLight<'_> {
         }
     }
 
-    fn allocate_grant(&self, processid: ProcessId) -> Result<(), kernel::process::Error> {
+    fn allocate_grant(&self, processid: ProcessId) -> Result<(), crate::kernel::process::Error> {
         self.apps.enter(processid, |_, _| {})
     }
 }

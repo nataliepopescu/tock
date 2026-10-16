@@ -15,14 +15,14 @@
 use crate::sam4l::pm;
 use crate::sam4l::scif;
 use core::cell::Cell;
-use kernel::ErrorCode;
-use kernel::debug;
-use kernel::hil;
-use kernel::hil::symmetric_encryption::{AES_BLOCK_SIZE, AES128, AES128_KEY_SIZE};
-use kernel::utilities::StaticRef;
-use kernel::utilities::cells::{OptionalCell, TakeCell};
-use kernel::utilities::registers::interfaces::{Readable, Writeable};
-use kernel::utilities::registers::{ReadOnly, ReadWrite, WriteOnly, register_bitfields};
+use crate::kernel::ErrorCode;
+use crate::kernel::debug;
+use crate::kernel::hil;
+use crate::kernel::hil::symmetric_encryption::{AES_BLOCK_SIZE, AES128, AES128_KEY_SIZE};
+use crate::kernel::utilities::StaticRef;
+use crate::kernel::utilities::cells::{OptionalCell, TakeCell};
+use crate::kernel::utilities::registers::interfaces::{Readable, Writeable};
+use crate::kernel::utilities::registers::{ReadOnly, ReadWrite, WriteOnly, register_bitfields};
 
 #[allow(dead_code)]
 #[derive(Copy, Clone)]
@@ -511,7 +511,7 @@ impl hil::symmetric_encryption::AESCBC for Aes<'_> {
     }
 }
 
-impl kernel::hil::symmetric_encryption::AESECB for Aes<'_> {
+impl crate::kernel::hil::symmetric_encryption::AESECB for Aes<'_> {
     fn set_mode_aesecb(&self, encrypting: bool) -> Result<(), ErrorCode> {
         self.set_mode(encrypting, ConfidentialityMode::ECB);
         Ok(())

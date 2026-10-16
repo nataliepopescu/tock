@@ -41,7 +41,7 @@
 //! Here is an example of how to set up a proximity sensor with the apds9960 IC
 //!
 //! ```rust,ignore
-//! # use kernel::static_init;
+//! # use crate::kernel::static_init;
 //!
 //!let grant_cap = create_capability!(capabilities::MemoryAllocationCapability);
 //!
@@ -49,18 +49,18 @@
 //!   capsules::proximity::ProximitySensor<'static>,
 //!   capsules::proximity::ProximitySensor::new(apds9960 , board_kernel.create_grant(&grant_cap)));
 //!
-//!kernel::hil::sensors::ProximityDriver::set_client(apds9960, proximity);
+//!crate::kernel::hil::sensors::ProximityDriver::set_client(apds9960, proximity);
 //! ```
 
 use core::cell::Cell;
 
-use kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
-use kernel::hil;
-use kernel::syscall::{CommandReturn, SyscallDriver};
-use kernel::{ErrorCode, ProcessId};
+use crate::kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
+use crate::kernel::hil;
+use crate::kernel::syscall::{CommandReturn, SyscallDriver};
+use crate::kernel::{ErrorCode, ProcessId};
 
 /// Syscall driver number.
-use capsules_core::driver;
+use crate::capsules_core::driver;
 pub const DRIVER_NUM: usize = driver::NUM::Proximity as usize;
 
 #[derive(Default)]
@@ -314,7 +314,7 @@ impl SyscallDriver for ProximitySensor<'_> {
         }
     }
 
-    fn allocate_grant(&self, processid: ProcessId) -> Result<(), kernel::process::Error> {
+    fn allocate_grant(&self, processid: ProcessId) -> Result<(), crate::kernel::process::Error> {
         self.apps.enter(processid, |_, _| {})
     }
 }

@@ -19,12 +19,12 @@
 //! -----
 //!
 //! ```rust,ignore
-//! # use kernel::static_init;
+//! # use crate::kernel::static_init;
 //!
 //! // Create a SPI device for this chip.
 //! let fm25cl_spi = static_init!(
 //!     capsules::virtual_spi::VirtualSpiMasterDevice<'static, usart::USART>,
-//!     capsules::virtual_spi::VirtualSpiMasterDevice::new(mux_spi, Some(&sam4l::gpio::PA[25])));
+//!     capsules::virtual_spi::VirtualSpiMasterDevice::new(mux_spi, Some(&crate::sam4l::gpio::PA[25])));
 //! // Setup the actual FM25CL driver.
 //! let fm25cl = static_init!(
 //!     capsules::fm25cl::FM25CL<'static,
@@ -46,10 +46,10 @@
 
 use core::cell::Cell;
 use core::cmp;
-use kernel::ErrorCode;
-use kernel::hil;
-use kernel::utilities::cells::{MapCell, OptionalCell, TakeCell};
-use kernel::utilities::leasable_buffer::SubSliceMut;
+use crate::kernel::ErrorCode;
+use crate::kernel::hil;
+use crate::kernel::utilities::cells::{MapCell, OptionalCell, TakeCell};
+use crate::kernel::utilities::leasable_buffer::SubSliceMut;
 
 pub const BUF_LEN: usize = 512;
 

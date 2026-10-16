@@ -7,18 +7,18 @@
 //! Usage
 //! -----
 //! ```rust
-//! let dac = components::dac::DacComponent::new(&peripherals.dac)
-//!      .finalize(components::dac_component_static!());
+//! let dac = crate::components::dac::DacComponent::new(&peripherals.dac)
+//!      .finalize(crate::components::dac_component_static!());
 //! ```
 
-use capsules_extra::dac::Dac;
+use crate::capsules_extra::dac::Dac;
 use core::mem::MaybeUninit;
-use kernel::component::Component;
-use kernel::hil;
+use crate::kernel::component::Component;
+use crate::kernel::hil;
 
 #[macro_export]
 macro_rules! dac_component_static {
-    () => {{ kernel::static_buf!(capsules_extra::dac::Dac<'static>) }};
+    () => {{ crate::kernel::static_buf!(crate::capsules_extra::dac::Dac<'static>) }};
 }
 
 pub struct DacComponent {

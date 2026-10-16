@@ -138,8 +138,8 @@ macro_rules! stream_from_option {
 /// encoders is to define another encoder as follows:
 ///
 /// ```rust,ignore
-/// # use capsules_core::{enc_try, stream_done};
-/// # use capsules_core::stream::{SResult};
+/// # use crate::capsules_core::{enc_try, stream_done};
+/// # use crate::capsules_core::stream::{SResult};
 ///
 /// // call a simple encoder
 /// let (bytes, out1) = enc_try!(buf; encoder1);
@@ -160,7 +160,7 @@ macro_rules! stream_from_option {
 /// Then, using an encoder can be done simply by:
 ///
 /// ```rust,ignore
-/// # use capsules_core::stream::SResult;
+/// # use crate::capsules_core::stream::SResult;
 ///
 /// match encoder(&mut buf) {
 ///     SResult::Done(off, out) => { /* celebrate */ }

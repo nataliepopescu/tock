@@ -54,14 +54,14 @@
 
 use crate::sam4l::pm::{Clock, HSBClock, PBBClock, disable_clock, enable_clock};
 use core::cell::Cell;
-use kernel::ErrorCode;
-use kernel::deferred_call::{DeferredCall, DeferredCallClient};
-use kernel::hil::crc::{Client, Crc, CrcAlgorithm, CrcOutput};
-use kernel::utilities::StaticRef;
-use kernel::utilities::cells::OptionalCell;
-use kernel::utilities::leasable_buffer::SubSliceMut;
-use kernel::utilities::registers::interfaces::{Readable, Writeable};
-use kernel::utilities::registers::{
+use crate::kernel::ErrorCode;
+use crate::kernel::deferred_call::{DeferredCall, DeferredCallClient};
+use crate::kernel::hil::crc::{Client, Crc, CrcAlgorithm, CrcOutput};
+use crate::kernel::utilities::StaticRef;
+use crate::kernel::utilities::cells::OptionalCell;
+use crate::kernel::utilities::leasable_buffer::SubSliceMut;
+use crate::kernel::utilities::registers::interfaces::{Readable, Writeable};
+use crate::kernel::utilities::registers::{
     FieldValue, InMemoryRegister, ReadOnly, ReadWrite, WriteOnly, register_bitfields,
 };
 

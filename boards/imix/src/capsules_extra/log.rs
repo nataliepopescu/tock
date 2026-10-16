@@ -44,19 +44,19 @@
 //!
 //! ```rust,ignore
 //!     storage_volume!(VOLUME, 2);
-//!     static mut PAGEBUFFER: sam4l::flashcalw::Sam4lPage = sam4l::flashcalw::Sam4lPage::new();
+//!     static mut PAGEBUFFER: crate::sam4l::flashcalw::Sam4lPage = crate::sam4l::flashcalw::Sam4lPage::new();
 //!
 //!     let log = static_init!(
 //!         capsules::log::Log,
 //!         capsules::log::Log::new(
 //!             &VOLUME,
-//!             &mut sam4l::flashcalw::FLASH_CONTROLLER,
+//!             &mut crate::sam4l::flashcalw::FLASH_CONTROLLER,
 //!             &mut PAGEBUFFER,
 //!             true
 //!         )
 //!     );
 //!     log.register();
-//!     kernel::hil::flash::HasClient::set_client(&sam4l::flashcalw::FLASH_CONTROLLER, log);
+//!     crate::kernel::hil::flash::HasClient::set_client(&crate::sam4l::flashcalw::FLASH_CONTROLLER, log);
 //!
 //!     log.set_read_client(log_storage_read_client);
 //!     log.set_append_client(log_storage_append_client);
@@ -66,11 +66,11 @@ use core::cell::Cell;
 use core::mem::size_of;
 use core::unreachable;
 
-use kernel::ErrorCode;
-use kernel::deferred_call::{DeferredCall, DeferredCallClient};
-use kernel::hil::flash::{self, Flash};
-use kernel::hil::log::{LogRead, LogReadClient, LogWrite, LogWriteClient};
-use kernel::utilities::cells::{OptionalCell, TakeCell};
+use crate::kernel::ErrorCode;
+use crate::kernel::deferred_call::{DeferredCall, DeferredCallClient};
+use crate::kernel::hil::flash::{self, Flash};
+use crate::kernel::hil::log::{LogRead, LogReadClient, LogWrite, LogWriteClient};
+use crate::kernel::utilities::cells::{OptionalCell, TakeCell};
 
 /// Globally declare entry ID type.
 type EntryID = usize;

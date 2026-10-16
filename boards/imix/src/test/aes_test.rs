@@ -25,11 +25,11 @@
 //!     aes_test CTR passed: (CTR Dec Ctr Src/Dst)
 //! ```
 
-use capsules_extra::test::aes::TestAes128Cbc;
-use capsules_extra::test::aes::TestAes128Ctr;
-use kernel::hil::symmetric_encryption::{AES, AES_BLOCK_SIZE, AES128_KEY_SIZE};
-use kernel::static_init;
-use sam4l::aes::Aes;
+use crate::capsules_extra::test::aes::TestAes128Cbc;
+use crate::capsules_extra::test::aes::TestAes128Ctr;
+use crate::kernel::hil::symmetric_encryption::{AES, AES_BLOCK_SIZE, AES128_KEY_SIZE};
+use crate::kernel::static_init;
+use crate::sam4l::aes::Aes;
 
 pub unsafe fn run_aes128_ctr(aes: &'static Aes) {
     let t = static_init_test_ctr(aes);

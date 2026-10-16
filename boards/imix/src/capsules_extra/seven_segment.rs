@@ -104,8 +104,8 @@
 //!         digit_array,
 //!         buffer,
 //!         virtual_alarm_digit,
-//!         kernel::hil::gpio::ActivationMode::ActiveLow,
-//!         kernel::hil::gpio::ActivationMode::ActiveHigh,
+//!         crate::kernel::hil::gpio::ActivationMode::ActiveLow,
+//!         crate::kernel::hil::gpio::ActivationMode::ActiveHigh,
 //!         60
 //!     ),
 //! );
@@ -150,15 +150,15 @@
 
 use core::cell::Cell;
 
-use kernel::ErrorCode;
-use kernel::ProcessId;
-use kernel::hil::gpio::{ActivationMode, Pin};
-use kernel::hil::time::{Alarm, AlarmClient, ConvertTicks};
-use kernel::syscall::{CommandReturn, SyscallDriver};
-use kernel::utilities::cells::TakeCell;
+use crate::kernel::ErrorCode;
+use crate::kernel::ProcessId;
+use crate::kernel::hil::gpio::{ActivationMode, Pin};
+use crate::kernel::hil::time::{Alarm, AlarmClient, ConvertTicks};
+use crate::kernel::syscall::{CommandReturn, SyscallDriver};
+use crate::kernel::utilities::cells::TakeCell;
 
 /// Syscall driver number.
-use capsules_core::driver;
+use crate::capsules_core::driver;
 pub const DRIVER_NUM: usize = driver::NUM::SevenSegment as usize;
 
 /// Digit patterns
@@ -401,7 +401,7 @@ impl<'a, P: Pin, A: Alarm<'a>, const NUM_DIGITS: usize> SyscallDriver
         }
     }
 
-    fn allocate_grant(&self, _processid: ProcessId) -> Result<(), kernel::process::Error> {
+    fn allocate_grant(&self, _processid: ProcessId) -> Result<(), crate::kernel::process::Error> {
         Ok(())
     }
 }

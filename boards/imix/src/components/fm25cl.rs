@@ -9,30 +9,30 @@
 //! Usage
 //! -----
 //! ```rust
-//! let fm25cl = components::fm25cl::Fm25clComponent::new(spi_mux, stm32f429zi::gpio::PinId::PE03)
-//!     .finalize(components::fm25cl_component_static!(stm32f429zi::spi::Spi));
+//! let fm25cl = crate::components::fm25cl::Fm25clComponent::new(spi_mux, stm32f429zi::gpio::PinId::PE03)
+//!     .finalize(crate::components::fm25cl_component_static!(stm32f429zi::spi::Spi));
 //! ```
 
-use capsules_core::virtualizers::virtual_spi::{MuxSpiMaster, VirtualSpiMasterDevice};
-use capsules_extra::fm25cl::FM25CL;
+use crate::capsules_core::virtualizers::virtual_spi::{MuxSpiMaster, VirtualSpiMasterDevice};
+use crate::capsules_extra::fm25cl::FM25CL;
 use core::mem::MaybeUninit;
-use kernel::component::Component;
-use kernel::hil::spi;
-use kernel::hil::spi::SpiMasterDevice;
+use crate::kernel::component::Component;
+use crate::kernel::hil::spi;
+use crate::kernel::hil::spi::SpiMasterDevice;
 
 #[macro_export]
 macro_rules! fm25cl_component_static {
     ($S:ty $(,)?) => {{
-        let txbuffer = kernel::static_buf!([u8; capsules_extra::fm25cl::BUF_LEN]);
-        let rxbuffer = kernel::static_buf!([u8; capsules_extra::fm25cl::BUF_LEN]);
+        let txbuffer = crate::kernel::static_buf!([u8; crate::capsules_extra::fm25cl::BUF_LEN]);
+        let rxbuffer = crate::kernel::static_buf!([u8; crate::capsules_extra::fm25cl::BUF_LEN]);
 
-        let spi = kernel::static_buf!(
-            capsules_core::virtualizers::virtual_spi::VirtualSpiMasterDevice<'static, $S>
+        let spi = crate::kernel::static_buf!(
+            crate::capsules_core::virtualizers::virtual_spi::VirtualSpiMasterDevice<'static, $S>
         );
-        let fm25cl = kernel::static_buf!(
-            capsules_extra::fm25cl::FM25CL<
+        let fm25cl = crate::kernel::static_buf!(
+            crate::capsules_extra::fm25cl::FM25CL<
                 'static,
-                capsules_core::virtualizers::virtual_spi::VirtualSpiMasterDevice<'static, $S>,
+                crate::capsules_core::virtualizers::virtual_spi::VirtualSpiMasterDevice<'static, $S>,
             >
         );
 
@@ -69,8 +69,8 @@ impl<
     type StaticInput = (
         &'static mut MaybeUninit<VirtualSpiMasterDevice<'static, S>>,
         &'static mut MaybeUninit<FM25CL<'static, VirtualSpiMasterDevice<'static, S>>>,
-        &'static mut MaybeUninit<[u8; capsules_extra::fm25cl::BUF_LEN]>,
-        &'static mut MaybeUninit<[u8; capsules_extra::fm25cl::BUF_LEN]>,
+        &'static mut MaybeUninit<[u8; crate::capsules_extra::fm25cl::BUF_LEN]>,
+        &'static mut MaybeUninit<[u8; crate::capsules_extra::fm25cl::BUF_LEN]>,
     );
     type Output = &'static FM25CL<'static, VirtualSpiMasterDevice<'static, S>>;
 
@@ -81,8 +81,8 @@ impl<
         ));
         spi_device.setup();
 
-        let txbuffer = static_buffer.2.write([0; capsules_extra::fm25cl::BUF_LEN]);
-        let rxbuffer = static_buffer.3.write([0; capsules_extra::fm25cl::BUF_LEN]);
+        let txbuffer = static_buffer.2.write([0; crate::capsules_extra::fm25cl::BUF_LEN]);
+        let rxbuffer = static_buffer.3.write([0; crate::capsules_extra::fm25cl::BUF_LEN]);
 
         let fm25cl = static_buffer
             .1

@@ -4,10 +4,10 @@
 
 //! A dummy SPI client to test the SPI implementation
 
-use kernel::hil::gpio;
-use kernel::hil::gpio::Pin;
-use kernel::hil::spi::{self, SpiSlave};
-use sam4l::spi::SPI as SPI_SLAVE;
+use crate::kernel::hil::gpio;
+use crate::kernel::hil::gpio::Pin;
+use crate::kernel::hil::spi::{self, SpiSlave};
+use crate::sam4l::spi::SPI as SPI_SLAVE;
 
 #[allow(unused_variables, dead_code)]
 pub struct SlaveCB {
@@ -62,14 +62,14 @@ pub static mut SPISLAVECB: SlaveCB = SlaveCB { val: 0x55 as u8 };
 pub unsafe fn spi_slave_dummy_test() {
     // set the LED to mark that we've programmed.
     // TODO: This doesn't do anything? We always blink...
-    sam4l::gpio::PC[10].make_output();
-    &sam4l::gpio::PC[10].set();
+    crate::sam4l::gpio::PC[10].make_output();
+    &crate::sam4l::gpio::PC[10].set();
 
-    let pin2: &mut gpio::Pin = &mut sam4l::gpio::PC[31]; // It's on D2 of the IMIX
+    let pin2: &mut gpio::Pin = &mut crate::sam4l::gpio::PC[31]; // It's on D2 of the IMIX
     pin2.make_output();
     pin2.set();
 
-    //sam4l::spi::SPI_SLAVE.set_active_peripheral(sam4l::spi::Peripheral::Peripheral0);
+    //crate::sam4l::spi::SPI_SLAVE.set_active_peripheral(crate::sam4l::spi::Peripheral::Peripheral0);
     SPI_SLAVE.set_client(Some(&SPISLAVECB));
     SPI_SLAVE.init(); // SpiSlave::init
     SPI_SLAVE.read_write_bytes(Some(&mut BUF2), Some(&mut BUF1), 8);
@@ -82,7 +82,7 @@ pub unsafe fn spi_slave_dummy_test() {
 
     // YES interrupts are up, prints 0x07 all the way
     // SPI_SLAVE.set_write_byte(SPI_SLAVE.are_interrupts_up());
-    //sam4l::spi::SPI_SLAVE.set_baud_rate(1000000);
+    //crate::sam4l::spi::SPI_SLAVE.set_baud_rate(1000000);
 
     // pin2.clear();
 

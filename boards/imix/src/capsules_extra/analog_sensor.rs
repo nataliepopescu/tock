@@ -9,9 +9,9 @@
 //!
 //! It includes support for analog light sensors and analog temperature sensors.
 
-use kernel::ErrorCode;
-use kernel::hil;
-use kernel::utilities::cells::OptionalCell;
+use crate::kernel::ErrorCode;
+use crate::kernel::hil;
+use crate::kernel::utilities::cells::OptionalCell;
 
 /// The type of the sensor implies how the raw ADC reading should be converted
 /// to a light value.
@@ -29,7 +29,7 @@ pub struct AnalogLightSensor<'a, A: hil::adc::Adc<'a>> {
 impl<'a, A: hil::adc::Adc<'a>> AnalogLightSensor<'a, A> {
     pub fn new(
         adc: &'a A,
-        channel: &'a <A as kernel::hil::adc::Adc<'a>>::Channel,
+        channel: &'a <A as crate::kernel::hil::adc::Adc<'a>>::Channel,
         sensor_type: AnalogLightSensorType,
     ) -> Self {
         Self {
@@ -81,7 +81,7 @@ pub struct AnalogTemperatureSensor<'a, A: hil::adc::Adc<'a>> {
 impl<'a, A: hil::adc::Adc<'a>> AnalogTemperatureSensor<'a, A> {
     pub fn new(
         adc: &'a A,
-        channel: &'a <A as kernel::hil::adc::Adc<'a>>::Channel,
+        channel: &'a <A as crate::kernel::hil::adc::Adc<'a>>::Channel,
         sensor_type: AnalogTemperatureSensorType,
     ) -> Self {
         Self {

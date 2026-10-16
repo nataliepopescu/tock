@@ -13,7 +13,7 @@ use core::marker::PhantomData;
 use core::mem::{self, size_of};
 use core::ops::Range;
 use core::ptr;
-use kernel::errorcode::ErrorCode;
+use crate::kernel::errorcode::ErrorCode;
 
 use crate::cortexm::CortexMVariant;
 
@@ -257,7 +257,7 @@ impl core::convert::TryFrom<&[u8]> for CortexMStoredState {
 }
 
 /// Implementation of the
-/// [`UserspaceKernelBoundary`](kernel::syscall::UserspaceKernelBoundary) for
+/// [`UserspaceKernelBoundary`](crate::kernel::syscall::UserspaceKernelBoundary) for
 /// the Cortex-M non-floating point architecture.
 pub struct SysCall<A: CortexMVariant>(PhantomData<A>);
 
@@ -267,7 +267,7 @@ impl<A: CortexMVariant> SysCall<A> {
     }
 }
 
-impl<A: CortexMVariant> kernel::syscall::UserspaceKernelBoundary for SysCall<A> {
+impl<A: CortexMVariant> crate::kernel::syscall::UserspaceKernelBoundary for SysCall<A> {
     type StoredState = CortexMStoredState;
 
     fn initial_process_app_brk_size(&self) -> usize {
@@ -306,7 +306,7 @@ impl<A: CortexMVariant> kernel::syscall::UserspaceKernelBoundary for SysCall<A> 
         accessible_memory_start: *const u8,
         app_brk: *const u8,
         state: &mut Self::StoredState,
-        return_value: kernel::syscall::SyscallReturn,
+        return_value: crate::kernel::syscall::SyscallReturn,
     ) -> Result<(), ()> {
         // For the Cortex-M arch, write the return values in the same
         // place that they were originally passed in (i.e. at the
@@ -350,7 +350,7 @@ impl<A: CortexMVariant> kernel::syscall::UserspaceKernelBoundary for SysCall<A> 
         // https://doc.rust-lang.org/std/primitive.pointer.html#safety-13
         let (r0_ref, r1_ref, r2_ref, r3_ref) = unsafe { (&mut *r0, &mut *r1, &mut *r2, &mut *r3) };
 
-        kernel::utilities::arch_helpers::encode_syscall_return_trd104(
+        crate::kernel::utilities::arch_helpers::encode_syscall_return_trd104(
             &return_value.into(),
             r0_ref,
             r1_ref,
@@ -378,7 +378,7 @@ impl<A: CortexMVariant> kernel::syscall::UserspaceKernelBoundary for SysCall<A> 
         accessible_memory_start: *const u8,
         app_brk: *const u8,
         state: &mut CortexMStoredState,
-        callback: kernel::process::FunctionCall,
+        callback: crate::kernel::process::FunctionCall,
     ) -> Result<(), ()> {
         // Ensure that [`state.psp`, `state.psp + SVC_FRAME_SIZE`] is within
         // process-accessible memory. Alignment is guaranteed by hardware.
@@ -405,7 +405,7 @@ impl<A: CortexMVariant> kernel::syscall::UserspaceKernelBoundary for SysCall<A> 
             ptr::write(stack_bottom.add(5), state.yield_pc | 1); // ... -> LR
 
             // Write upcall arguments to the proper stack locations.
-            kernel::utilities::arch_helpers::encode_upcall_trd104_ptr(
+            crate::kernel::utilities::arch_helpers::encode_upcall_trd104_ptr(
                 &callback,
                 stack_bottom.add(0).cast::<u32>(), // -> R0
                 stack_bottom.add(1).cast::<u32>(), // -> R1
@@ -422,7 +422,7 @@ impl<A: CortexMVariant> kernel::syscall::UserspaceKernelBoundary for SysCall<A> 
         accessible_memory_start: *const u8,
         app_brk: *const u8,
         state: &mut CortexMStoredState,
-    ) -> (kernel::syscall::ContextSwitchReason, Option<*const u8>) {
+    ) -> (crate::kernel::syscall::ContextSwitchReason, Option<*const u8>) {
         let new_stack_pointer =
             unsafe { A::switch_to_user(state.psp as *const usize, &mut state.regs) };
 
@@ -450,7 +450,7 @@ impl<A: CortexMVariant> kernel::syscall::UserspaceKernelBoundary for SysCall<A> 
         let switch_reason = if app_fault == 1 || invalid_stack_pointer {
             // APP_HARD_FAULT takes priority. This means we hit the hardfault
             // handler and this process faulted.
-            kernel::syscall::ContextSwitchReason::Fault
+            crate::kernel::syscall::ContextSwitchReason::Fault
         } else if syscall_fired == 1 {
             // SAFETY: We verified that there is room on the stack for the
             // service frame so we can safely create pointers to that memory on
@@ -498,7 +498,7 @@ impl<A: CortexMVariant> kernel::syscall::UserspaceKernelBoundary for SysCall<A> 
 
             // Use the helper function to convert these raw values into a Tock
             // `Syscall` type.
-            let syscall = kernel::utilities::arch_helpers::syscall_from_register_arguments_trd104(
+            let syscall = crate::kernel::utilities::arch_helpers::syscall_from_register_arguments_trd104(
                 svc_num,
                 r0,
                 r1.into(),
@@ -507,13 +507,13 @@ impl<A: CortexMVariant> kernel::syscall::UserspaceKernelBoundary for SysCall<A> 
             );
 
             match syscall {
-                Some(s) => kernel::syscall::ContextSwitchReason::SyscallFired { syscall: s },
-                None => kernel::syscall::ContextSwitchReason::Fault,
+                Some(s) => crate::kernel::syscall::ContextSwitchReason::SyscallFired { syscall: s },
+                None => crate::kernel::syscall::ContextSwitchReason::Fault,
             }
         } else {
             // If none of the above cases are true its because the process was interrupted by an
             // ISR for a hardware event
-            kernel::syscall::ContextSwitchReason::Interrupted
+            crate::kernel::syscall::ContextSwitchReason::Interrupted
         };
 
         // Cast new_stack_pointer from a *const usize to a *const u8 to match

@@ -9,28 +9,28 @@
 //! -----
 //! ```rust
 //! let BMM150 = BMM150Component::new(mux_i2c, 0x10).finalize(
-//!     components::bmm150_component_static!(nrf5240::i2c::TWI));
-//! let ninedof = components::ninedof::NineDofComponent::new(board_kernel)
-//!     .finalize(components::ninedof_component_static!(BMM150));
+//!     crate::components::bmm150_component_static!(nrf5240::i2c::TWI));
+//! let ninedof = crate::components::ninedof::NineDofComponent::new(board_kernel)
+//!     .finalize(crate::components::ninedof_component_static!(BMM150));
 //! ```
 
-use capsules_core::virtualizers::virtual_i2c::{I2CDevice, MuxI2C};
-use capsules_extra::bmm150::BMM150;
+use crate::capsules_core::virtualizers::virtual_i2c::{I2CDevice, MuxI2C};
+use crate::capsules_extra::bmm150::BMM150;
 use core::mem::MaybeUninit;
-use kernel::component::Component;
-use kernel::hil::i2c;
+use crate::kernel::component::Component;
+use crate::kernel::hil::i2c;
 
 // Setup static space for the objects.
 #[macro_export]
 macro_rules! bmm150_component_static {
     ($I:ty $(,)?) => {{
         let i2c_device =
-            kernel::static_buf!(capsules_core::virtualizers::virtual_i2c::I2CDevice<$I>);
-        let buffer = kernel::static_buf!([u8; 8]);
-        let bmm150 = kernel::static_buf!(
-            capsules_extra::bmm150::BMM150<
+            crate::kernel::static_buf!(crate::capsules_core::virtualizers::virtual_i2c::I2CDevice<$I>);
+        let buffer = crate::kernel::static_buf!([u8; 8]);
+        let bmm150 = crate::kernel::static_buf!(
+            crate::capsules_extra::bmm150::BMM150<
                 'static,
-                capsules_core::virtualizers::virtual_i2c::I2CDevice<$I>,
+                crate::capsules_core::virtualizers::virtual_i2c::I2CDevice<$I>,
             >
         );
 

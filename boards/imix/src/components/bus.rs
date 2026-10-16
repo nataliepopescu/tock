@@ -8,49 +8,49 @@
 //!
 //! Intel 8080 Parallel Interface
 //!
-//! let bus = components::bus::Bus8080BusComponent::new(&stm32f412g::fsmc::FSMC).finalize(
-//!     components::bus8080_bus_component_static!(stm32f412g::fsmc::Fsmc)
+//! let bus = crate::components::bus::Bus8080BusComponent::new(&stm32f412g::fsmc::FSMC).finalize(
+//!     crate::components::bus8080_bus_component_static!(stm32f412g::fsmc::Fsmc)
 //! );
 //!
 //! SPI
 //!
 //! ```rust
-//! let bus = components::bus::SpiMasterBusComponent::new(spi_mux,
+//! let bus = crate::components::bus::SpiMasterBusComponent::new(spi_mux,
 //!                                                       chip_select,
 //!                                                       baud_rate,
 //!                                                       clock_phase,
 //!                                                       clock_polarity).finalize(
-//!     components::spi_bus_component_static!(nrf52840::spi::SPIM)
+//!     crate::components::spi_bus_component_static!(nrf52840::spi::SPIM)
 //! );
 //! ```
 
-use capsules_core::virtualizers::virtual_i2c::{I2CDevice, MuxI2C};
-use capsules_core::virtualizers::virtual_spi::MuxSpiMaster;
-use capsules_core::virtualizers::virtual_spi::VirtualSpiMasterDevice;
-use capsules_extra::bus::{Bus8080Bus, I2CMasterBus, SpiMasterBus};
+use crate::capsules_core::virtualizers::virtual_i2c::{I2CDevice, MuxI2C};
+use crate::capsules_core::virtualizers::virtual_spi::MuxSpiMaster;
+use crate::capsules_core::virtualizers::virtual_spi::VirtualSpiMasterDevice;
+use crate::capsules_extra::bus::{Bus8080Bus, I2CMasterBus, SpiMasterBus};
 use core::mem::MaybeUninit;
-use kernel::component::Component;
-use kernel::hil::bus8080;
-use kernel::hil::i2c;
-use kernel::hil::spi::{self, ClockPhase, ClockPolarity, SpiMasterDevice};
+use crate::kernel::component::Component;
+use crate::kernel::hil::bus8080;
+use crate::kernel::hil::i2c;
+use crate::kernel::hil::spi::{self, ClockPhase, ClockPolarity, SpiMasterDevice};
 
 // Setup static space for the objects.
 #[macro_export]
 macro_rules! bus8080_bus_component_static {
-    ($B:ty $(,)?) => {{ kernel::static_buf!(capsules_extra::bus::Bus8080Bus<'static, $B>) }};
+    ($B:ty $(,)?) => {{ crate::kernel::static_buf!(crate::capsules_extra::bus::Bus8080Bus<'static, $B>) }};
 }
 
 #[macro_export]
 macro_rules! spi_bus_component_static {
     ($S:ty $(,)?) => {{
-        let spi = kernel::static_buf!(
-            capsules_core::virtualizers::virtual_spi::VirtualSpiMasterDevice<'static, $S>
+        let spi = crate::kernel::static_buf!(
+            crate::capsules_core::virtualizers::virtual_spi::VirtualSpiMasterDevice<'static, $S>
         );
-        let address_buffer = kernel::static_buf!([u8; core::mem::size_of::<usize>()]);
-        let bus = kernel::static_buf!(
-            capsules_extra::bus::SpiMasterBus<
+        let address_buffer = crate::kernel::static_buf!([u8; core::mem::size_of::<usize>()]);
+        let bus = crate::kernel::static_buf!(
+            crate::capsules_extra::bus::SpiMasterBus<
                 'static,
-                capsules_core::virtualizers::virtual_spi::VirtualSpiMasterDevice<'static, $S>,
+                crate::capsules_core::virtualizers::virtual_spi::VirtualSpiMasterDevice<'static, $S>,
             >
         );
 
@@ -61,12 +61,12 @@ macro_rules! spi_bus_component_static {
 #[macro_export]
 macro_rules! i2c_master_bus_component_static {
     ($D:ty $(,)?) => {{
-        let address_buffer = kernel::static_buf!([u8; 1]);
-        let bus = kernel::static_buf!(capsules_extra::bus::I2CMasterBus<'static, $D>);
-        let i2c_device = kernel::static_buf!(
-            capsules_core::virtualizers::virtual_i2c::I2CDevice<
+        let address_buffer = crate::kernel::static_buf!([u8; 1]);
+        let bus = crate::kernel::static_buf!(crate::capsules_extra::bus::I2CMasterBus<'static, $D>);
+        let i2c_device = crate::kernel::static_buf!(
+            crate::capsules_core::virtualizers::virtual_i2c::I2CDevice<
                 'static,
-                capsules_extra::bus::I2CMasterBus<'static, $D>,
+                crate::capsules_extra::bus::I2CMasterBus<'static, $D>,
             >
         );
 

@@ -17,27 +17,27 @@
 //! and use the `USER` and `RESET` buttons to manually erase the log and reboot the imix,
 //! respectively.
 
-use capsules_core::virtualizers::virtual_alarm::{MuxAlarm, VirtualMuxAlarm};
-use capsules_extra::log;
+use crate::capsules_core::virtualizers::virtual_alarm::{MuxAlarm, VirtualMuxAlarm};
+use crate::capsules_extra::log;
 use core::cell::Cell;
 use core::ptr::addr_of_mut;
-use kernel::ErrorCode;
-use kernel::debug;
-use kernel::hil::flash;
-use kernel::hil::log::{LogRead, LogReadClient, LogWrite, LogWriteClient};
-use kernel::hil::time::{Alarm, AlarmClient, ConvertTicks};
-use kernel::static_init;
-use kernel::storage_volume;
-use kernel::utilities::cells::{NumericCellExt, TakeCell};
-use sam4l::ast::Ast;
-use sam4l::flashcalw;
+use crate::kernel::ErrorCode;
+use crate::kernel::debug;
+use crate::kernel::hil::flash;
+use crate::kernel::hil::log::{LogRead, LogReadClient, LogWrite, LogWriteClient};
+use crate::kernel::hil::time::{Alarm, AlarmClient, ConvertTicks};
+use crate::kernel::static_init;
+use crate::kernel::storage_volume;
+use crate::kernel::utilities::cells::{NumericCellExt, TakeCell};
+use crate::sam4l::ast::Ast;
+use crate::sam4l::flashcalw;
 
 // Allocate 1kiB volume for log storage.
 storage_volume!(LINEAR_TEST_LOG, 1);
 
 pub unsafe fn run(
     mux_alarm: &'static MuxAlarm<'static, Ast>,
-    flash_controller: &'static sam4l::flashcalw::FLASHCALW,
+    flash_controller: &'static crate::sam4l::flashcalw::FLASHCALW,
 ) {
     // Set up flash controller.
     flash_controller.configure();
@@ -48,7 +48,7 @@ pub unsafe fn run(
         Log,
         log::Log::new(&LINEAR_TEST_LOG, flash_controller, pagebuffer, false)
     );
-    kernel::deferred_call::DeferredCallClient::register(log);
+    crate::kernel::deferred_call::DeferredCallClient::register(log);
     flash::HasClient::set_client(flash_controller, log);
 
     let alarm = static_init!(

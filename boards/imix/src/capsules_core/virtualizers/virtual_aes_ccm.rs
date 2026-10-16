@@ -44,12 +44,12 @@
 //! -----
 //!
 //! ```rust,ignore
-//! # use capsules_core::test::aes_ccm::Test;
-//! # use capsules_core::virtual_aes_ccm;
-//! # use kernel::common::deferred_call::DeferredCallClient;
-//! # use kernel::hil::symmetric_encryption::{AES, AES128, AESCCM, AES_BLOCK_SIZE};
-//! # use kernel::static_init;
-//! # use sam4l::aes::{Aes, AES};
+//! # use crate::capsules_core::test::aes_ccm::Test;
+//! # use crate::capsules_core::virtual_aes_ccm;
+//! # use crate::kernel::common::deferred_call::DeferredCallClient;
+//! # use crate::kernel::hil::symmetric_encryption::{AES, AES128, AESCCM, AES_BLOCK_SIZE};
+//! # use crate::kernel::static_init;
+//! # use crate::sam4l::aes::{Aes, AES};
 //! type AESCCMMUX = virtual_aes_ccm::MuxAES128CCM<'static, Aes<'static>>;
 //! type AESCCMCLIENT = virtual_aes_ccm::VirtualAES128CCM<'static, AESCCMMUX>;
 //! // mux
@@ -82,15 +82,15 @@
 
 use core::cell::Cell;
 
-use kernel::ErrorCode;
-use kernel::collections::list::{List, ListLink, ListNode};
-use kernel::debug;
-use kernel::deferred_call::{DeferredCall, DeferredCallClient};
-use kernel::hil::symmetric_encryption;
-use kernel::hil::symmetric_encryption::{
+use crate::kernel::ErrorCode;
+use crate::kernel::collections::list::{List, ListLink, ListNode};
+use crate::kernel::debug;
+use crate::kernel::deferred_call::{DeferredCall, DeferredCallClient};
+use crate::kernel::hil::symmetric_encryption;
+use crate::kernel::hil::symmetric_encryption::{
     AES, AES_BLOCK_SIZE, AES128, AES128_KEY_SIZE, AESCBC, AESCtr, AESECB, CCM_NONCE_LENGTH,
 };
-use kernel::utilities::cells::{OptionalCell, TakeCell};
+use crate::kernel::utilities::cells::{OptionalCell, TakeCell};
 
 use crate::capsules_core::stream::SResult;
 use crate::capsules_core::stream::{encode_bytes, encode_u16};

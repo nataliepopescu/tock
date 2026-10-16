@@ -13,42 +13,42 @@
 //!
 //! With the default i2c address
 //! ```rust
-//! let bmp280 = components::bmp280::Bmp280Component::new(sensors_i2c_bus, mux_alarm).finalize(
-//!         components::bmp280_component_static!(nrf52::rtc::Rtc<'static>),
+//! let bmp280 = crate::components::bmp280::Bmp280Component::new(sensors_i2c_bus, mux_alarm).finalize(
+//!         crate::components::bmp280_component_static!(nrf52::rtc::Rtc<'static>),
 //!     );
 //! bmp280.begin_reset();
 //! ```
 //!
 //! With a specified i2c address
 //! ```rust
-//! let bmp280 = components::bmp280::Bmp280Component::new(sensors_i2c_bus, mux_alarm).finalize(
-//!         components::bmp280_component_static!(nrf52::rtc::Rtc<'static>, capsules_extra::bmp280::BASE_ADDR),
+//! let bmp280 = crate::components::bmp280::Bmp280Component::new(sensors_i2c_bus, mux_alarm).finalize(
+//!         crate::components::bmp280_component_static!(nrf52::rtc::Rtc<'static>, crate::capsules_extra::bmp280::BASE_ADDR),
 //!     );
 //! bmp280.begin_reset();
 //! ```
 
-use capsules_core::virtualizers::virtual_alarm::{MuxAlarm, VirtualMuxAlarm};
-use capsules_core::virtualizers::virtual_i2c::{I2CDevice, MuxI2C};
-use capsules_extra::bmp280::Bmp280;
+use crate::capsules_core::virtualizers::virtual_alarm::{MuxAlarm, VirtualMuxAlarm};
+use crate::capsules_core::virtualizers::virtual_i2c::{I2CDevice, MuxI2C};
+use crate::capsules_extra::bmp280::Bmp280;
 use core::mem::MaybeUninit;
-use kernel::component::Component;
-use kernel::hil::i2c;
-use kernel::hil::time::Alarm;
+use crate::kernel::component::Component;
+use crate::kernel::hil::i2c;
+use crate::kernel::hil::time::Alarm;
 
 #[macro_export]
 macro_rules! bmp280_component_static {
     ($A:ty, $I:ty $(,)?) => {{
         let i2c_device =
-            kernel::static_buf!(capsules_core::virtualizers::virtual_i2c::I2CDevice<'static, $I>);
-        let alarm = kernel::static_buf!(
-            capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, $A>
+            crate::kernel::static_buf!(crate::capsules_core::virtualizers::virtual_i2c::I2CDevice<'static, $I>);
+        let alarm = crate::kernel::static_buf!(
+            crate::capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, $A>
         );
-        let buffer = kernel::static_buf!([u8; capsules_extra::bmp280::BUFFER_SIZE]);
-        let bmp280 = kernel::static_buf!(
-            capsules_extra::bmp280::Bmp280<
+        let buffer = crate::kernel::static_buf!([u8; crate::capsules_extra::bmp280::BUFFER_SIZE]);
+        let bmp280 = crate::kernel::static_buf!(
+            crate::capsules_extra::bmp280::Bmp280<
                 'static,
                 VirtualMuxAlarm<'static, $A>,
-                capsules_core::virtualizers::virtual_i2c::I2CDevice<'static, $I>,
+                crate::capsules_core::virtualizers::virtual_i2c::I2CDevice<'static, $I>,
             >
         );
 
@@ -56,7 +56,7 @@ macro_rules! bmp280_component_static {
     }};
 }
 
-pub type Bmp280ComponentType<A, I> = capsules_extra::bmp280::Bmp280<'static, A, I>;
+pub type Bmp280ComponentType<A, I> = crate::capsules_extra::bmp280::Bmp280<'static, A, I>;
 
 pub struct Bmp280Component<A: 'static + Alarm<'static>, I: 'static + i2c::I2CMaster<'static>> {
     i2c_mux: &'static MuxI2C<'static, I>,
@@ -84,7 +84,7 @@ impl<A: 'static + Alarm<'static>, I: 'static + i2c::I2CMaster<'static>> Componen
     type StaticInput = (
         &'static mut MaybeUninit<I2CDevice<'static, I>>,
         &'static mut MaybeUninit<VirtualMuxAlarm<'static, A>>,
-        &'static mut MaybeUninit<[u8; capsules_extra::bmp280::BUFFER_SIZE]>,
+        &'static mut MaybeUninit<[u8; crate::capsules_extra::bmp280::BUFFER_SIZE]>,
         &'static mut MaybeUninit<
             Bmp280<'static, VirtualMuxAlarm<'static, A>, I2CDevice<'static, I>>,
         >,
@@ -96,7 +96,7 @@ impl<A: 'static + Alarm<'static>, I: 'static + i2c::I2CMaster<'static>> Componen
         let bmp280_alarm = s.1.write(VirtualMuxAlarm::new(self.alarm_mux));
         bmp280_alarm.setup();
 
-        let buffer = s.2.write([0; capsules_extra::bmp280::BUFFER_SIZE]);
+        let buffer = s.2.write([0; crate::capsules_extra::bmp280::BUFFER_SIZE]);
 
         let bmp280 = s.3.write(Bmp280::new(bmp280_i2c, buffer, bmp280_alarm));
         bmp280_i2c.set_client(bmp280);

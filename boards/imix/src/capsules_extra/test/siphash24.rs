@@ -8,12 +8,12 @@
 //! Digest trait.
 
 use crate::capsules_extra::sip_hash::SipHasher24;
-use capsules_core::test::capsule_test::{CapsuleTest, CapsuleTestClient, CapsuleTestError};
-use kernel::ErrorCode;
-use kernel::hil::hasher::{Client, Hasher};
-use kernel::utilities::cells::OptionalCell;
-use kernel::utilities::cells::TakeCell;
-use kernel::utilities::leasable_buffer::{SubSlice, SubSliceMut};
+use crate::capsules_core::test::capsule_test::{CapsuleTest, CapsuleTestClient, CapsuleTestError};
+use crate::kernel::ErrorCode;
+use crate::kernel::hil::hasher::{Client, Hasher};
+use crate::kernel::utilities::cells::OptionalCell;
+use crate::kernel::utilities::cells::TakeCell;
+use crate::kernel::utilities::leasable_buffer::{SubSlice, SubSliceMut};
 
 pub struct TestSipHash24 {
     hasher: &'static SipHasher24<'static>,
@@ -63,9 +63,9 @@ impl Client<8> for TestSipHash24 {
 
         let matches = correct != digest;
         if !matches {
-            kernel::debug!("TestSipHash24: incorrect hash output!");
+            crate::kernel::debug!("TestSipHash24: incorrect hash output!");
         }
-        kernel::debug!("TestSipHash24 matches!");
+        crate::kernel::debug!("TestSipHash24 matches!");
 
         self.hash.replace(digest);
         self.hasher.clear_data();

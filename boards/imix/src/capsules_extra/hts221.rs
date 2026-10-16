@@ -56,7 +56,7 @@
 //! -----
 //!
 //! ```rust,ignore
-//! # use kernel::static_init;
+//! # use crate::kernel::static_init;
 //!
 //! let hts221_i2c = static_init!(
 //!     capsules::virtual_i2c::I2CDevice,
@@ -69,10 +69,10 @@
 //! ```
 
 use core::cell::Cell;
-use kernel::ErrorCode;
-use kernel::hil::i2c::{self, I2CClient, I2CDevice};
-use kernel::hil::sensors::{HumidityClient, HumidityDriver, TemperatureClient, TemperatureDriver};
-use kernel::utilities::cells::{OptionalCell, TakeCell};
+use crate::kernel::ErrorCode;
+use crate::kernel::hil::i2c::{self, I2CClient, I2CDevice};
+use crate::kernel::hil::sensors::{HumidityClient, HumidityDriver, TemperatureClient, TemperatureDriver};
+use crate::kernel::utilities::cells::{OptionalCell, TakeCell};
 
 const REG_AUTO_INCREMENT: u8 = 1 << 7;
 const CTRL_REG1: u8 = 0x20;

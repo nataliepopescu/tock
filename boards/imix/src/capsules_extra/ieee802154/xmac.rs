@@ -28,16 +28,16 @@
 //! Usage
 //! -----
 //! This capsule implements the `capsules::ieee802154::mac::Mac` interface while
-//! wrapping an actual `kernel::hil::radio::Radio' with a similar interface, and
+//! wrapping an actual `crate::kernel::hil::radio::Radio' with a similar interface, and
 //! can be used as the backend for a `capsules::ieee802154::device::MacDevice`,
 //! which should fully encode frames before passing it to this layer.
 //!
 //! In general, given a radio driver `RF233Device`,
-//! a `kernel::hil::time::Alarm`, and a `kernel::hil::rng::Rng` device, the
+//! a `crate::kernel::hil::time::Alarm`, and a `crate::kernel::hil::rng::Rng` device, the
 //! necessary modifications to the board configuration are shown below for `imix`s:
 //!
 //! ```rust,ignore
-//! # use kernel::static_init;
+//! # use crate::kernel::static_init;
 //!
 //! // main.rs
 //!
@@ -85,11 +85,11 @@
 use crate::capsules_extra::ieee802154::mac::Mac;
 use crate::capsules_extra::net::ieee802154::{FrameType, FrameVersion, Header, MacAddress, PanID};
 use core::cell::Cell;
-use kernel::ErrorCode;
-use kernel::hil::radio;
-use kernel::hil::rng::{self, Rng};
-use kernel::hil::time::{self, Alarm, ConvertTicks, Ticks};
-use kernel::utilities::cells::{OptionalCell, TakeCell};
+use crate::kernel::ErrorCode;
+use crate::kernel::hil::radio;
+use crate::kernel::hil::rng::{self, Rng};
+use crate::kernel::hil::time::{self, Alarm, ConvertTicks, Ticks};
+use crate::kernel::utilities::cells::{OptionalCell, TakeCell};
 
 // Time the radio will remain awake listening for packets before sleeping.
 // Observing the RF233, receive callbacks for preambles are generated only after

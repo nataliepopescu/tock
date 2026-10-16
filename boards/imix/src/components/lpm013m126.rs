@@ -17,13 +17,13 @@
 //!     ),
 //! );
 //! let display
-//!     = components::lpm013m126::Lpm013m126Component::new(
+//!     = crate::components::lpm013m126::Lpm013m126Component::new(
 //!         disp_pin,
 //!         extcomin_pin,
 //!         alarm_mux,
 //!     )
 //!     .finalize(
-//!         components::lpm013m126_component_static!(
+//!         crate::components::lpm013m126_component_static!(
 //!             nrf52840::rtc::Rtc<'static>,
 //!             nrf52840::gpio::GPIOPin,
 //!             VirtualSpiMasterDevice<'static, nrf52840::spi::SPIM>,
@@ -35,28 +35,28 @@
 //! // wait for `ScreenClient::screen_is_ready` callback
 //! ```
 
-use capsules_core::virtualizers::virtual_alarm::{MuxAlarm, VirtualMuxAlarm};
-use capsules_core::virtualizers::virtual_spi::{MuxSpiMaster, VirtualSpiMasterDevice};
-use capsules_extra::lpm013m126::Lpm013m126;
+use crate::capsules_core::virtualizers::virtual_alarm::{MuxAlarm, VirtualMuxAlarm};
+use crate::capsules_core::virtualizers::virtual_spi::{MuxSpiMaster, VirtualSpiMasterDevice};
+use crate::capsules_extra::lpm013m126::Lpm013m126;
 use core::mem::MaybeUninit;
-use kernel::component::Component;
-use kernel::hil::spi::{SpiMaster, SpiMasterDevice};
-use kernel::hil::time::Alarm;
-use kernel::hil::{self, gpio};
+use crate::kernel::component::Component;
+use crate::kernel::hil::spi::{SpiMaster, SpiMasterDevice};
+use crate::kernel::hil::time::Alarm;
+use crate::kernel::hil::{self, gpio};
 
 /// Setup static space for the driver and its requirements.
 #[macro_export]
 macro_rules! lpm013m126_component_static {
     ($A:ty, $P:ty, $S:ty $(,)?) => {{
-        let alarm = kernel::static_buf!(
-            capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, $A>
+        let alarm = crate::kernel::static_buf!(
+            crate::capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, $A>
         );
-        let buffer = kernel::static_buf!([u8; capsules_extra::lpm013m126::BUF_LEN]);
-        let spi_device = kernel::static_buf!(
-            capsules_core::virtualizers::virtual_spi::VirtualSpiMasterDevice<'static, $S>
+        let buffer = crate::kernel::static_buf!([u8; crate::capsules_extra::lpm013m126::BUF_LEN]);
+        let spi_device = crate::kernel::static_buf!(
+            crate::capsules_core::virtualizers::virtual_spi::VirtualSpiMasterDevice<'static, $S>
         );
-        let lpm013m126 = kernel::static_buf!(
-            capsules_extra::lpm013m126::Lpm013m126<
+        let lpm013m126 = crate::kernel::static_buf!(
+            crate::capsules_extra::lpm013m126::Lpm013m126<
                 'static,
                 VirtualMuxAlarm<'static, $A>,
                 $P,
@@ -87,7 +87,7 @@ where
     P: 'static + gpio::Pin,
     S: 'static + SpiMaster<'static>,
 {
-    pub fn new<I: kernel::hil::spi::cs::IntoChipSelect<S::ChipSelect, hil::spi::cs::ActiveHigh>>(
+    pub fn new<I: crate::kernel::hil::spi::cs::IntoChipSelect<S::ChipSelect, hil::spi::cs::ActiveHigh>>(
         spi: &'static MuxSpiMaster<'static, S>,
 
         chip_select: I,
@@ -113,7 +113,7 @@ where
 {
     type StaticInput = (
         &'static mut MaybeUninit<VirtualMuxAlarm<'static, A>>,
-        &'static mut MaybeUninit<[u8; capsules_extra::lpm013m126::BUF_LEN]>,
+        &'static mut MaybeUninit<[u8; crate::capsules_extra::lpm013m126::BUF_LEN]>,
         &'static mut MaybeUninit<VirtualSpiMasterDevice<'static, S>>,
         &'static mut MaybeUninit<
             Lpm013m126<'static, VirtualMuxAlarm<'static, A>, P, VirtualSpiMasterDevice<'static, S>>,
@@ -130,7 +130,7 @@ where
         let lpm013m126_alarm = s.0.write(VirtualMuxAlarm::new(self.alarm_mux));
         lpm013m126_alarm.setup();
 
-        let buffer = s.1.write([0; capsules_extra::lpm013m126::BUF_LEN]);
+        let buffer = s.1.write([0; crate::capsules_extra::lpm013m126::BUF_LEN]);
 
         let spi_device =
             s.2.write(VirtualSpiMasterDevice::new(self.spi, self.chip_select));
@@ -151,7 +151,7 @@ where
         // Because this capsule uses multiple deferred calls internally, this
         // takes care of registering the deferred calls as well. Thus there is
         // no need to explicitly call
-        // `kernel::deferred_call::DeferredCallClient::register`.
+        // `crate::kernel::deferred_call::DeferredCallClient::register`.
         lpm013m126.setup().unwrap();
         lpm013m126
     }

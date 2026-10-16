@@ -4,26 +4,26 @@
 
 //! Component for LPS25HB pressure sensor.
 
-use capsules_core::virtualizers::virtual_i2c::{I2CDevice, MuxI2C};
-use capsules_extra::lps25hb::LPS25HB;
+use crate::capsules_core::virtualizers::virtual_i2c::{I2CDevice, MuxI2C};
+use crate::capsules_extra::lps25hb::LPS25HB;
 use core::mem::MaybeUninit;
-use kernel::capabilities::MemoryAllocationCapability;
-use kernel::component::Component;
-use kernel::hil::gpio;
-use kernel::hil::i2c;
+use crate::kernel::capabilities::MemoryAllocationCapability;
+use crate::kernel::component::Component;
+use crate::kernel::hil::gpio;
+use crate::kernel::hil::i2c;
 
 #[macro_export]
 macro_rules! lps25hb_component_static {
     ($I:ty $(,)?) => {{
         let i2c_device =
-            kernel::static_buf!(capsules_core::virtualizers::virtual_i2c::I2CDevice<'static>);
-        let lps25hb = kernel::static_buf!(
-            capsules_extra::lps25hb::LPS25HB<
+            crate::kernel::static_buf!(crate::capsules_core::virtualizers::virtual_i2c::I2CDevice<'static>);
+        let lps25hb = crate::kernel::static_buf!(
+            crate::capsules_extra::lps25hb::LPS25HB<
                 'static,
-                capsules_core::virtualizers::virtual_i2c::I2CDevice<'static, $I>,
+                crate::capsules_core::virtualizers::virtual_i2c::I2CDevice<'static, $I>,
             >
         );
-        let buffer = kernel::static_buf!([u8; capsules_extra::lps25hb::BUF_LEN]);
+        let buffer = crate::kernel::static_buf!([u8; crate::capsules_extra::lps25hb::BUF_LEN]);
 
         (i2c_device, lps25hb, buffer)
     }};
@@ -36,7 +36,7 @@ pub struct Lps25hbComponent<
     i2c_mux: &'static MuxI2C<'static, I>,
     i2c_address: u8,
     interrupt_pin: &'static dyn gpio::InterruptPin<'static>,
-    board_kernel: &'static kernel::Kernel,
+    board_kernel: &'static crate::kernel::Kernel,
     driver_num: usize,
     mem_cap: CAP,
 }
@@ -48,7 +48,7 @@ impl<I: 'static + i2c::I2CMaster<'static>, CAP: MemoryAllocationCapability + 'st
         i2c_mux: &'static MuxI2C<'static, I>,
         i2c_address: u8,
         interrupt_pin: &'static dyn gpio::InterruptPin<'static>,
-        board_kernel: &'static kernel::Kernel,
+        board_kernel: &'static crate::kernel::Kernel,
         driver_num: usize,
         mem_cap: CAP,
     ) -> Self {
@@ -69,7 +69,7 @@ impl<I: 'static + i2c::I2CMaster<'static>, CAP: MemoryAllocationCapability + 'st
     type StaticInput = (
         &'static mut MaybeUninit<I2CDevice<'static, I>>,
         &'static mut MaybeUninit<LPS25HB<'static, I2CDevice<'static, I>>>,
-        &'static mut MaybeUninit<[u8; capsules_extra::lps25hb::BUF_LEN]>,
+        &'static mut MaybeUninit<[u8; crate::capsules_extra::lps25hb::BUF_LEN]>,
     );
     type Output = &'static LPS25HB<'static, I2CDevice<'static, I>>;
 
@@ -80,7 +80,7 @@ impl<I: 'static + i2c::I2CMaster<'static>, CAP: MemoryAllocationCapability + 'st
 
         let lps25hb_i2c = s.0.write(I2CDevice::new(self.i2c_mux, self.i2c_address));
 
-        let buffer = s.2.write([0; capsules_extra::lps25hb::BUF_LEN]);
+        let buffer = s.2.write([0; crate::capsules_extra::lps25hb::BUF_LEN]);
 
         let lps25hb =
             s.1.write(LPS25HB::new(lps25hb_i2c, self.interrupt_pin, buffer, grant));

@@ -7,9 +7,9 @@
 //! Usage
 //! -----
 //! ```rust
-//! let led_matrix = components::led_matrix::LedMatrixComponent::new(
+//! let led_matrix = crate::components::led_matrix::LedMatrixComponent::new(
 //!     mux_alarm,
-//!     components::led_line_component_static!(
+//!     crate::components::led_line_component_static!(
 //!         nrf52833::gpio::GPIOPin,
 //!         &nrf52833_peripherals.gpio_port[LED_MATRIX_COLS[0]],
 //!         &nrf52833_peripherals.gpio_port[LED_MATRIX_COLS[1]],
@@ -17,7 +17,7 @@
 //!         &nrf52833_peripherals.gpio_port[LED_MATRIX_COLS[3]],
 //!         &nrf52833_peripherals.gpio_port[LED_MATRIX_COLS[4]],
 //!     ),
-//!     components::led_line_component_static!(
+//!     crate::components::led_line_component_static!(
 //!         nrf52833::gpio::GPIOPin,
 //!         &nrf52833_peripherals.gpio_port[LED_MATRIX_ROWS[0]],
 //!         &nrf52833_peripherals.gpio_port[LED_MATRIX_ROWS[1]],
@@ -25,11 +25,11 @@
 //!         &nrf52833_peripherals.gpio_port[LED_MATRIX_ROWS[3]],
 //!         &nrf52833_peripherals.gpio_port[LED_MATRIX_ROWS[4]],
 //!     ),
-//!     kernel::hil::gpio::ActivationMode::ActiveLow,
-//!     kernel::hil::gpio::ActivationMode::ActiveHigh,
+//!     crate::kernel::hil::gpio::ActivationMode::ActiveLow,
+//!     crate::kernel::hil::gpio::ActivationMode::ActiveHigh,
 //!     60,
 //! )
-//! .finalize(components::led_matrix_component_static!(
+//! .finalize(crate::components::led_matrix_component_static!(
 //!     nrf52833::gpio::GPIOPin,
 //!     nrf52::rtc::Rtc<'static>,
 //!     5,
@@ -41,9 +41,9 @@
 //! ----------------
 //!
 //! ```rust
-//! let led = components::led_matrix_led!(
+//! let led = crate::components::led_matrix_led!(
 //!     nrf52::gpio::GPIOPin<'static>,
-//!     capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, nrf52::rtc::Rtc<'static>>,
+//!     crate::capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, nrf52::rtc::Rtc<'static>>,
 //!     led,
 //!     1,
 //!     2
@@ -54,9 +54,9 @@
 //! ----------------
 //!
 //! ```rust
-//! let leds = components::led_matrix_leds!(
+//! let leds = crate::components::led_matrix_leds!(
 //!     nrf52::gpio::GPIOPin<'static>,
-//!     capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, nrf52::rtc::Rtc<'static>>,
+//!     crate::capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, nrf52::rtc::Rtc<'static>>,
 //!     led,
 //!     (0, 0),
 //!     (1, 0),
@@ -69,25 +69,25 @@
 //! ```
 //!
 
-use capsules_core::virtualizers::virtual_alarm::{MuxAlarm, VirtualMuxAlarm};
-use capsules_extra::led_matrix::LedMatrixDriver;
+use crate::capsules_core::virtualizers::virtual_alarm::{MuxAlarm, VirtualMuxAlarm};
+use crate::capsules_extra::led_matrix::LedMatrixDriver;
 use core::mem::MaybeUninit;
-use kernel::component::Component;
-use kernel::hil::gpio::{ActivationMode, Pin};
-use kernel::hil::time::Alarm;
+use crate::kernel::component::Component;
+use crate::kernel::hil::gpio::{ActivationMode, Pin};
+use crate::kernel::hil::time::Alarm;
 
 #[macro_export]
 macro_rules! led_matrix_component_static {
     ($Pin:ty, $A: ty, $num_cols: literal, $num_rows: literal $(,)?) => {{
-        let buffer = kernel::static_buf!([u8; $num_cols * $num_rows / 8 + 1]);
-        let alarm = kernel::static_buf!(
-            capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, $A>
+        let buffer = crate::kernel::static_buf!([u8; $num_cols * $num_rows / 8 + 1]);
+        let alarm = crate::kernel::static_buf!(
+            crate::capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, $A>
         );
-        let led = kernel::static_buf!(
-            capsules_extra::led_matrix::LedMatrixDriver<
+        let led = crate::kernel::static_buf!(
+            crate::capsules_extra::led_matrix::LedMatrixDriver<
                 'static,
                 $Pin,
-                capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, $A>,
+                crate::capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, $A>,
             >
         );
 
@@ -98,8 +98,8 @@ macro_rules! led_matrix_component_static {
 #[macro_export]
 macro_rules! led_line_component_static {
     ($Pin:ty, $($L:expr),+ $(,)?) => {{
-        use kernel::count_expressions;
-        use kernel::static_init;
+        use crate::kernel::count_expressions;
+        use crate::kernel::static_init;
         const NUM_LEDS: usize = count_expressions!($($L),+);
 
         static_init!(
@@ -119,7 +119,7 @@ macro_rules! led_line_component_static {
 #[macro_export]
 macro_rules! led_matrix_led {
     ($Pin:ty, $A: ty, $led_matrix: expr, $col: expr, $row: expr) => {{
-        use capsules_extra::led_matrix::LedMatrixLed;
+        use crate::capsules_extra::led_matrix::LedMatrixLed;
         static_init!(
             LedMatrixLed<'static, $Pin, $A>,
             LedMatrixLed::new($led_matrix, $col, $row)
@@ -130,8 +130,8 @@ macro_rules! led_matrix_led {
 #[macro_export]
 macro_rules! led_matrix_leds {
     ($Pin:ty, $A: ty, $led_matrix: expr, $(($col: expr, $row: expr)),+) => {{
-        use capsules_extra::led_matrix::LedMatrixLed;
-        use kernel::count_expressions;
+        use crate::capsules_extra::led_matrix::LedMatrixLed;
+        use crate::kernel::count_expressions;
 
         const NUM_LEDS: usize = count_expressions!($(($col, $row)),+);
         let leds = static_init!(

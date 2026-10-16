@@ -19,9 +19,9 @@ use crate::capsules_extra::net::udp::UDPHeader;
 use crate::capsules_extra::net::udp::driver::UDPDriver;
 use crate::capsules_extra::net::udp::udp_port_table::{PortQuery, UdpPortBindingRx};
 
-use kernel::collections::list::{List, ListLink, ListNode};
-use kernel::debug;
-use kernel::utilities::cells::{MapCell, OptionalCell};
+use crate::kernel::collections::list::{List, ListLink, ListNode};
+use crate::kernel::debug;
+use crate::kernel::utilities::cells::{MapCell, OptionalCell};
 
 pub struct MuxUdpReceiver<'a> {
     rcvr_list: List<'a, UDPReceiver<'a>>,

@@ -10,13 +10,13 @@
 use core::cell::Cell;
 use core::cmp;
 
-use capsules_core::test::capsule_test::{CapsuleTest, CapsuleTestClient};
-use kernel::ErrorCode;
-use kernel::debug;
-use kernel::hil::digest;
-use kernel::utilities::cells::{OptionalCell, TakeCell};
-use kernel::utilities::leasable_buffer::SubSlice;
-use kernel::utilities::leasable_buffer::SubSliceMut;
+use crate::capsules_core::test::capsule_test::{CapsuleTest, CapsuleTestClient};
+use crate::kernel::ErrorCode;
+use crate::kernel::debug;
+use crate::kernel::hil::digest;
+use crate::kernel::utilities::cells::{OptionalCell, TakeCell};
+use crate::kernel::utilities::leasable_buffer::SubSlice;
+use crate::kernel::utilities::leasable_buffer::SubSliceMut;
 
 const SHA1_DIGEST_LEN: usize = 20;
 

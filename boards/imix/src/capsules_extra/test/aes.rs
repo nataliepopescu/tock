@@ -4,15 +4,15 @@
 
 //! Test the AES hardware.
 
-use capsules_core::test::capsule_test::{CapsuleTest, CapsuleTestClient};
+use crate::capsules_core::test::capsule_test::{CapsuleTest, CapsuleTestClient};
 use core::cell::Cell;
-use kernel::debug;
-use kernel::hil;
-use kernel::hil::symmetric_encryption::{
+use crate::kernel::debug;
+use crate::kernel::hil;
+use crate::kernel::hil::symmetric_encryption::{
     AES, AES_BLOCK_SIZE, AES128, AES128_KEY_SIZE, AESCBC, AESCtr, AESECB,
 };
-use kernel::utilities::cells::OptionalCell;
-use kernel::utilities::cells::TakeCell;
+use crate::kernel::utilities::cells::OptionalCell;
+use crate::kernel::utilities::cells::TakeCell;
 
 pub struct TestAes128Ctr<'a, A: 'a> {
     aes: &'a A,

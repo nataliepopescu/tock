@@ -32,24 +32,24 @@
 //! lowpan_frag_test.start(); // If flashing the transmitting Imix
 //! ```
 
-use capsules_core::virtualizers::virtual_alarm::{MuxAlarm, VirtualMuxAlarm};
-use capsules_extra::ieee802154::device::{MacDevice, TxClient};
-use capsules_extra::net::ieee802154::MacAddress;
-use capsules_extra::net::ipv6::ip_utils::{IPAddr, ip6_nh};
-use capsules_extra::net::ipv6::{IP6Header, IP6Packet, IPPayload, TransportHeader};
-use capsules_extra::net::sixlowpan::sixlowpan_compression;
-use capsules_extra::net::sixlowpan::sixlowpan_state::{
+use crate::capsules_core::virtualizers::virtual_alarm::{MuxAlarm, VirtualMuxAlarm};
+use crate::capsules_extra::ieee802154::device::{MacDevice, TxClient};
+use crate::capsules_extra::net::ieee802154::MacAddress;
+use crate::capsules_extra::net::ipv6::ip_utils::{IPAddr, ip6_nh};
+use crate::capsules_extra::net::ipv6::{IP6Header, IP6Packet, IPPayload, TransportHeader};
+use crate::capsules_extra::net::sixlowpan::sixlowpan_compression;
+use crate::capsules_extra::net::sixlowpan::sixlowpan_state::{
     RxState, Sixlowpan, SixlowpanRxClient, SixlowpanState, TxState,
 };
-use capsules_extra::net::udp::UDPHeader;
+use crate::capsules_extra::net::udp::UDPHeader;
 use core::cell::Cell;
 use core::ptr::addr_of_mut;
 use core::sync::atomic::{AtomicUsize, Ordering};
-use kernel::ErrorCode;
-use kernel::debug;
-use kernel::hil::radio;
-use kernel::hil::time::{self, Alarm, ConvertTicks};
-use kernel::static_init;
+use crate::kernel::ErrorCode;
+use crate::kernel::debug;
+use crate::kernel::hil::radio;
+use crate::kernel::hil::time::{self, Alarm, ConvertTicks};
+use crate::kernel::static_init;
 
 pub const MLP: [u8; 8] = [0xc0, 0xc1, 0xc2, 0xc3, 0xc4, 0xc5, 0xc6, 0xc7];
 
@@ -121,15 +121,15 @@ static mut UDP_DGRAM: [u8; PAYLOAD_LEN - UDP_HDR_SIZE] = [0; PAYLOAD_LEN - UDP_H
 static mut IP6_DG_OPT: Option<IP6Packet> = None;
 //END changes
 
-type Rf233 = capsules_extra::rf233::RF233<
+type Rf233 = crate::capsules_extra::rf233::RF233<
     'static,
-    capsules_core::virtualizers::virtual_spi::VirtualSpiMasterDevice<
+    crate::capsules_core::virtualizers::virtual_spi::VirtualSpiMasterDevice<
         'static,
-        sam4l::spi::SpiHw<'static>,
+        crate::sam4l::spi::SpiHw<'static>,
     >,
 >;
 type Ieee802154MacDevice =
-    components::ieee802154::Ieee802154ComponentMacDeviceType<Rf233, sam4l::aes::Aes<'static>>;
+    crate::components::ieee802154::Ieee802154ComponentMacDeviceType<Rf233, crate::sam4l::aes::Aes<'static>>;
 
 pub struct LowpanTest<'a, A: time::Alarm<'a>> {
     alarm: &'a A,
@@ -139,15 +139,15 @@ pub struct LowpanTest<'a, A: time::Alarm<'a>> {
 }
 
 pub unsafe fn initialize_all(
-    mux_mac: &'static capsules_extra::ieee802154::virtual_mac::MuxMac<'static, Ieee802154MacDevice>,
-    mux_alarm: &'static MuxAlarm<'static, sam4l::ast::Ast>,
+    mux_mac: &'static crate::capsules_extra::ieee802154::virtual_mac::MuxMac<'static, Ieee802154MacDevice>,
+    mux_alarm: &'static MuxAlarm<'static, crate::sam4l::ast::Ast>,
 ) -> &'static LowpanTest<
     'static,
-    capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, sam4l::ast::Ast<'static>>,
+    crate::capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm<'static, crate::sam4l::ast::Ast<'static>>,
 > {
     let radio_mac = static_init!(
-        capsules_extra::ieee802154::virtual_mac::MacUser<'static, Ieee802154MacDevice>,
-        capsules_extra::ieee802154::virtual_mac::MacUser::new(mux_mac)
+        crate::capsules_extra::ieee802154::virtual_mac::MacUser<'static, Ieee802154MacDevice>,
+        crate::capsules_extra::ieee802154::virtual_mac::MacUser::new(mux_mac)
     );
     mux_mac.add_user(radio_mac);
     let default_rx_state = static_init!(
@@ -156,7 +156,7 @@ pub unsafe fn initialize_all(
     );
 
     let sixlo_alarm = static_init!(
-        VirtualMuxAlarm<sam4l::ast::Ast>,
+        VirtualMuxAlarm<crate::sam4l::ast::Ast>,
         VirtualMuxAlarm::new(mux_alarm)
     );
     sixlo_alarm.setup();
@@ -164,7 +164,7 @@ pub unsafe fn initialize_all(
     let sixlowpan = static_init!(
         Sixlowpan<
             'static,
-            VirtualMuxAlarm<sam4l::ast::Ast<'static>>,
+            VirtualMuxAlarm<crate::sam4l::ast::Ast<'static>>,
             sixlowpan_compression::Context,
         >,
         Sixlowpan::new(
@@ -184,13 +184,13 @@ pub unsafe fn initialize_all(
     let _ = sixlowpan_tx.init(SRC_MAC_ADDR, DST_MAC_ADDR, radio_mac.get_pan(), None);
 
     let alarm = static_init!(
-        VirtualMuxAlarm<'static, sam4l::ast::Ast>,
+        VirtualMuxAlarm<'static, crate::sam4l::ast::Ast>,
         VirtualMuxAlarm::new(mux_alarm)
     );
     alarm.setup();
 
     let lowpan_frag_test = static_init!(
-        LowpanTest<'static, VirtualMuxAlarm<'static, sam4l::ast::Ast>>,
+        LowpanTest<'static, VirtualMuxAlarm<'static, crate::sam4l::ast::Ast>>,
         LowpanTest::new(sixlowpan_tx, radio_mac, alarm)
     );
 

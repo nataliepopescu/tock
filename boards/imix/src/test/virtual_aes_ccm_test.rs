@@ -40,19 +40,19 @@
 //! aes_ccm_test passed: (current_test=1, encrypting=false, tag_is_valid=true)
 //! aes_ccm_test passed: (current_test=2, encrypting=true, tag_is_valid=true)
 //! aes_ccm_test passed: (current_test=2, encrypting=false, tag_is_valid=true)
-use capsules_core::virtualizers::virtual_aes_ccm;
-use capsules_extra::test::aes_ccm::Test;
-use kernel::hil::symmetric_encryption::{AES, AES_BLOCK_SIZE, AESCCM};
-use kernel::static_init;
-use sam4l::aes::Aes;
+use crate::capsules_core::virtualizers::virtual_aes_ccm;
+use crate::capsules_extra::test::aes_ccm::Test;
+use crate::kernel::hil::symmetric_encryption::{AES, AES_BLOCK_SIZE, AESCCM};
+use crate::kernel::static_init;
+use crate::sam4l::aes::Aes;
 
 type AESCCMMUX = virtual_aes_ccm::MuxAES128CCM<'static, Aes<'static>>;
 type AESCCMCLIENT = virtual_aes_ccm::VirtualAES128CCM<'static, Aes<'static>>;
 
-pub unsafe fn run(aes: &'static sam4l::aes::Aes) {
+pub unsafe fn run(aes: &'static crate::sam4l::aes::Aes) {
     // mux
     let ccm_mux = static_init!(AESCCMMUX, virtual_aes_ccm::MuxAES128CCM::new(aes));
-    kernel::deferred_call::DeferredCallClient::register(ccm_mux);
+    crate::kernel::deferred_call::DeferredCallClient::register(ccm_mux);
     aes.set_client(ccm_mux);
     // ---------------- ONE CLIENT ---------------------
     // client 1

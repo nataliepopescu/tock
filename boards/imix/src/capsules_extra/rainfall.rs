@@ -36,13 +36,13 @@
 
 use core::cell::Cell;
 
-use kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
-use kernel::hil;
-use kernel::syscall::{CommandReturn, SyscallDriver};
-use kernel::{ErrorCode, ProcessId};
+use crate::kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
+use crate::kernel::hil;
+use crate::kernel::syscall::{CommandReturn, SyscallDriver};
+use crate::kernel::{ErrorCode, ProcessId};
 
 /// Syscall driver number.
-use capsules_core::driver;
+use crate::capsules_core::driver;
 pub const DRIVER_NUM: usize = driver::NUM::RainFall as usize;
 
 #[derive(Clone, Copy, PartialEq)]
@@ -120,11 +120,11 @@ impl<'a, H: hil::sensors::RainFallDriver<'a>> hil::sensors::RainFallClient
                         Ok(rainfall_val) => upcalls
                             .schedule_upcall(
                                 0,
-                                (kernel::errorcode::into_statuscode(Ok(())), rainfall_val, 0),
+                                (crate::kernel::errorcode::into_statuscode(Ok(())), rainfall_val, 0),
                             )
                             .ok(),
                         Err(e) => upcalls
-                            .schedule_upcall(0, (kernel::errorcode::into_statuscode(Err(e)), 0, 0))
+                            .schedule_upcall(0, (crate::kernel::errorcode::into_statuscode(Err(e)), 0, 0))
                             .ok(),
                     };
                 }
@@ -152,7 +152,7 @@ impl<'a, H: hil::sensors::RainFallDriver<'a>> SyscallDriver for RainFallSensor<'
         }
     }
 
-    fn allocate_grant(&self, processid: ProcessId) -> Result<(), kernel::process::Error> {
+    fn allocate_grant(&self, processid: ProcessId) -> Result<(), crate::kernel::process::Error> {
         self.apps.enter(processid, |_, _| {})
     }
 }

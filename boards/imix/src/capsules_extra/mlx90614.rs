@@ -10,11 +10,11 @@
 //! -----
 //!
 //! ```rust,ignore
-//! let mux_i2c = components::i2c::I2CMuxComponent::new(&earlgrey::i2c::I2C)
-//!     .finalize(components::i2c_mux_component_helper!());
+//! let mux_i2c = crate::components::i2c::I2CMuxComponent::new(&earlgrey::i2c::I2C)
+//!     .finalize(crate::components::i2c_mux_component_helper!());
 //!
-//! let mlx90614 = components::mlx90614::Mlx90614I2CComponent::new()
-//!    .finalize(components::mlx90614_i2c_component_helper!(mux_i2c));
+//! let mlx90614 = crate::components::mlx90614::Mlx90614I2CComponent::new()
+//!    .finalize(crate::components::mlx90614_i2c_component_helper!(mux_i2c));
 //! ```
 //!
 
@@ -23,15 +23,15 @@ use core::cell::Cell;
 use enum_primitive::cast::FromPrimitive;
 use enum_primitive::enum_from_primitive;
 
-use kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
-use kernel::hil::i2c;
-use kernel::hil::sensors;
-use kernel::syscall::{CommandReturn, SyscallDriver};
-use kernel::utilities::cells::{OptionalCell, TakeCell};
-use kernel::utilities::registers::register_bitfields;
-use kernel::{ErrorCode, ProcessId};
+use crate::kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
+use crate::kernel::hil::i2c;
+use crate::kernel::hil::sensors;
+use crate::kernel::syscall::{CommandReturn, SyscallDriver};
+use crate::kernel::utilities::cells::{OptionalCell, TakeCell};
+use crate::kernel::utilities::registers::register_bitfields;
+use crate::kernel::{ErrorCode, ProcessId};
 
-use capsules_core::driver;
+use crate::capsules_core::driver;
 
 /// Syscall driver number.
 pub const DRIVER_NUM: usize = driver::NUM::Mlx90614 as usize;
@@ -228,7 +228,7 @@ impl<S: i2c::SMBusDevice> SyscallDriver for Mlx90614SMBus<'_, S> {
         }
     }
 
-    fn allocate_grant(&self, processid: ProcessId) -> Result<(), kernel::process::Error> {
+    fn allocate_grant(&self, processid: ProcessId) -> Result<(), crate::kernel::process::Error> {
         self.apps.enter(processid, |_, _| {})
     }
 }

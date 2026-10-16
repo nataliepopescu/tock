@@ -43,24 +43,24 @@
 //!    rx_buffer,
 //! );
 //!
-//! kernel::hil::can::Controller::set_client(can_peripheral, Some(can));
-//! kernel::hil::can::Transmit::set_client(can_peripheral, Some(can));
-//! kernel::hil::can::Receive::set_client(can_peripheral, Some(can));
+//! crate::kernel::hil::can::Controller::set_client(can_peripheral, Some(can));
+//! crate::kernel::hil::can::Transmit::set_client(can_peripheral, Some(can));
+//! crate::kernel::hil::can::Receive::set_client(can_peripheral, Some(can));
 //! ```
 //!
 
 use core::mem::size_of;
 
-use kernel::ErrorCode;
-use kernel::ProcessId;
-use kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
-use kernel::hil::can;
-use kernel::processbuffer::{ReadableProcessBuffer, WriteableProcessBuffer};
-use kernel::syscall::{CommandReturn, SyscallDriver};
-use kernel::utilities::cells::{OptionalCell, TakeCell};
-use kernel::utilities::streaming_process_slice::StreamingProcessSlice;
+use crate::kernel::ErrorCode;
+use crate::kernel::ProcessId;
+use crate::kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
+use crate::kernel::hil::can;
+use crate::kernel::processbuffer::{ReadableProcessBuffer, WriteableProcessBuffer};
+use crate::kernel::syscall::{CommandReturn, SyscallDriver};
+use crate::kernel::utilities::cells::{OptionalCell, TakeCell};
+use crate::kernel::utilities::streaming_process_slice::StreamingProcessSlice;
 
-use capsules_core::driver;
+use crate::capsules_core::driver;
 pub const DRIVER_NUM: usize = driver::NUM::Can as usize;
 pub const BYTE4_MASK: usize = 0xff000000;
 pub const BYTE3_MASK: usize = 0xff0000;
@@ -339,7 +339,7 @@ impl<Can: can::Can> SyscallDriver for CanCapsule<'_, Can> {
         }
     }
 
-    fn allocate_grant(&self, process_id: ProcessId) -> Result<(), kernel::process::Error> {
+    fn allocate_grant(&self, process_id: ProcessId) -> Result<(), crate::kernel::process::Error> {
         self.processes.enter(process_id, |_, _| {})
     }
 }

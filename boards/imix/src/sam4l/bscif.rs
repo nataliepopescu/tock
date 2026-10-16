@@ -4,9 +4,9 @@
 
 //! Implementation of the Backup System Control Interface (BSCIF) peripheral.
 
-use kernel::utilities::StaticRef;
-use kernel::utilities::registers::interfaces::{Readable, Writeable};
-use kernel::utilities::registers::{ReadOnly, ReadWrite, WriteOnly, register_bitfields};
+use crate::kernel::utilities::StaticRef;
+use crate::kernel::utilities::registers::interfaces::{Readable, Writeable};
+use crate::kernel::utilities::registers::{ReadOnly, ReadWrite, WriteOnly, register_bitfields};
 
 #[repr(C)]
 struct BscifRegisters {

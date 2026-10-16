@@ -11,7 +11,7 @@
 //! This allows the `I2CMasterSlaveDriver` capsule to be implemented on more
 //! types of hardware.
 
-use kernel::hil::i2c::{
+use crate::kernel::hil::i2c::{
     Error, I2CHwMasterClient, I2CHwSlaveClient, I2CMaster, I2CMasterSlave, I2CSlave,
 };
 

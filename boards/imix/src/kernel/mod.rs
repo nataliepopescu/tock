@@ -192,7 +192,7 @@ mod process_printer;
 mod process_standard;
 mod syscall_driver;
 
-// Core resources exposed as `kernel::Type`.
+// Core resources exposed as `crate::kernel::Type`.
 pub use crate::kernel::errorcode::ErrorCode;
 pub use crate::kernel::kernel::Kernel;
 pub use crate::kernel::process::ProcessId;

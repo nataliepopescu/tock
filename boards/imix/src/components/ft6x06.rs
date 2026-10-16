@@ -7,34 +7,34 @@
 //! Usage
 //! -----
 //! ```rust
-//! let ft6x06 = components::ft6x06::Ft6x06Component::new(
+//! let ft6x06 = crate::components::ft6x06::Ft6x06Component::new(
 //!    i2c_mux,
 //!    0x38,
 //!    base_peripherals.gpio_ports.get_pin(stm32f412g::gpio::PinId::PG05).unwrap()
 //! )
-//!    .finalize(components::ft6x06_component_static!(mux_i2c));
+//!    .finalize(crate::components::ft6x06_component_static!(mux_i2c));
 //! ```
 
-use capsules_core::virtualizers::virtual_i2c::{I2CDevice, MuxI2C};
-use capsules_extra::ft6x06::Ft6x06;
-use capsules_extra::ft6x06::NO_TOUCH;
+use crate::capsules_core::virtualizers::virtual_i2c::{I2CDevice, MuxI2C};
+use crate::capsules_extra::ft6x06::Ft6x06;
+use crate::capsules_extra::ft6x06::NO_TOUCH;
 use core::mem::MaybeUninit;
-use kernel::component::Component;
-use kernel::hil::gpio;
-use kernel::hil::i2c;
+use crate::kernel::component::Component;
+use crate::kernel::hil::gpio;
+use crate::kernel::hil::i2c;
 
 // Setup static space for the objects.
 #[macro_export]
 macro_rules! ft6x06_component_static {
     ($I:ty $(,)?) => {{
         let i2c_device =
-            kernel::static_buf!(capsules_core::virtualizers::virtual_i2c::I2CDevice<$I>);
-        let buffer = kernel::static_buf!([u8; 17]);
-        let events_buffer = kernel::static_buf!([kernel::hil::touch::TouchEvent; 2]);
-        let ft6x06 = kernel::static_buf!(
-            capsules_extra::ft6x06::Ft6x06<
+            crate::kernel::static_buf!(crate::capsules_core::virtualizers::virtual_i2c::I2CDevice<$I>);
+        let buffer = crate::kernel::static_buf!([u8; 17]);
+        let events_buffer = crate::kernel::static_buf!([crate::kernel::hil::touch::TouchEvent; 2]);
+        let ft6x06 = crate::kernel::static_buf!(
+            crate::capsules_extra::ft6x06::Ft6x06<
                 'static,
-                capsules_core::virtualizers::virtual_i2c::I2CDevice<$I>,
+                crate::capsules_core::virtualizers::virtual_i2c::I2CDevice<$I>,
             >
         );
 
@@ -67,7 +67,7 @@ impl<I: 'static + i2c::I2CMaster<'static>> Component for Ft6x06Component<I> {
         &'static mut MaybeUninit<I2CDevice<'static, I>>,
         &'static mut MaybeUninit<Ft6x06<'static, I2CDevice<'static, I>>>,
         &'static mut MaybeUninit<[u8; 17]>,
-        &'static mut MaybeUninit<[kernel::hil::touch::TouchEvent; 2]>,
+        &'static mut MaybeUninit<[crate::kernel::hil::touch::TouchEvent; 2]>,
     );
     type Output = &'static Ft6x06<'static, I2CDevice<'static, I>>;
 

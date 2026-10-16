@@ -14,22 +14,22 @@
 //! -----
 //!
 //! ```rust
-//! components::panic_button::PanicButtonComponent::new(
-//!     &sam4l::gpio::PC[24],
-//!     kernel::hil::gpio::ActivationMode::ActiveLow,
-//!     kernel::hil::gpio::FloatingState::PullUp
+//! crate::components::panic_button::PanicButtonComponent::new(
+//!     &crate::sam4l::gpio::PC[24],
+//!     crate::kernel::hil::gpio::ActivationMode::ActiveLow,
+//!     crate::kernel::hil::gpio::FloatingState::PullUp
 //! )
-//! .finalize(components::panic_button_component_static!(sam4l::gpio::GPIOPin));
+//! .finalize(crate::components::panic_button_component_static!(crate::sam4l::gpio::GPIOPin));
 //! ```
 
-use capsules_extra::panic_button::PanicButton;
+use crate::capsules_extra::panic_button::PanicButton;
 use core::mem::MaybeUninit;
-use kernel::component::Component;
-use kernel::hil::gpio;
+use crate::kernel::component::Component;
+use crate::kernel::hil::gpio;
 
 #[macro_export]
 macro_rules! panic_button_component_static {
-    ($Pin:ty $(,)?) => {{ kernel::static_buf!(capsules_core::button::PanicButton<'static, $Pin>) }};
+    ($Pin:ty $(,)?) => {{ crate::kernel::static_buf!(crate::capsules_core::button::PanicButton<'static, $Pin>) }};
 }
 
 pub struct PanicButtonComponent<'a, IP: gpio::InterruptPin<'a>> {

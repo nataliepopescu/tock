@@ -11,9 +11,9 @@
 //! -----
 //!
 //! '''rust
-//!     let date_time = components::date_time::DateTimeComponent::new(
+//!     let date_time = crate::components::date_time::DateTimeComponent::new(
 //!         board_kernel,
-//!         capsules_extra::date_time::DRIVER_NUM,
+//!         crate::capsules_extra::date_time::DRIVER_NUM,
 //!         &peripherals.rtc,
 //!     )
 //!     .finalize(rtc_component_static!(stm32f429zi::rtc::Rtc<'static>));
@@ -21,15 +21,15 @@
 
 use core::mem::MaybeUninit;
 
-use capsules_extra::date_time::DateTimeCapsule;
-use kernel::capabilities::MemoryAllocationCapability;
-use kernel::component::Component;
-use kernel::hil::date_time;
+use crate::capsules_extra::date_time::DateTimeCapsule;
+use crate::kernel::capabilities::MemoryAllocationCapability;
+use crate::kernel::component::Component;
+use crate::kernel::hil::date_time;
 
 #[macro_export]
 macro_rules! date_time_component_static {
     ($R:ty $(,)?) => {{
-        let rtc = kernel::static_buf!(capsules_extra::date_time::DateTimeCapsule<'static, $R>);
+        let rtc = crate::kernel::static_buf!(crate::capsules_extra::date_time::DateTimeCapsule<'static, $R>);
         (rtc)
     }};
 }
@@ -38,7 +38,7 @@ pub struct DateTimeComponent<
     D: 'static + date_time::DateTime<'static>,
     CAP: MemoryAllocationCapability + 'static,
 > {
-    board_kernel: &'static kernel::Kernel,
+    board_kernel: &'static crate::kernel::Kernel,
     driver_num: usize,
     rtc: &'static D,
     mem_cap: CAP,
@@ -48,7 +48,7 @@ impl<D: 'static + date_time::DateTime<'static>, CAP: MemoryAllocationCapability 
     DateTimeComponent<D, CAP>
 {
     pub fn new(
-        board_kernel: &'static kernel::Kernel,
+        board_kernel: &'static crate::kernel::Kernel,
         driver_num: usize,
         rtc: &'static D,
         mem_cap: CAP,
@@ -63,7 +63,7 @@ impl<D: 'static + date_time::DateTime<'static>, CAP: MemoryAllocationCapability 
 }
 
 impl<
-    D: 'static + date_time::DateTime<'static> + kernel::deferred_call::DeferredCallClient,
+    D: 'static + date_time::DateTime<'static> + crate::kernel::deferred_call::DeferredCallClient,
     CAP: MemoryAllocationCapability + 'static,
 > Component for DateTimeComponent<D, CAP>
 {

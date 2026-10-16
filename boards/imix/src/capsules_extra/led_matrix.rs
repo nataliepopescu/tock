@@ -8,18 +8,18 @@
 //! -----
 //!
 //! ```rust,ignore
-//! let led_matrix = components::led_matrix_component_helper!(
+//! let led_matrix = crate::components::led_matrix_component_helper!(
 //!     nrf52833::gpio::GPIOPin,
 //!     nrf52::rtc::Rtc<'static>,
 //!     mux_alarm,
 //!     @fps => 60,
-//!     @cols => kernel::hil::gpio::ActivationMode::ActiveLow,
+//!     @cols => crate::kernel::hil::gpio::ActivationMode::ActiveLow,
 //!         &nrf52833_peripherals.gpio_port[LED_MATRIX_COLS[0]],
 //!         &nrf52833_peripherals.gpio_port[LED_MATRIX_COLS[1]],
 //!         &nrf52833_peripherals.gpio_port[LED_MATRIX_COLS[2]],
 //!         &nrf52833_peripherals.gpio_port[LED_MATRIX_COLS[3]],
 //!         &nrf52833_peripherals.gpio_port[LED_MATRIX_COLS[4]],
-//!     @rows => kernel::hil::gpio::ActivationMode::ActiveHigh,
+//!     @rows => crate::kernel::hil::gpio::ActivationMode::ActiveHigh,
 //!         &nrf52833_peripherals.gpio_port[LED_MATRIX_ROWS[0]],
 //!         &nrf52833_peripherals.gpio_port[LED_MATRIX_ROWS[1]],
 //!         &nrf52833_peripherals.gpio_port[LED_MATRIX_ROWS[2]],
@@ -27,7 +27,7 @@
 //!         &nrf52833_peripherals.gpio_port[LED_MATRIX_ROWS[4]]
 //!
 //! )
-//! .finalize(components::led_matrix_component_buf!(
+//! .finalize(crate::components::led_matrix_component_buf!(
 //!     nrf52833::gpio::GPIOPin,
 //!     nrf52::rtc::Rtc<'static>
 //! ));
@@ -42,7 +42,7 @@
 //!         >,
 //!         25,
 //!     >,
-//!     capsules::led::LedDriver::new(components::led_matrix_leds!(
+//!     capsules::led::LedDriver::new(crate::components::led_matrix_leds!(
 //!         nrf52::gpio::GPIOPin<'static>,
 //!         capsules::virtual_alarm::VirtualMuxAlarm<'static, nrf52::rtc::Rtc<'static>>,
 //!         led_matrix,
@@ -76,12 +76,12 @@
 
 use core::cell::Cell;
 
-use kernel::ErrorCode;
-use kernel::utilities::cells::TakeCell;
+use crate::kernel::ErrorCode;
+use crate::kernel::utilities::cells::TakeCell;
 
-use kernel::hil::gpio::{ActivationMode, Pin};
-use kernel::hil::led::Led;
-use kernel::hil::time::{Alarm, AlarmClient, ConvertTicks};
+use crate::kernel::hil::gpio::{ActivationMode, Pin};
+use crate::kernel::hil::led::Led;
+use crate::kernel::hil::time::{Alarm, AlarmClient, ConvertTicks};
 
 /// Holds the array of LEDs and implements a `Driver` interface to
 /// control them.

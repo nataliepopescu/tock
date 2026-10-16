@@ -7,42 +7,42 @@
 //! Usage
 //! -----
 //! ```rust
-//!    let hmac = components::hmac::HmacComponent::new(
+//!    let hmac = crate::components::hmac::HmacComponent::new(
 //!        board_kernel,
 //!        chip.hmac,
 //!    )
-//!    .finalize(components::hmac_component_static!(
+//!    .finalize(crate::components::hmac_component_static!(
 //!        lowrisc::hmac::Hmac,
 //!        32
 //!    ));
 //! ```
 
-use capsules_extra::hmac::HmacDriver;
+use crate::capsules_extra::hmac::HmacDriver;
 use core::mem::MaybeUninit;
-use kernel::capabilities::MemoryAllocationCapability;
-use kernel::component::Component;
-use kernel::hil::digest;
+use crate::kernel::capabilities::MemoryAllocationCapability;
+use crate::kernel::component::Component;
+use crate::kernel::hil::digest;
 
 #[macro_export]
 macro_rules! hmac_component_static {
     ($A:ty, $L:expr $(,)?) => {{
-        let hmac = kernel::static_buf!(capsules_extra::hmac::HmacDriver<'static, $A, $L>);
+        let hmac = crate::kernel::static_buf!(crate::capsules_extra::hmac::HmacDriver<'static, $A, $L>);
 
-        let data_buffer = kernel::static_buf!([u8; 64]);
-        let dest_buffer = kernel::static_buf!([u8; $L]);
+        let data_buffer = crate::kernel::static_buf!([u8; 64]);
+        let dest_buffer = crate::kernel::static_buf!([u8; $L]);
 
         (hmac, data_buffer, dest_buffer)
     }};
 }
 
-pub type HmacComponentType<H, const L: usize> = capsules_extra::hmac::HmacDriver<'static, H, L>;
+pub type HmacComponentType<H, const L: usize> = crate::capsules_extra::hmac::HmacDriver<'static, H, L>;
 
 pub struct HmacComponent<
     A: 'static + digest::Digest<'static, L>,
     const L: usize,
     CAP: MemoryAllocationCapability + 'static,
 > {
-    board_kernel: &'static kernel::Kernel,
+    board_kernel: &'static crate::kernel::Kernel,
     driver_num: usize,
     hmac: &'static A,
     mem_cap: CAP,
@@ -55,7 +55,7 @@ impl<
 > HmacComponent<A, L, CAP>
 {
     pub fn new(
-        board_kernel: &'static kernel::Kernel,
+        board_kernel: &'static crate::kernel::Kernel,
         driver_num: usize,
         hmac: &'static A,
         mem_cap: CAP,
@@ -70,7 +70,7 @@ impl<
 }
 
 impl<
-    A: kernel::hil::digest::HmacSha256
+    A: crate::kernel::hil::digest::HmacSha256
         + digest::HmacSha384
         + digest::HmacSha512
         + digest::HmacMd5
@@ -93,7 +93,7 @@ impl<
         let data_buffer = s.1.write([0; 64]);
         let dest_buffer = s.2.write([0; L]);
 
-        let hmac = s.0.write(capsules_extra::hmac::HmacDriver::new(
+        let hmac = s.0.write(crate::capsules_extra::hmac::HmacDriver::new(
             self.hmac,
             data_buffer,
             dest_buffer,
@@ -111,17 +111,17 @@ impl<
 macro_rules! hmac_sha256_software_component_static {
     ($S:ty $(,)?) => {{
         let hmac_sha256 =
-            kernel::static_buf!(capsules_extra::hmac_sha256::HmacSha256Software<'static, $S>);
+            crate::kernel::static_buf!(crate::capsules_extra::hmac_sha256::HmacSha256Software<'static, $S>);
 
-        let data_buffer = kernel::static_buf!([u8; 64]);
-        let verify_buffer = kernel::static_buf!([u8; 32]);
+        let data_buffer = crate::kernel::static_buf!([u8; 64]);
+        let verify_buffer = crate::kernel::static_buf!([u8; 32]);
 
         (hmac_sha256, data_buffer, verify_buffer)
     }};
 }
 
 pub type HmacSha256SoftwareComponentType<S> =
-    capsules_extra::hmac_sha256::HmacSha256Software<'static, S>;
+    crate::capsules_extra::hmac_sha256::HmacSha256Software<'static, S>;
 
 pub struct HmacSha256SoftwareComponent<
     S: digest::Sha256 + digest::DigestDataHash<'static, 32> + digest::Digest<'static, 32> + 'static,
@@ -142,24 +142,24 @@ impl<
 > Component for HmacSha256SoftwareComponent<S>
 {
     type StaticInput = (
-        &'static mut MaybeUninit<capsules_extra::hmac_sha256::HmacSha256Software<'static, S>>,
+        &'static mut MaybeUninit<crate::capsules_extra::hmac_sha256::HmacSha256Software<'static, S>>,
         &'static mut MaybeUninit<[u8; 64]>,
         &'static mut MaybeUninit<[u8; 32]>,
     );
-    type Output = &'static capsules_extra::hmac_sha256::HmacSha256Software<'static, S>;
+    type Output = &'static crate::capsules_extra::hmac_sha256::HmacSha256Software<'static, S>;
 
     fn finalize(self, s: Self::StaticInput) -> Self::Output {
         let data_buffer = s.1.write([0; 64]);
         let verify_buffer = s.2.write([0; 32]);
 
         let hmac_sha256_sw =
-            s.0.write(capsules_extra::hmac_sha256::HmacSha256Software::new(
+            s.0.write(crate::capsules_extra::hmac_sha256::HmacSha256Software::new(
                 self.sha_256,
                 data_buffer,
                 verify_buffer,
             ));
 
-        kernel::hil::digest::Digest::set_client(self.sha_256, hmac_sha256_sw);
+        crate::kernel::hil::digest::Digest::set_client(self.sha_256, hmac_sha256_sw);
 
         hmac_sha256_sw
     }

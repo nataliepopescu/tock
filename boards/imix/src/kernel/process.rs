@@ -23,7 +23,7 @@ use crate::kernel::utilities::capability_ptr::CapabilityPtr;
 use crate::kernel::utilities::machine_register::MachineRegister;
 use tock_tbf::types::CommandPermissions;
 
-// Export all process related types via `kernel::process::`.
+// Export all process related types via `crate::kernel::process::`.
 pub use crate::kernel::process_array::{ProcessArray, ProcessSlot};
 pub use crate::kernel::process_binary::ProcessBinary;
 pub use crate::kernel::process_checker::AcceptedCredential;

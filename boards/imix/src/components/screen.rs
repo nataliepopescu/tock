@@ -10,7 +10,7 @@
 //! Displays can receive a large amount of data and having larger transfer buffers
 //! optimizes the number of bus writes.
 //!
-//! As memory is limited on some MCUs, the `components::screen_buffer_size``
+//! As memory is limited on some MCUs, the `crate::components::screen_buffer_size``
 //! macro allows users to define the size of the screen buffer.
 //!
 //! Usage
@@ -19,30 +19,30 @@
 //! // Screen
 //! ```rust
 //! let screen =
-//!     components::screen::ScreenComponent::new(board_kernel, tft, None)
-//!         .finalize(components::screen_component_static!(40960));
+//!     crate::components::screen::ScreenComponent::new(board_kernel, tft, None)
+//!         .finalize(crate::components::screen_component_static!(40960));
 //! ```
 //!
 //! // Screen with Setup
 //! ```rust
 //! let screen =
-//!     components::screen::ScreenComponent::new(board_kernel, tft, Some(tft))
-//!         .finalize(components::screen_component_static!(40960));
+//!     crate::components::screen::ScreenComponent::new(board_kernel, tft, Some(tft))
+//!         .finalize(crate::components::screen_component_static!(40960));
 //! ```
 
-use capsules_extra::screen::screen::Screen;
-use capsules_extra::screen::screen_shared::ScreenShared;
-use capsules_extra::virtualizers::screen::virtual_screen_split;
+use crate::capsules_extra::screen::screen::Screen;
+use crate::capsules_extra::screen::screen_shared::ScreenShared;
+use crate::capsules_extra::virtualizers::screen::virtual_screen_split;
 use core::mem::MaybeUninit;
-use kernel::capabilities::MemoryAllocationCapability;
-use kernel::component::Component;
-use kernel::hil;
+use crate::kernel::capabilities::MemoryAllocationCapability;
+use crate::kernel::component::Component;
+use crate::kernel::hil;
 
 #[macro_export]
 macro_rules! screen_split_mux_component_static {
     ($S:ty $(,)?) => {{
-        kernel::static_buf!(
-            capsules_extra::virtualizers::screen::virtual_screen_split::ScreenSplitMux<'static, $S>
+        crate::kernel::static_buf!(
+            crate::capsules_extra::virtualizers::screen::virtual_screen_split::ScreenSplitMux<'static, $S>
         )
     }};
 }
@@ -50,8 +50,8 @@ macro_rules! screen_split_mux_component_static {
 #[macro_export]
 macro_rules! screen_split_user_component_static {
     ($S:ty $(,)?) => {{
-        kernel::static_buf!(
-            capsules_extra::virtualizers::screen::virtual_screen_split::ScreenSplitUser<
+        crate::kernel::static_buf!(
+            crate::capsules_extra::virtualizers::screen::virtual_screen_split::ScreenSplitUser<
                 'static,
                 $S,
             >
@@ -78,8 +78,8 @@ impl<S: hil::screen::Screen<'static> + 'static> Component for ScreenSplitMuxComp
     fn finalize(self, static_input: Self::StaticInput) -> Self::Output {
         let mux = static_input.write(virtual_screen_split::ScreenSplitMux::new(self.screen));
 
-        kernel::hil::screen::Screen::set_client(self.screen, mux);
-        kernel::deferred_call::DeferredCallClient::register(mux);
+        crate::kernel::hil::screen::Screen::set_client(self.screen, mux);
+        crate::kernel::deferred_call::DeferredCallClient::register(mux);
 
         mux
     }
@@ -135,20 +135,20 @@ impl<S: hil::screen::Screen<'static> + 'static> Component for ScreenSplitUserCom
 #[macro_export]
 macro_rules! screen_component_static {
     ($s:literal $(,)?) => {{
-        let buffer = kernel::static_buf!([u8; $s]);
-        let screen = kernel::static_buf!(capsules_extra::screen::screen::Screen);
+        let buffer = crate::kernel::static_buf!([u8; $s]);
+        let screen = crate::kernel::static_buf!(crate::capsules_extra::screen::screen::Screen);
 
         (buffer, screen)
     }};
 }
 
-pub type ScreenComponentType = capsules_extra::screen::screen::Screen<'static>;
+pub type ScreenComponentType = crate::capsules_extra::screen::screen::Screen<'static>;
 
 pub struct ScreenComponent<const SCREEN_BUF_LEN: usize, CAP: MemoryAllocationCapability + 'static> {
-    board_kernel: &'static kernel::Kernel,
+    board_kernel: &'static crate::kernel::Kernel,
     driver_num: usize,
-    screen: &'static dyn kernel::hil::screen::Screen<'static>,
-    screen_setup: Option<&'static dyn kernel::hil::screen::ScreenSetup<'static>>,
+    screen: &'static dyn crate::kernel::hil::screen::Screen<'static>,
+    screen_setup: Option<&'static dyn crate::kernel::hil::screen::ScreenSetup<'static>>,
     mem_cap: CAP,
 }
 
@@ -156,10 +156,10 @@ impl<const SCREEN_BUF_LEN: usize, CAP: MemoryAllocationCapability + 'static>
     ScreenComponent<SCREEN_BUF_LEN, CAP>
 {
     pub fn new(
-        board_kernel: &'static kernel::Kernel,
+        board_kernel: &'static crate::kernel::Kernel,
         driver_num: usize,
-        screen: &'static dyn kernel::hil::screen::Screen,
-        screen_setup: Option<&'static dyn kernel::hil::screen::ScreenSetup>,
+        screen: &'static dyn crate::kernel::hil::screen::Screen,
+        screen_setup: Option<&'static dyn crate::kernel::hil::screen::ScreenSetup>,
         mem_cap: CAP,
     ) -> ScreenComponent<SCREEN_BUF_LEN, CAP> {
         ScreenComponent {
@@ -195,9 +195,9 @@ impl<const SCREEN_BUF_LEN: usize, CAP: MemoryAllocationCapability + 'static> Com
             grant_screen,
         ));
 
-        kernel::hil::screen::Screen::set_client(self.screen, screen);
+        crate::kernel::hil::screen::Screen::set_client(self.screen, screen);
         if let Some(screen_setup) = self.screen_setup {
-            kernel::hil::screen::ScreenSetup::set_client(screen_setup, screen);
+            crate::kernel::hil::screen::ScreenSetup::set_client(screen_setup, screen);
         }
 
         screen
@@ -207,25 +207,25 @@ impl<const SCREEN_BUF_LEN: usize, CAP: MemoryAllocationCapability + 'static> Com
 #[macro_export]
 macro_rules! screen_shared_component_static {
     ($s:literal, $S:ty $(,)?) => {{
-        let buffer = kernel::static_buf!([u8; $s]);
-        let screen = kernel::static_buf!(capsules_extra::screen::screen_shared::ScreenShared<$S>);
+        let buffer = crate::kernel::static_buf!([u8; $s]);
+        let screen = crate::kernel::static_buf!(crate::capsules_extra::screen::screen_shared::ScreenShared<$S>);
 
         (buffer, screen)
     }};
 }
 
 pub type ScreenSharedComponentType<S> =
-    capsules_extra::screen::screen_shared::ScreenShared<'static, S>;
+    crate::capsules_extra::screen::screen_shared::ScreenShared<'static, S>;
 
 pub struct ScreenSharedComponent<
     const SCREEN_BUF_LEN: usize,
     S: hil::screen::Screen<'static> + 'static,
     CAP: MemoryAllocationCapability + 'static,
 > {
-    board_kernel: &'static kernel::Kernel,
+    board_kernel: &'static crate::kernel::Kernel,
     driver_num: usize,
     screen: &'static S,
-    apps_regions: &'static [capsules_extra::screen::screen_shared::AppScreenRegion],
+    apps_regions: &'static [crate::capsules_extra::screen::screen_shared::AppScreenRegion],
     mem_cap: CAP,
 }
 
@@ -236,10 +236,10 @@ impl<
 > ScreenSharedComponent<SCREEN_BUF_LEN, S, CAP>
 {
     pub fn new(
-        board_kernel: &'static kernel::Kernel,
+        board_kernel: &'static crate::kernel::Kernel,
         driver_num: usize,
         screen: &'static S,
-        apps_regions: &'static [capsules_extra::screen::screen_shared::AppScreenRegion],
+        apps_regions: &'static [crate::capsules_extra::screen::screen_shared::AppScreenRegion],
         mem_cap: CAP,
     ) -> ScreenSharedComponent<SCREEN_BUF_LEN, S, CAP> {
         ScreenSharedComponent {
@@ -278,7 +278,7 @@ impl<
             self.apps_regions,
         ));
 
-        kernel::hil::screen::Screen::set_client(self.screen, screen);
+        crate::kernel::hil::screen::Screen::set_client(self.screen, screen);
 
         screen
     }

@@ -21,10 +21,10 @@
 //! taken from
 //! <https://reveng.sourceforge.io/crc-catalogue/17plus.htm>
 
-use capsules_extra::test::crc::TestCrc;
-use kernel::hil::crc::Crc;
-use kernel::static_init;
-use sam4l::crccu::Crccu;
+use crate::capsules_extra::test::crc::TestCrc;
+use crate::kernel::hil::crc::Crc;
+use crate::kernel::static_init;
+use crate::sam4l::crccu::Crccu;
 
 pub unsafe fn run_crc(crc: &'static Crccu) {
     let t = static_init_crc(crc);

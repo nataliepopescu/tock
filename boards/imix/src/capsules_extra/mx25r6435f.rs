@@ -20,7 +20,7 @@
 //! -----
 //!
 //! ```rust,ignore
-//! # use kernel::static_init;
+//! # use crate::kernel::static_init;
 //! # use capsules::virtual_alarm::VirtualMuxAlarm;
 //!
 //! // Create a SPI device for this chip.
@@ -56,13 +56,13 @@
 
 use core::cell::Cell;
 use core::ops::{Index, IndexMut};
-use kernel::ErrorCode;
-use kernel::debug;
-use kernel::hil;
-use kernel::hil::time::ConvertTicks;
-use kernel::utilities::cells::TakeCell;
-use kernel::utilities::cells::{MapCell, OptionalCell};
-use kernel::utilities::leasable_buffer::SubSliceMut;
+use crate::kernel::ErrorCode;
+use crate::kernel::debug;
+use crate::kernel::hil;
+use crate::kernel::hil::time::ConvertTicks;
+use crate::kernel::utilities::cells::TakeCell;
+use crate::kernel::utilities::cells::{MapCell, OptionalCell};
+use crate::kernel::utilities::leasable_buffer::SubSliceMut;
 
 pub const TX_BUF_LEN: usize = PAGE_SIZE as usize + 4;
 pub const RX_BUF_LEN: usize = PAGE_SIZE as usize + 4;

@@ -27,13 +27,13 @@
 use crate::sam4l::pm;
 use core::cell::Cell;
 use core::ops::{Index, IndexMut};
-use kernel::ErrorCode;
-use kernel::deferred_call::{DeferredCall, DeferredCallClient};
-use kernel::hil;
-use kernel::utilities::StaticRef;
-use kernel::utilities::cells::{OptionalCell, TakeCell};
-use kernel::utilities::registers::interfaces::{ReadWriteable, Readable, Writeable};
-use kernel::utilities::registers::{ReadOnly, ReadWrite, WriteOnly, register_bitfields};
+use crate::kernel::ErrorCode;
+use crate::kernel::deferred_call::{DeferredCall, DeferredCallClient};
+use crate::kernel::hil;
+use crate::kernel::utilities::StaticRef;
+use crate::kernel::utilities::cells::{OptionalCell, TakeCell};
+use crate::kernel::utilities::registers::interfaces::{ReadWriteable, Readable, Writeable};
+use crate::kernel::utilities::registers::{ReadOnly, ReadWrite, WriteOnly, register_bitfields};
 
 /// Struct of the FLASHCALW registers. Section 14.10 of the datasheet.
 #[repr(C)]
@@ -368,8 +368,8 @@ enum FlashState {
 ///
 /// ```rust
 /// # extern crate sam4l;
-/// # use sam4l::flashcalw::Sam4lPage;
-/// # use kernel::static_init;
+/// # use crate::sam4l::flashcalw::Sam4lPage;
+/// # use crate::kernel::static_init;
 ///
 /// let pagebuffer = unsafe { static_init!(Sam4lPage, Sam4lPage::default()) };
 /// ```

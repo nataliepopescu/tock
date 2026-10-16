@@ -31,7 +31,7 @@
 //! Here is a sample usage of this capsule in a board's main.rs file:
 //!
 //! ```rust,ignore
-//! # use kernel::static_init;
+//! # use crate::kernel::static_init;
 //!
 //! let buffer = static_init!([u8; capsules::ltc294x::BUF_LEN], [0; capsules::ltc294x::BUF_LEN]);
 //! let ltc294x_i2c = static_init!(
@@ -52,15 +52,15 @@
 
 use core::cell::Cell;
 
-use kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
-use kernel::hil::gpio;
-use kernel::hil::i2c;
-use kernel::syscall::{CommandReturn, SyscallDriver};
-use kernel::utilities::cells::{OptionalCell, TakeCell};
-use kernel::{ErrorCode, ProcessId};
+use crate::kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
+use crate::kernel::hil::gpio;
+use crate::kernel::hil::i2c;
+use crate::kernel::syscall::{CommandReturn, SyscallDriver};
+use crate::kernel::utilities::cells::{OptionalCell, TakeCell};
+use crate::kernel::{ErrorCode, ProcessId};
 
 /// Syscall driver number.
-use capsules_core::driver;
+use crate::capsules_core::driver;
 pub const DRIVER_NUM: usize = driver::NUM::Ltc294x as usize;
 
 pub const BUF_LEN: usize = 20;
@@ -624,7 +624,7 @@ impl<I: i2c::I2CDevice> SyscallDriver for LTC294XDriver<'_, I> {
         }
     }
 
-    fn allocate_grant(&self, processid: ProcessId) -> Result<(), kernel::process::Error> {
+    fn allocate_grant(&self, processid: ProcessId) -> Result<(), crate::kernel::process::Error> {
         self.grants.enter(processid, |_, _| {})
     }
 }

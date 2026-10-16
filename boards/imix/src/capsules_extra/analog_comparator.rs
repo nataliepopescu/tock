@@ -8,20 +8,20 @@
 //! -----
 //!
 //! ```rust,ignore
-//! # use kernel::static_init;
+//! # use crate::kernel::static_init;
 //!
 //! let ac_channels = static_init!(
-//!     [&'static sam4l::acifc::AcChannel; 2],
+//!     [&'static crate::sam4l::acifc::AcChannel; 2],
 //!     [
-//!         &sam4l::acifc::CHANNEL_AC0,
-//!         &sam4l::acifc::CHANNEL_AC1,
+//!         &crate::sam4l::acifc::CHANNEL_AC0,
+//!         &crate::sam4l::acifc::CHANNEL_AC1,
 //!     ]
 //! );
 //! let analog_comparator = static_init!(
-//!     capsules::analog_comparator::AnalogComparator<'static, sam4l::acifc::Acifc>,
-//!     capsules::analog_comparator::AnalogComparator::new(&mut sam4l::acifc::ACIFC, ac_channels)
+//!     capsules::analog_comparator::AnalogComparator<'static, crate::sam4l::acifc::Acifc>,
+//!     capsules::analog_comparator::AnalogComparator::new(&mut crate::sam4l::acifc::ACIFC, ac_channels)
 //! );
-//! sam4l::acifc::ACIFC.set_client(analog_comparator);
+//! crate::sam4l::acifc::ACIFC.set_client(analog_comparator);
 //! ```
 //!
 //! ## Number of Analog Comparators
@@ -38,14 +38,14 @@
 // Last modified August 9th, 2018
 
 /// Syscall driver number.
-use capsules_core::driver;
+use crate::capsules_core::driver;
 pub const DRIVER_NUM: usize = driver::NUM::AnalogComparator as usize;
 
-use kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
-use kernel::hil;
-use kernel::syscall::{CommandReturn, SyscallDriver};
-use kernel::utilities::cells::OptionalCell;
-use kernel::{ErrorCode, ProcessId};
+use crate::kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
+use crate::kernel::hil;
+use crate::kernel::syscall::{CommandReturn, SyscallDriver};
+use crate::kernel::utilities::cells::OptionalCell;
+use crate::kernel::{ErrorCode, ProcessId};
 
 pub struct AnalogComparator<'a, A: hil::analog_comparator::AnalogComparator<'a> + 'a> {
     // Analog Comparator driver
@@ -166,7 +166,7 @@ impl<'a, A: hil::analog_comparator::AnalogComparator<'a>> SyscallDriver
         }
     }
 
-    fn allocate_grant(&self, processid: ProcessId) -> Result<(), kernel::process::Error> {
+    fn allocate_grant(&self, processid: ProcessId) -> Result<(), crate::kernel::process::Error> {
         self.grants.enter(processid, |_, _| {})
     }
 }

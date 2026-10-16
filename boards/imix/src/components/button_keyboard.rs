@@ -9,22 +9,22 @@
 //! Implements the button system call with keyboard inputs.
 
 use core::mem::MaybeUninit;
-use kernel::capabilities::MemoryAllocationCapability;
-use kernel::component::Component;
-use kernel::hil;
+use crate::kernel::capabilities::MemoryAllocationCapability;
+use crate::kernel::component::Component;
+use crate::kernel::hil;
 
 #[macro_export]
 macro_rules! keyboard_button_component_static {
-    () => {{ kernel::static_buf!(capsules_extra::button_keyboard::ButtonKeyboard<'static>) }};
+    () => {{ crate::kernel::static_buf!(crate::capsules_extra::button_keyboard::ButtonKeyboard<'static>) }};
 }
 
-pub type KeyboardButtonComponentType = capsules_extra::button_keyboard::ButtonKeyboard<'static>;
+pub type KeyboardButtonComponentType = crate::capsules_extra::button_keyboard::ButtonKeyboard<'static>;
 
 pub struct KeyboardButtonComponent<
     K: 'static + hil::keyboard::Keyboard<'static>,
     CAP: MemoryAllocationCapability + 'static,
 > {
-    board_kernel: &'static kernel::Kernel,
+    board_kernel: &'static crate::kernel::Kernel,
     driver_num: usize,
     keyboard: &'static K,
     key_codes: &'static [u16],
@@ -35,7 +35,7 @@ impl<K: 'static + hil::keyboard::Keyboard<'static>, CAP: MemoryAllocationCapabil
     KeyboardButtonComponent<K, CAP>
 {
     pub fn new(
-        board_kernel: &'static kernel::Kernel,
+        board_kernel: &'static crate::kernel::Kernel,
         driver_num: usize,
         keyboard: &'static K,
         key_codes: &'static [u16],
@@ -55,11 +55,11 @@ impl<K: 'static + hil::keyboard::Keyboard<'static>, CAP: MemoryAllocationCapabil
     Component for KeyboardButtonComponent<K, CAP>
 {
     type StaticInput =
-        &'static mut MaybeUninit<capsules_extra::button_keyboard::ButtonKeyboard<'static>>;
-    type Output = &'static capsules_extra::button_keyboard::ButtonKeyboard<'static>;
+        &'static mut MaybeUninit<crate::capsules_extra::button_keyboard::ButtonKeyboard<'static>>;
+    type Output = &'static crate::capsules_extra::button_keyboard::ButtonKeyboard<'static>;
 
     fn finalize(self, s: Self::StaticInput) -> Self::Output {
-        let button_keyboard = s.write(capsules_extra::button_keyboard::ButtonKeyboard::new(
+        let button_keyboard = s.write(crate::capsules_extra::button_keyboard::ButtonKeyboard::new(
             self.key_codes,
             self.board_kernel
                 .create_grant(self.driver_num, &self.mem_cap),

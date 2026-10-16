@@ -17,17 +17,17 @@
 //! -----
 //!
 //! ```rust,ignore
-//! # use kernel::static_init;
+//! # use crate::kernel::static_init;
 //! # use capsules::virtual_alarm::VirtualMuxAlarm;
 //!
 //! let isl29035_i2c = static_init!(I2CDevice, I2CDevice::new(i2c_bus, 0x44));
 //! let isl29035_virtual_alarm = static_init!(
-//!     VirtualMuxAlarm<'static, sam4l::ast::Ast>,
+//!     VirtualMuxAlarm<'static, crate::sam4l::ast::Ast>,
 //!     VirtualMuxAlarm::new(mux_alarm));
 //! isl29035_virtual_alarm.setup();
 //!
 //! let isl29035 = static_init!(
-//!     capsules::isl29035::Isl29035<'static, VirtualMuxAlarm<'static, sam4l::ast::Ast>>,
+//!     capsules::isl29035::Isl29035<'static, VirtualMuxAlarm<'static, crate::sam4l::ast::Ast>>,
 //!     capsules::isl29035::Isl29035::new(isl29035_i2c, isl29035_virtual_alarm,
 //!                                       &mut capsules::isl29035::BUF));
 //! isl29035_i2c.set_client(isl29035);
@@ -35,11 +35,11 @@
 //! ```
 
 use core::cell::Cell;
-use kernel::ErrorCode;
-use kernel::hil::i2c::{Error, I2CClient, I2CDevice};
-use kernel::hil::sensors::{AmbientLight, AmbientLightClient};
-use kernel::hil::time::{self, ConvertTicks};
-use kernel::utilities::cells::{OptionalCell, TakeCell};
+use crate::kernel::ErrorCode;
+use crate::kernel::hil::i2c::{Error, I2CClient, I2CDevice};
+use crate::kernel::hil::sensors::{AmbientLight, AmbientLightClient};
+use crate::kernel::hil::time::{self, ConvertTicks};
+use crate::kernel::utilities::cells::{OptionalCell, TakeCell};
 
 /// Recommended buffer length.
 pub const BUF_LEN: usize = 3;

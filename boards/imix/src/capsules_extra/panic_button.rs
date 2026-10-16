@@ -18,15 +18,15 @@
 //! let panic_button = static_init!(
 //!     PanicButton,
 //!     PanicButton::new(
-//!         &sam4l::gpio::PA[16],
-//!         kernel::hil::gpio::ActivationMode::ActiveLow,
-//!         kernel::hil::gpio::FloatingState::PullUp
+//!         &crate::sam4l::gpio::PA[16],
+//!         crate::kernel::hil::gpio::ActivationMode::ActiveLow,
+//!         crate::kernel::hil::gpio::FloatingState::PullUp
 //!     )
 //! );
-//! sam4l::gpio::PA[16].set_client(panic_button);
+//! crate::sam4l::gpio::PA[16].set_client(panic_button);
 //! ```
 
-use kernel::hil::gpio;
+use crate::kernel::hil::gpio;
 
 pub struct PanicButton<'a, IP: gpio::InterruptPin<'a>> {
     pin: &'a IP,

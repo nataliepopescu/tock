@@ -6,19 +6,19 @@
 //! permissions.
 
 use core::mem::MaybeUninit;
-use kernel::component::Component;
-use kernel::platform::chip::Chip;
-use kernel::process::ProcessStandardDebug;
+use crate::kernel::component::Component;
+use crate::kernel::platform::chip::Chip;
+use crate::kernel::process::ProcessStandardDebug;
 
 #[macro_export]
 macro_rules! storage_permissions_null_component_static {
     ($C:ty, $D:ty $(,)?) => {{
-        kernel::static_buf!(capsules_system::storage_permissions::null::NullStoragePermissions<$C, $D>)
+        crate::kernel::static_buf!(crate::capsules_system::storage_permissions::null::NullStoragePermissions<$C, $D>)
     }};
 }
 
 pub type StoragePermissionsNullComponentType<C, D> =
-    capsules_system::storage_permissions::null::NullStoragePermissions<C, D>;
+    crate::capsules_system::storage_permissions::null::NullStoragePermissions<C, D>;
 
 pub struct StoragePermissionsNullComponent<C: Chip, D: ProcessStandardDebug> {
     _chip: core::marker::PhantomData<C>,
@@ -38,11 +38,11 @@ impl<C: Chip + 'static, D: ProcessStandardDebug + 'static> Component
     for StoragePermissionsNullComponent<C, D>
 {
     type StaticInput = &'static mut MaybeUninit<
-        capsules_system::storage_permissions::null::NullStoragePermissions<C, D>,
+        crate::capsules_system::storage_permissions::null::NullStoragePermissions<C, D>,
     >;
-    type Output = &'static capsules_system::storage_permissions::null::NullStoragePermissions<C, D>;
+    type Output = &'static crate::capsules_system::storage_permissions::null::NullStoragePermissions<C, D>;
 
     fn finalize(self, s: Self::StaticInput) -> Self::Output {
-        s.write(capsules_system::storage_permissions::null::NullStoragePermissions::new())
+        s.write(crate::capsules_system::storage_permissions::null::NullStoragePermissions::new())
     }
 }

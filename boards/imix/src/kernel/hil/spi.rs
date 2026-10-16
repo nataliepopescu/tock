@@ -117,7 +117,7 @@ pub mod cs {
     /// this trait _only_ for the [`ActiveLow`] marker.
     ///
     /// ```rust
-    /// use kernel::hil::spi::cs::*;
+    /// use crate::kernel::hil::spi::cs::*;
     ///
     /// #[derive(Copy, Clone)]
     /// enum PeripheralSelect {

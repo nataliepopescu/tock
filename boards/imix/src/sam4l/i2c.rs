@@ -16,13 +16,13 @@
 use crate::sam4l::dma::{DMAChannel, DMAClient, DMAPeripheral};
 use crate::sam4l::pm;
 use core::cell::Cell;
-use kernel::hil;
-use kernel::platform::chip::ClockInterface;
-use kernel::utilities::StaticRef;
-use kernel::utilities::cells::{OptionalCell, TakeCell};
-use kernel::utilities::peripheral_management::{PeripheralManagement, PeripheralManager};
-use kernel::utilities::registers::interfaces::{Readable, Writeable};
-use kernel::utilities::registers::{
+use crate::kernel::hil;
+use crate::kernel::platform::chip::ClockInterface;
+use crate::kernel::utilities::StaticRef;
+use crate::kernel::utilities::cells::{OptionalCell, TakeCell};
+use crate::kernel::utilities::peripheral_management::{PeripheralManagement, PeripheralManager};
+use crate::kernel::utilities::registers::interfaces::{Readable, Writeable};
+use crate::kernel::utilities::registers::{
     FieldValue, ReadOnly, ReadWrite, WriteOnly, register_bitfields,
 };
 

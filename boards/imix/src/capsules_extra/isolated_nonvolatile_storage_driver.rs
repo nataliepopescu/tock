@@ -78,7 +78,7 @@
 //! |                             userspace                                  |
 //! |                                                                        |
 //! +------------------------------------------------------------------------+
-//!                             kernel::Driver
+//!                             crate::kernel::Driver
 //! +------------------------------------------------------------------------+
 //! |                                                                        |
 //! | isolated_nonvolatile_storage_driver::IsolatedNonvolatileStorage (this) |
@@ -95,16 +95,16 @@
 
 use core::cmp;
 
-use kernel::errorcode::into_statuscode;
-use kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
-use kernel::hil;
-use kernel::processbuffer::{ReadableProcessBuffer, WriteableProcessBuffer};
-use kernel::syscall::{CommandReturn, SyscallDriver};
-use kernel::utilities::cells::{OptionalCell, TakeCell};
-use kernel::utilities::copy_slice::CopyOrErr;
-use kernel::{ErrorCode, ProcessId};
+use crate::kernel::errorcode::into_statuscode;
+use crate::kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
+use crate::kernel::hil;
+use crate::kernel::processbuffer::{ReadableProcessBuffer, WriteableProcessBuffer};
+use crate::kernel::syscall::{CommandReturn, SyscallDriver};
+use crate::kernel::utilities::cells::{OptionalCell, TakeCell};
+use crate::kernel::utilities::copy_slice::CopyOrErr;
+use crate::kernel::{ErrorCode, ProcessId};
 
-use capsules_core::driver;
+use crate::capsules_core::driver;
 
 pub const DRIVER_NUM: usize = driver::NUM::IsolatedNvmStorage as usize;
 
@@ -806,7 +806,7 @@ impl<'a, const APP_REGION_SIZE: usize> IsolatedNonvolatileStorage<'a, APP_REGION
         command: NvmCommand,
         processid: ProcessId,
         app: &mut App,
-        kernel_data: &kernel::grant::GrantKernelData,
+        kernel_data: &crate::kernel::grant::GrantKernelData,
     ) -> Result<bool, ErrorCode> {
         match command {
             NvmCommand::GetSize => {
@@ -1141,7 +1141,7 @@ impl<const APP_REGION_SIZE: usize> SyscallDriver
         }
     }
 
-    fn allocate_grant(&self, processid: ProcessId) -> Result<(), kernel::process::Error> {
+    fn allocate_grant(&self, processid: ProcessId) -> Result<(), crate::kernel::process::Error> {
         self.apps.enter(processid, |_, _| {})
     }
 }
