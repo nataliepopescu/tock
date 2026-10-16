@@ -526,8 +526,6 @@ dependencies = [
 name = "imix"
 version = "0.2.4-dev"
 dependencies = [
- "cortexm",
- "cortexv7m",
  "enum_primitive",
  "flux-rs",
  "segger",

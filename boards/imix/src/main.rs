@@ -13,6 +13,16 @@
 
 mod imix_components;
 
+pub mod kernel;
+pub mod capsules_core;
+pub mod capsules_extra;
+pub mod capsules_system;
+pub mod sam4l;
+pub mod components;
+pub mod cortexm4;
+pub mod cortexm;
+pub mod cortexv7m;
+
 use capsules_core::alarm::AlarmDriver;
 use capsules_core::console_ordered::ConsoleOrdered;
 use capsules_core::virtualizers::virtual_aes_ccm::MuxAES128CCM;
