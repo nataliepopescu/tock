@@ -9,15 +9,15 @@
 //! bind to UDP ports for receiving packets. Also exposes a list of interface
 //! addresses to the application (currently hard-coded).
 
-use crate::net::ipv6::ip_utils::IPAddr;
-use crate::net::network_capabilities::NetworkCapability;
-use crate::net::stream::SResult;
-use crate::net::stream::encode_u8;
-use crate::net::stream::encode_u16;
-use crate::net::udp::udp_port_table::{PortQuery, UdpPortManager};
-use crate::net::udp::udp_recv::UDPRecvClient;
-use crate::net::udp::udp_send::{UDPSendClient, UDPSender};
-use crate::net::util::host_slice_to_u16;
+use crate::capsules_extra::net::ipv6::ip_utils::IPAddr;
+use crate::capsules_extra::net::network_capabilities::NetworkCapability;
+use crate::capsules_extra::net::stream::SResult;
+use crate::capsules_extra::net::stream::encode_u8;
+use crate::capsules_extra::net::stream::encode_u16;
+use crate::capsules_extra::net::udp::udp_port_table::{PortQuery, UdpPortManager};
+use crate::capsules_extra::net::udp::udp_recv::UDPRecvClient;
+use crate::capsules_extra::net::udp::udp_send::{UDPSendClient, UDPSender};
+use crate::capsules_extra::net::util::host_slice_to_u16;
 
 use core::cell::Cell;
 use core::mem::size_of;

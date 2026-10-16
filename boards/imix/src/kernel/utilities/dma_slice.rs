@@ -95,7 +95,7 @@ use core::ops::Range;
 use core::ptr::{self, NonNull};
 
 use super::leasable_buffer::{SubSlice, SubSliceMut, SubSliceMutImmut};
-use crate::platform::dma_fence::DmaFence;
+use crate::kernel::platform::dma_fence::DmaFence;
 
 /// An immutable buffer that can be safely used for read-only DMA operations.
 ///

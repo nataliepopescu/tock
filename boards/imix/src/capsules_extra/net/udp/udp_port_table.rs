@@ -36,7 +36,7 @@
 //! userspace UDP driver to check which ports are bound, and vice-versa, such that
 //! exclusive access to ports between userspace apps and capsules is still enforced.
 
-use crate::net::network_capabilities::{NetworkCapability, UdpVisibilityCapability};
+use crate::capsules_extra::net::network_capabilities::{NetworkCapability, UdpVisibilityCapability};
 
 use core::fmt;
 

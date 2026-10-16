@@ -6,11 +6,11 @@
 //!
 //! Drivers implement these interfaces to expose operations to processes.
 
-use crate::errorcode::ErrorCode;
-use crate::process;
-use crate::process::ProcessId;
-use crate::processbuffer::UserspaceReadableProcessBuffer;
-use crate::syscall::SyscallReturn;
+use crate::kernel::errorcode::ErrorCode;
+use crate::kernel::process;
+use crate::kernel::process::ProcessId;
+use crate::kernel::processbuffer::UserspaceReadableProcessBuffer;
+use crate::kernel::syscall::SyscallReturn;
 
 /// Possible return values of a `command` driver method, as specified in TRD104.
 ///
@@ -20,7 +20,7 @@ use crate::syscall::SyscallReturn;
 /// It is important for this wrapper to only be constructable over variants of
 /// [`SyscallReturn`] that are deemed safe for a capsule to construct and return
 /// to an application (e.g. not
-/// [`SubscribeSuccess`](crate::syscall::SyscallReturn::SubscribeSuccess)). This
+/// [`SubscribeSuccess`](crate::kernel::syscall::SyscallReturn::SubscribeSuccess)). This
 /// means that the inner value **must** remain private.
 pub struct CommandReturn(SyscallReturn);
 
@@ -387,13 +387,13 @@ pub trait SyscallDriver {
     // This same mechanism was later extended to handle allow calls as well.
     // Capsules that do not need upcalls but do use process buffers must also
     // implement this function.
-    fn allocate_grant(&self, process_id: ProcessId) -> Result<(), crate::process::Error>;
+    fn allocate_grant(&self, process_id: ProcessId) -> Result<(), crate::kernel::process::Error>;
 }
 
 #[cfg(test)]
 mod test {
-    use crate::ErrorCode;
-    use crate::syscall_driver::CommandReturn;
+    use crate::kernel::ErrorCode;
+    use crate::kernel::syscall_driver::CommandReturn;
 
     #[test]
     fn failure() {

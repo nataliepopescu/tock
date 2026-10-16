@@ -236,7 +236,7 @@ pub unsafe extern "C" fn initialize_ram_jump_to_main() {
 }
 
 pub fn print_cortexm_state(writer: &mut dyn Write) {
-    let (_ccr, cfsr, hfsr, mmfar, bfar) = crate::syscall::get_global_scb_registers();
+    let (_ccr, cfsr, hfsr, mmfar, bfar) = crate::cortexm::syscall::get_global_scb_registers();
 
     let iaccviol = (cfsr & 0x01) == 0x01;
     let daccviol = (cfsr & 0x02) == 0x02;

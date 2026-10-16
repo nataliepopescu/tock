@@ -20,8 +20,8 @@ use kernel::utilities::leasable_buffer::SubSliceMut;
 use kernel::utilities::registers::interfaces::{ReadWriteable, Readable, Writeable};
 use kernel::utilities::registers::{ReadOnly, ReadWrite, WriteOnly, register_bitfields};
 
-use crate::dma;
-use crate::pm;
+use crate::sam4l::dma;
+use crate::sam4l::pm;
 
 // Register map for SAM4L USART
 #[repr(C)]
@@ -407,7 +407,7 @@ pub struct USART<'a> {
 
     client: OptionalCell<UsartClient<'a>>,
 
-    spi_chip_select: OptionalCell<ChipSelectPolar<'a, crate::gpio::GPIOPin<'a>>>,
+    spi_chip_select: OptionalCell<ChipSelectPolar<'a, crate::sam4l::gpio::GPIOPin<'a>>>,
     pm: &'a pm::PowerManager,
     dc_state: OptionalCell<DeferredCallState>,
     deferred_call: DeferredCall,
@@ -1056,7 +1056,7 @@ impl<'a> uart::ReceiveAdvanced<'a> for USART<'a> {
 
 /// SPI
 impl<'a> spi::SpiMaster<'a> for USART<'a> {
-    type ChipSelect = ChipSelectPolar<'a, crate::gpio::GPIOPin<'a>>;
+    type ChipSelect = ChipSelectPolar<'a, crate::sam4l::gpio::GPIOPin<'a>>;
 
     fn init(&self) -> Result<(), ErrorCode> {
         let usart = &USARTRegManager::new(self);

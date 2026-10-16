@@ -38,7 +38,7 @@
 //! and anytime an error occurs.
 //!
 
-use crate::ErrorCode;
+use crate::kernel::ErrorCode;
 use core::cmp;
 
 pub const STANDARD_CAN_PACKET_SIZE: usize = 8;

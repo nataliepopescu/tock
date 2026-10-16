@@ -4,7 +4,7 @@
 
 //! Interfaces for environment sensors
 
-use crate::errorcode::ErrorCode;
+use crate::kernel::errorcode::ErrorCode;
 
 /// A basic interface for a temperature sensor
 pub trait TemperatureDriver<'a> {

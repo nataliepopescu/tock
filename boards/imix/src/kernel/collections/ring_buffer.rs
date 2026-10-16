@@ -4,7 +4,7 @@
 
 //! Implementation of a ring buffer.
 
-use crate::collections::queue;
+use crate::kernel::collections::queue;
 use core::mem::MaybeUninit;
 
 /// Queue implementation based on a contiguous buffer.
@@ -462,9 +462,9 @@ mod flux_specs {
 
     // ======= RingBuffer spec ===========
     #[allow(unused_imports)]
-    use crate::collections::list::ListIterator;
-    use crate::collections::queue::Queue;
-    use crate::collections::ring_buffer::RingBuffer;
+    use crate::kernel::collections::list::ListIterator;
+    use crate::kernel::collections::queue::Queue;
+    use crate::kernel::collections::ring_buffer::RingBuffer;
     use core::mem::MaybeUninit;
 
     #[flux::specs {

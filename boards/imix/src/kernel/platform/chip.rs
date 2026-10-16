@@ -4,9 +4,9 @@
 
 //! Interfaces for implementing microcontrollers in Tock.
 
-use crate::platform::mpu;
-use crate::syscall;
-use crate::utilities::io_write::IoWrite;
+use crate::kernel::platform::mpu;
+use crate::kernel::syscall;
+use crate::kernel::utilities::io_write::IoWrite;
 use core::fmt::Write;
 use core::panic::PanicInfo;
 

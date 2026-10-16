@@ -108,19 +108,19 @@ use core::fmt::{Arguments, Write, write};
 use core::panic::PanicInfo;
 use core::str;
 
-use crate::capabilities::SetDebugWriterCapability;
-use crate::hil;
-use crate::platform::chip::Chip;
-use crate::platform::chip::PanicWriter;
-use crate::platform::chip::ThreadIdProvider;
-use crate::process::ProcessPrinter;
-use crate::process::ProcessSlot;
-use crate::processbuffer::ReadableProcessSlice;
-use crate::utilities::binary_write::BinaryToWriteWrapper;
-use crate::utilities::cells::MapCell;
-use crate::utilities::cells::NumericCellExt;
-use crate::utilities::io_write::IoWrite;
-use crate::utilities::single_thread_value::SingleThreadValue;
+use crate::kernel::capabilities::SetDebugWriterCapability;
+use crate::kernel::hil;
+use crate::kernel::platform::chip::Chip;
+use crate::kernel::platform::chip::PanicWriter;
+use crate::kernel::platform::chip::ThreadIdProvider;
+use crate::kernel::process::ProcessPrinter;
+use crate::kernel::process::ProcessSlot;
+use crate::kernel::processbuffer::ReadableProcessSlice;
+use crate::kernel::utilities::binary_write::BinaryToWriteWrapper;
+use crate::kernel::utilities::cells::MapCell;
+use crate::kernel::utilities::cells::NumericCellExt;
+use crate::kernel::utilities::io_write::IoWrite;
+use crate::kernel::utilities::single_thread_value::SingleThreadValue;
 
 ///////////////////////////////////////////////////////////////////
 // panic! support routines
@@ -185,7 +185,7 @@ pub fn panic_print<PW: PanicWriter, C: Chip, PP: ProcessPrinter>(
         }
 
         chip.map(|c| {
-            use crate::platform::mpu::MPU;
+            use crate::kernel::platform::mpu::MPU;
             // Some systems may enforce memory protection regions for the kernel,
             // making application memory inaccessible. However, printing process
             // information will attempt to access memory. If we are provided a chip
@@ -284,7 +284,7 @@ pub unsafe fn panic_print_old<W: Write + IoWrite, C: Chip, PP: ProcessPrinter>(
                 // making application memory inaccessible. However, printing process
                 // information will attempt to access memory. If we are provided a chip
                 // reference, attempt to disable userspace memory protection first:
-                use crate::platform::mpu::MPU;
+                use crate::kernel::platform::mpu::MPU;
                 c.mpu().disable_app_mpu()
             });
             pr.processes.take().map(|p| {
@@ -364,20 +364,20 @@ pub fn panic_banner<W: Write>(writer: &mut W, panic_info: &PanicInfo) {
     }
 
     // Print version of the kernel
-    if crate::KERNEL_PRERELEASE_VERSION != 0 {
+    if crate::kernel::KERNEL_PRERELEASE_VERSION != 0 {
         let _ = writer.write_fmt(format_args!(
             "\tKernel version {}.{}.{}-dev{}\r\n",
-            crate::KERNEL_MAJOR_VERSION,
-            crate::KERNEL_MINOR_VERSION,
-            crate::KERNEL_PATCH_VERSION,
-            crate::KERNEL_PRERELEASE_VERSION,
+            crate::kernel::KERNEL_MAJOR_VERSION,
+            crate::kernel::KERNEL_MINOR_VERSION,
+            crate::kernel::KERNEL_PATCH_VERSION,
+            crate::kernel::KERNEL_PRERELEASE_VERSION,
         ));
     } else {
         let _ = writer.write_fmt(format_args!(
             "\tKernel version {}.{}.{}\r\n",
-            crate::KERNEL_MAJOR_VERSION,
-            crate::KERNEL_MINOR_VERSION,
-            crate::KERNEL_PATCH_VERSION,
+            crate::kernel::KERNEL_MAJOR_VERSION,
+            crate::kernel::KERNEL_MINOR_VERSION,
+            crate::kernel::KERNEL_PATCH_VERSION,
         ));
     }
 }
@@ -519,7 +519,7 @@ macro_rules! debug_gpio {
     ($i:tt, $method:ident $(,)?) => {{
         #[allow(unused_unsafe)]
         unsafe {
-            $crate::debug::DEBUG_GPIOS.get().map(|debug_gpio_cell| {
+            $crate::kernel::debug::DEBUG_GPIOS.get().map(|debug_gpio_cell| {
                 debug_gpio_cell.map(|debug_gpio_array| {
                     debug_gpio_array.get($i).map(|g| g.$method());
                 });
@@ -730,17 +730,17 @@ macro_rules! debug {
         debug!("")
     });
     ($msg:expr $(,)?) => ({
-        $crate::debug::debug_println(format_args!($msg));
+        $crate::kernel::debug::debug_println(format_args!($msg));
     });
     ($fmt:expr, $($arg:tt)+) => ({
-        $crate::debug::debug_println(format_args!($fmt, $($arg)+));
+        $crate::kernel::debug::debug_println(format_args!($fmt, $($arg)+));
     });
 }
 
 /// In-kernel `println()` debugging that can take a process slice.
 #[macro_export]
 macro_rules! debug_process_slice {
-    ($msg:expr $(,)?) => {{ $crate::debug::debug_slice($msg) }};
+    ($msg:expr $(,)?) => {{ $crate::kernel::debug::debug_slice($msg) }};
 }
 
 /// In-kernel `println()` debugging with filename and line numbers.
@@ -751,7 +751,7 @@ macro_rules! debug_verbose {
         debug_verbose!("")
     });
     ($msg:expr $(,)?) => ({
-        $crate::debug::debug_verbose_println(format_args!($msg), {
+        $crate::kernel::debug::debug_verbose_println(format_args!($msg), {
             // TODO: Maybe make opposite choice of panic!, no `static`, more
             // runtime code for less static data
             static _FILE_LINE: (&'static str, u32) = (file!(), line!());
@@ -759,7 +759,7 @@ macro_rules! debug_verbose {
         })
     });
     ($fmt:expr, $($arg:tt)+) => ({
-        $crate::debug::debug_verbose_println(format_args!($fmt, $($arg)+), {
+        $crate::kernel::debug::debug_verbose_println(format_args!($fmt, $($arg)+), {
             static _FILE_LINE: (&'static str, u32) = (file!(), line!());
             &_FILE_LINE
         })
@@ -780,21 +780,21 @@ macro_rules! debug_expr {
     // expression could be a block (`{ .. }`), in which case the `eprintln!`
     // will be malformed.
     () => {
-        $crate::debug!("[{}:{}]", file!(), line!())
+        $crate::kernel::debug!("[{}:{}]", file!(), line!())
     };
     ($val:expr $(,)?) => {
         // Use of `match` here is intentional because it affects the lifetimes
         // of temporaries - https://stackoverflow.com/a/48732525/1063961
         match $val {
             tmp => {
-                $crate::debug!("[{}:{}] {} = {:#?}",
+                $crate::kernel::debug!("[{}:{}] {} = {:#?}",
                     file!(), line!(), stringify!($val), &tmp);
                 tmp
             }
         }
     };
     ($($val:expr),+ $(,)?) => {
-        ($($crate::debug_expr!($val)),+,)
+        ($($crate::kernel::debug_expr!($val)),+,)
     };
 }
 

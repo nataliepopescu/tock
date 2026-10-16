@@ -4,7 +4,7 @@
 
 //! Interfaces for analog to digital converter peripherals.
 
-use crate::ErrorCode;
+use crate::kernel::ErrorCode;
 
 // *** Interfaces for low-speed, single-sample ADCs ***
 

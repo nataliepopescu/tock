@@ -30,7 +30,7 @@
 //! ---Finished TicKV Tests---
 //! ```
 
-use crate::tickv::{KVSystem, KVSystemClient, KeyType};
+use crate::capsules_extra::tickv::{KVSystem, KVSystemClient, KeyType};
 use core::cell::Cell;
 use core::marker::PhantomData;
 use kernel::ErrorCode;

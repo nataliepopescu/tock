@@ -8,12 +8,12 @@
 //! managing processes. For example, these policies control decisions such as
 //! whether a specific process should be restarted.
 
-use crate::platform::chip::Chip;
-use crate::process;
-use crate::process::Process;
-use crate::process_standard::ProcessStandard;
-use crate::process_standard::ProcessStandardDebug;
-use crate::storage_permissions::StoragePermissions;
+use crate::kernel::platform::chip::Chip;
+use crate::kernel::process;
+use crate::kernel::process::Process;
+use crate::kernel::process_standard::ProcessStandard;
+use crate::kernel::process_standard::ProcessStandardDebug;
+use crate::kernel::storage_permissions::StoragePermissions;
 
 /// Generic trait for implementing a policy on what to do when a process faults.
 ///

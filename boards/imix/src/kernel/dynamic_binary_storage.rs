@@ -9,20 +9,20 @@
 
 use core::cell::Cell;
 
-use crate::ErrorCode;
-use crate::Kernel;
-use crate::config;
-use crate::debug;
-use crate::deferred_call::{DeferredCall, DeferredCallClient};
-use crate::hil::nonvolatile_storage::{NonvolatileStorage, NonvolatileStorageClient};
-use crate::platform::chip::Chip;
-use crate::process::{ProcessLoadingAsyncClient, ShortId};
-use crate::process_loading::{
+use crate::kernel::ErrorCode;
+use crate::kernel::Kernel;
+use crate::kernel::config;
+use crate::kernel::debug;
+use crate::kernel::deferred_call::{DeferredCall, DeferredCallClient};
+use crate::kernel::hil::nonvolatile_storage::{NonvolatileStorage, NonvolatileStorageClient};
+use crate::kernel::platform::chip::Chip;
+use crate::kernel::process::{ProcessLoadingAsyncClient, ShortId};
+use crate::kernel::process_loading::{
     PaddingRequirement, ProcessLoadError, SequentialProcessLoaderMachine,
 };
-use crate::process_standard::ProcessStandardDebug;
-use crate::utilities::cells::{OptionalCell, TakeCell};
-use crate::utilities::leasable_buffer::SubSliceMut;
+use crate::kernel::process_standard::ProcessStandardDebug;
+use crate::kernel::utilities::cells::{OptionalCell, TakeCell};
+use crate::kernel::utilities::leasable_buffer::SubSliceMut;
 
 /// Expected buffer length for storing application binaries.
 pub const BUF_LEN: usize = 512;

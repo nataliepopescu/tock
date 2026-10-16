@@ -9,11 +9,11 @@
 //! src port are printed to the console, along with the address/port combo they were sent from.
 //! Example use of this capsule can be found in `udp_lowpan_test.rs` in the Imix board directory.
 
-use crate::net::ipv6::ip_utils::IPAddr;
-use crate::net::network_capabilities::NetworkCapability;
-use crate::net::udp::udp_port_table::UdpPortManager;
-use crate::net::udp::udp_recv::{UDPReceiver, UDPRecvClient};
-use crate::net::udp::udp_send::{UDPSendClient, UDPSender};
+use crate::capsules_extra::net::ipv6::ip_utils::IPAddr;
+use crate::capsules_extra::net::network_capabilities::NetworkCapability;
+use crate::capsules_extra::net::udp::udp_port_table::UdpPortManager;
+use crate::capsules_extra::net::udp::udp_recv::{UDPReceiver, UDPRecvClient};
+use crate::capsules_extra::net::udp::udp_send::{UDPSendClient, UDPSender};
 use core::cell::Cell;
 
 use kernel::ErrorCode;

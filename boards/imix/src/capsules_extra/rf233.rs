@@ -15,7 +15,7 @@
 
 #![allow(unused_parens)]
 
-use crate::rf233_const::{
+use crate::capsules_extra::rf233_const::{
     ExternalState, InteruptFlags, RF233BusCommand, RF233Register, RF233TrxCmd,
 };
 use core::cell::Cell;
@@ -27,20 +27,20 @@ use kernel::utilities::cells::MapCell;
 use kernel::utilities::cells::OptionalCell;
 use kernel::utilities::leasable_buffer::SubSliceMut;
 
-use crate::rf233_const::CSMA_SEED_1;
-use crate::rf233_const::IRQ_MASK;
-use crate::rf233_const::PHY_CC_CCA_MODE_CS_OR_ED;
-use crate::rf233_const::PHY_RSSI_RX_CRC_VALID;
-use crate::rf233_const::PHY_TX_PWR;
-use crate::rf233_const::SHORT_ADDR_0;
-use crate::rf233_const::SHORT_ADDR_1;
-use crate::rf233_const::TRX_CTRL_1;
-use crate::rf233_const::TRX_CTRL_2;
-use crate::rf233_const::TRX_RPC;
-use crate::rf233_const::TRX_TRAC_CHANNEL_ACCESS_FAILURE;
-use crate::rf233_const::TRX_TRAC_MASK;
-use crate::rf233_const::XAH_CTRL_0;
-use crate::rf233_const::XAH_CTRL_1;
+use crate::capsules_extra::rf233_const::CSMA_SEED_1;
+use crate::capsules_extra::rf233_const::IRQ_MASK;
+use crate::capsules_extra::rf233_const::PHY_CC_CCA_MODE_CS_OR_ED;
+use crate::capsules_extra::rf233_const::PHY_RSSI_RX_CRC_VALID;
+use crate::capsules_extra::rf233_const::PHY_TX_PWR;
+use crate::capsules_extra::rf233_const::SHORT_ADDR_0;
+use crate::capsules_extra::rf233_const::SHORT_ADDR_1;
+use crate::capsules_extra::rf233_const::TRX_CTRL_1;
+use crate::capsules_extra::rf233_const::TRX_CTRL_2;
+use crate::capsules_extra::rf233_const::TRX_RPC;
+use crate::capsules_extra::rf233_const::TRX_TRAC_CHANNEL_ACCESS_FAILURE;
+use crate::capsules_extra::rf233_const::TRX_TRAC_MASK;
+use crate::capsules_extra::rf233_const::XAH_CTRL_0;
+use crate::capsules_extra::rf233_const::XAH_CTRL_1;
 
 #[allow(non_camel_case_types, dead_code)]
 #[derive(Copy, Clone, PartialEq)]

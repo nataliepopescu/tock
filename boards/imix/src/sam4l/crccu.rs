@@ -52,7 +52,7 @@
 //
 // - Support continuous-mode CRC
 
-use crate::pm::{Clock, HSBClock, PBBClock, disable_clock, enable_clock};
+use crate::sam4l::pm::{Clock, HSBClock, PBBClock, disable_clock, enable_clock};
 use core::cell::Cell;
 use kernel::ErrorCode;
 use kernel::deferred_call::{DeferredCall, DeferredCallClient};

@@ -29,7 +29,7 @@
 
 // Author: Danilo Verhaert <verhaert@cs.stanford.edu>
 
-use crate::pm;
+use crate::sam4l::pm;
 use core::cell::Cell;
 use kernel::ErrorCode;
 use kernel::debug;

@@ -4,7 +4,7 @@
 
 //! Interface for verifying signatures.
 
-use crate::ErrorCode;
+use crate::kernel::ErrorCode;
 
 /// This trait provides callbacks for when the verification has completed.
 pub trait ClientVerify<const HASH_LEN: usize, const SIGNATURE_LEN: usize> {

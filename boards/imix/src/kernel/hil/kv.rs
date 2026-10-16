@@ -35,9 +35,9 @@
 //!    hil::flash
 //! ```
 
-use crate::ErrorCode;
-use crate::storage_permissions::StoragePermissions;
-use crate::utilities::leasable_buffer::SubSliceMut;
+use crate::kernel::ErrorCode;
+use crate::kernel::storage_permissions::StoragePermissions;
+use crate::kernel::utilities::leasable_buffer::SubSliceMut;
 
 /// Callback trait for KV stores.
 ///

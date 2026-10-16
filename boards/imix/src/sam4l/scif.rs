@@ -11,7 +11,7 @@
 //! - Author: Philip Levis
 //! - Date: Aug 2, 2015
 
-use crate::bscif;
+use crate::sam4l::bscif;
 use kernel::utilities::StaticRef;
 use kernel::utilities::registers::interfaces::{Readable, Writeable};
 use kernel::utilities::registers::{

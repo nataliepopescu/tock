@@ -4,7 +4,7 @@
 
 //! Interface for keyboard key presses.
 
-use crate::ErrorCode;
+use crate::kernel::ErrorCode;
 
 /// Receiver for keyboard key presses.
 pub trait KeyboardClient {

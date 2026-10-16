@@ -7,7 +7,7 @@
 //! Log entries are appended to the end of a log and read back sequentially. Log data persists
 //! across device reboots.
 
-use crate::ErrorCode;
+use crate::kernel::ErrorCode;
 
 /// An interface for reading from log storage.
 pub trait LogRead<'a> {

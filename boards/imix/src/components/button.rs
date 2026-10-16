@@ -42,7 +42,7 @@ use kernel::hil::gpio::InterruptWithValue;
 #[macro_export]
 macro_rules! button_component_helper_owned {
     ($Pin:ty, $(($P:expr, $M:expr, $F:expr)),+ $(,)?) => {
-        $crate::button_component_helper!(
+        $crate::components::button_component_helper!(
             $Pin,
             $((
                 static_init!($Pin, $P),

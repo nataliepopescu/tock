@@ -4,7 +4,7 @@
 
 //! Interrupt mapping and DMA channel setup.
 
-use crate::pm;
+use crate::sam4l::pm;
 
 use core::fmt::Write;
 use cortexm4::{CortexM4, CortexMVariant};
@@ -13,12 +13,12 @@ use kernel::platform::chip::{Chip, InterruptService};
 pub struct Sam4l<I: InterruptService + 'static> {
     mpu: cortexm4::mpu::MPU,
     userspace_kernel_boundary: cortexm4::syscall::SysCall,
-    pub pm: &'static crate::pm::PowerManager,
+    pub pm: &'static crate::sam4l::pm::PowerManager,
     interrupt_service: &'static I,
 }
 
 impl<I: InterruptService + 'static> Sam4l<I> {
-    pub unsafe fn new(pm: &'static crate::pm::PowerManager, interrupt_service: &'static I) -> Self {
+    pub unsafe fn new(pm: &'static crate::sam4l::pm::PowerManager, interrupt_service: &'static I) -> Self {
         Self {
             mpu: cortexm4::mpu::new(),
             userspace_kernel_boundary: cortexm4::syscall::SysCall::new(),
@@ -34,42 +34,42 @@ impl<I: InterruptService + 'static> Sam4l<I> {
 /// should not be used or imported, and a modified version should be
 /// constructed manually in main.rs.
 pub struct Sam4lDefaultPeripherals {
-    pub acifc: crate::acifc::Acifc<'static>,
-    pub adc: crate::adc::Adc<'static>,
-    pub aes: crate::aes::Aes<'static>,
-    pub ast: crate::ast::Ast<'static>,
-    pub crccu: crate::crccu::Crccu<'static>,
-    pub dac: crate::dac::Dac,
-    pub dma_channels: [crate::dma::DMAChannel; 16],
-    pub eic: crate::eic::Eic<'static>,
-    pub flash_controller: crate::flashcalw::FLASHCALW,
-    pub gloc: crate::gloc::Gloc,
-    pub pa: crate::gpio::Port<'static>,
-    pub pb: crate::gpio::Port<'static>,
-    pub pc: crate::gpio::Port<'static>,
-    pub i2c0: crate::i2c::I2CHw<'static>,
-    pub i2c1: crate::i2c::I2CHw<'static>,
-    pub i2c2: crate::i2c::I2CHw<'static>,
-    pub i2c3: crate::i2c::I2CHw<'static>,
-    pub spi: crate::spi::SpiHw<'static>,
-    pub trng: crate::trng::Trng<'static>,
-    pub usart0: crate::usart::USART<'static>,
-    pub usart1: crate::usart::USART<'static>,
-    pub usart2: crate::usart::USART<'static>,
-    pub usart3: crate::usart::USART<'static>,
-    pub usbc: crate::usbc::Usbc<'static>,
+    pub acifc: crate::sam4l::acifc::Acifc<'static>,
+    pub adc: crate::sam4l::adc::Adc<'static>,
+    pub aes: crate::sam4l::aes::Aes<'static>,
+    pub ast: crate::sam4l::ast::Ast<'static>,
+    pub crccu: crate::sam4l::crccu::Crccu<'static>,
+    pub dac: crate::sam4l::dac::Dac,
+    pub dma_channels: [crate::sam4l::dma::DMAChannel; 16],
+    pub eic: crate::sam4l::eic::Eic<'static>,
+    pub flash_controller: crate::sam4l::flashcalw::FLASHCALW,
+    pub gloc: crate::sam4l::gloc::Gloc,
+    pub pa: crate::sam4l::gpio::Port<'static>,
+    pub pb: crate::sam4l::gpio::Port<'static>,
+    pub pc: crate::sam4l::gpio::Port<'static>,
+    pub i2c0: crate::sam4l::i2c::I2CHw<'static>,
+    pub i2c1: crate::sam4l::i2c::I2CHw<'static>,
+    pub i2c2: crate::sam4l::i2c::I2CHw<'static>,
+    pub i2c3: crate::sam4l::i2c::I2CHw<'static>,
+    pub spi: crate::sam4l::spi::SpiHw<'static>,
+    pub trng: crate::sam4l::trng::Trng<'static>,
+    pub usart0: crate::sam4l::usart::USART<'static>,
+    pub usart1: crate::sam4l::usart::USART<'static>,
+    pub usart2: crate::sam4l::usart::USART<'static>,
+    pub usart3: crate::sam4l::usart::USART<'static>,
+    pub usbc: crate::sam4l::usbc::Usbc<'static>,
 }
 
 impl Sam4lDefaultPeripherals {
-    pub fn new(pm: &'static crate::pm::PowerManager) -> Self {
-        use crate::dma::{DMAChannel, DMAChannelNum};
+    pub fn new(pm: &'static crate::sam4l::pm::PowerManager) -> Self {
+        use crate::sam4l::dma::{DMAChannel, DMAChannelNum};
         Self {
-            acifc: crate::acifc::Acifc::new(),
-            adc: crate::adc::Adc::new(crate::dma::DMAPeripheral::ADCIFE_RX, pm),
-            aes: crate::aes::Aes::new(),
-            ast: crate::ast::Ast::new(),
-            crccu: crate::crccu::Crccu::new(crate::crccu::BASE_ADDRESS),
-            dac: crate::dac::Dac::new(),
+            acifc: crate::sam4l::acifc::Acifc::new(),
+            adc: crate::sam4l::adc::Adc::new(crate::sam4l::dma::DMAPeripheral::ADCIFE_RX, pm),
+            aes: crate::sam4l::aes::Aes::new(),
+            ast: crate::sam4l::ast::Ast::new(),
+            crccu: crate::sam4l::crccu::Crccu::new(crate::sam4l::crccu::BASE_ADDRESS),
+            dac: crate::sam4l::dac::Dac::new(),
             dma_channels: [
                 DMAChannel::new(DMAChannelNum::DMAChannel00),
                 DMAChannel::new(DMAChannelNum::DMAChannel01),
@@ -88,32 +88,32 @@ impl Sam4lDefaultPeripherals {
                 DMAChannel::new(DMAChannelNum::DMAChannel14),
                 DMAChannel::new(DMAChannelNum::DMAChannel15),
             ],
-            eic: crate::eic::Eic::new(),
-            flash_controller: crate::flashcalw::FLASHCALW::new(
-                crate::pm::HSBClock::FLASHCALW,
-                crate::pm::HSBClock::FLASHCALWP,
-                crate::pm::PBBClock::FLASHCALW,
+            eic: crate::sam4l::eic::Eic::new(),
+            flash_controller: crate::sam4l::flashcalw::FLASHCALW::new(
+                crate::sam4l::pm::HSBClock::FLASHCALW,
+                crate::sam4l::pm::HSBClock::FLASHCALWP,
+                crate::sam4l::pm::PBBClock::FLASHCALW,
             ),
-            gloc: crate::gloc::Gloc::new(),
-            pa: crate::gpio::Port::new_port_a(),
-            pb: crate::gpio::Port::new_port_b(),
-            pc: crate::gpio::Port::new_port_c(),
-            i2c0: crate::i2c::I2CHw::new_i2c0(pm),
-            i2c1: crate::i2c::I2CHw::new_i2c1(pm),
-            i2c2: crate::i2c::I2CHw::new_i2c2(pm),
-            i2c3: crate::i2c::I2CHw::new_i2c3(pm),
-            spi: crate::spi::SpiHw::new(pm),
-            trng: crate::trng::Trng::new(),
-            usart0: crate::usart::USART::new_usart0(pm),
-            usart1: crate::usart::USART::new_usart1(pm),
-            usart2: crate::usart::USART::new_usart2(pm),
-            usart3: crate::usart::USART::new_usart3(pm),
-            usbc: crate::usbc::Usbc::new(pm),
+            gloc: crate::sam4l::gloc::Gloc::new(),
+            pa: crate::sam4l::gpio::Port::new_port_a(),
+            pb: crate::sam4l::gpio::Port::new_port_b(),
+            pc: crate::sam4l::gpio::Port::new_port_c(),
+            i2c0: crate::sam4l::i2c::I2CHw::new_i2c0(pm),
+            i2c1: crate::sam4l::i2c::I2CHw::new_i2c1(pm),
+            i2c2: crate::sam4l::i2c::I2CHw::new_i2c2(pm),
+            i2c3: crate::sam4l::i2c::I2CHw::new_i2c3(pm),
+            spi: crate::sam4l::spi::SpiHw::new(pm),
+            trng: crate::sam4l::trng::Trng::new(),
+            usart0: crate::sam4l::usart::USART::new_usart0(pm),
+            usart1: crate::sam4l::usart::USART::new_usart1(pm),
+            usart2: crate::sam4l::usart::USART::new_usart2(pm),
+            usart3: crate::sam4l::usart::USART::new_usart3(pm),
+            usbc: crate::sam4l::usbc::Usbc::new(pm),
         }
     }
 
     pub fn setup_circular_deps(&'static self) {
-        use crate::dma;
+        use crate::sam4l::dma;
         self.usart0
             .set_dma(&self.dma_channels[0], &self.dma_channels[1]);
         self.dma_channels[0].initialize(&self.usart0, dma::DMAWidth::Width8Bit);
@@ -162,7 +162,7 @@ impl Sam4lDefaultPeripherals {
 }
 impl InterruptService for Sam4lDefaultPeripherals {
     fn service_interrupt(&self, interrupt: u32) -> bool {
-        use crate::nvic;
+        use crate::sam4l::nvic;
         match interrupt {
             nvic::ASTALARM => self.ast.handle_interrupt(),
 
@@ -221,14 +221,14 @@ impl InterruptService for Sam4lDefaultPeripherals {
             nvic::TRNG => self.trng.handle_interrupt(),
             nvic::AESA => self.aes.handle_interrupt(),
 
-            nvic::EIC1 => self.eic.handle_interrupt(&crate::eic::Line::Ext1),
-            nvic::EIC2 => self.eic.handle_interrupt(&crate::eic::Line::Ext2),
-            nvic::EIC3 => self.eic.handle_interrupt(&crate::eic::Line::Ext3),
-            nvic::EIC4 => self.eic.handle_interrupt(&crate::eic::Line::Ext4),
-            nvic::EIC5 => self.eic.handle_interrupt(&crate::eic::Line::Ext5),
-            nvic::EIC6 => self.eic.handle_interrupt(&crate::eic::Line::Ext6),
-            nvic::EIC7 => self.eic.handle_interrupt(&crate::eic::Line::Ext7),
-            nvic::EIC8 => self.eic.handle_interrupt(&crate::eic::Line::Ext8),
+            nvic::EIC1 => self.eic.handle_interrupt(&crate::sam4l::eic::Line::Ext1),
+            nvic::EIC2 => self.eic.handle_interrupt(&crate::sam4l::eic::Line::Ext2),
+            nvic::EIC3 => self.eic.handle_interrupt(&crate::sam4l::eic::Line::Ext3),
+            nvic::EIC4 => self.eic.handle_interrupt(&crate::sam4l::eic::Line::Ext4),
+            nvic::EIC5 => self.eic.handle_interrupt(&crate::sam4l::eic::Line::Ext5),
+            nvic::EIC6 => self.eic.handle_interrupt(&crate::sam4l::eic::Line::Ext6),
+            nvic::EIC7 => self.eic.handle_interrupt(&crate::sam4l::eic::Line::Ext7),
+            nvic::EIC8 => self.eic.handle_interrupt(&crate::sam4l::eic::Line::Ext8),
             _ => return false,
         }
         true

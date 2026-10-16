@@ -11,7 +11,7 @@
 //! for address recognition. This must be committed to hardware with a call to
 //! config_commit. Please see the relevant TRD for more details.
 
-use crate::ErrorCode;
+use crate::kernel::ErrorCode;
 
 /// Client trait for when sending a packet is finished.
 pub trait TxClient {

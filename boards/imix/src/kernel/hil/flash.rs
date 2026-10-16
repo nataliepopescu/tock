@@ -94,7 +94,7 @@
 //! }
 //! ```
 
-use crate::ErrorCode;
+use crate::kernel::ErrorCode;
 
 /// Flash errors returned in the callbacks.
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]

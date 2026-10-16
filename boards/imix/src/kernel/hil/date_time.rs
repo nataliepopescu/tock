@@ -4,7 +4,7 @@
 
 //! HIL for Date Time interface
 
-use crate::ErrorCode;
+use crate::kernel::ErrorCode;
 
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub enum DayOfWeek {

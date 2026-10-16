@@ -92,8 +92,8 @@ use kernel::hil::symmetric_encryption::{
 };
 use kernel::utilities::cells::{OptionalCell, TakeCell};
 
-use crate::stream::SResult;
-use crate::stream::{encode_bytes, encode_u16};
+use crate::capsules_core::stream::SResult;
+use crate::capsules_core::stream::{encode_bytes, encode_u16};
 
 #[derive(Copy, Clone, Eq, PartialEq, Debug)]
 enum CCMState {

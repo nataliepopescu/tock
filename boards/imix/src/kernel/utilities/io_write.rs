@@ -4,7 +4,7 @@
 
 //! Re-implementation of `std:io` traits not available in `no_std`.
 
-use crate::collections::ring_buffer::RingBuffer;
+use crate::kernel::collections::ring_buffer::RingBuffer;
 
 /// Implementation of `std::io::Write` for `no_std`.
 ///

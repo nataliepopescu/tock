@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 // Copyright Tock Contributors 2024.
 
-use crate::ErrorCode;
+use crate::kernel::ErrorCode;
 
 pub trait Servo<'a> {
     /// Changes the angle of the servo.

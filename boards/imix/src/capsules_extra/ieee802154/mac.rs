@@ -15,7 +15,7 @@
 //! the underlying kernel::hil::radio::Radio powered at all times and passing
 //! through each frame for transmission.
 
-use crate::net::ieee802154::{Header, MacAddress};
+use crate::capsules_extra::net::ieee802154::{Header, MacAddress};
 use kernel::ErrorCode;
 use kernel::hil::radio::{self, MAX_FRAME_SIZE, PSDU_OFFSET};
 use kernel::utilities::cells::OptionalCell;

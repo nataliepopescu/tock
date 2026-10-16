@@ -11,7 +11,7 @@ use kernel::syscall::{CommandReturn, SyscallDriver};
 use kernel::{ErrorCode, ProcessId};
 
 /// Syscall driver number.
-use crate::driver;
+use crate::capsules_core::driver;
 pub const DRIVER_NUM: usize = driver::NUM::Alarm as usize;
 
 #[derive(Copy, Clone, Debug)]

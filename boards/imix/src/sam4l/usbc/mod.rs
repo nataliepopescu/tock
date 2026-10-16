@@ -8,9 +8,9 @@ pub mod debug;
 
 #[allow(unused_imports)]
 use self::debug::{HexBuf, UdintFlags, UeconFlags, UestaFlags};
-use crate::pm;
-use crate::pm::{Clock, HSBClock, PBBClock, disable_clock, enable_clock};
-use crate::scif;
+use crate::sam4l::pm;
+use crate::sam4l::pm::{Clock, HSBClock, PBBClock, disable_clock, enable_clock};
+use crate::sam4l::scif;
 use core::cell::Cell;
 use core::slice;
 use kernel::debug as debugln;

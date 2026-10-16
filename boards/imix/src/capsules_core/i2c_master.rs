@@ -14,7 +14,7 @@ use kernel::utilities::cells::{MapCell, OptionalCell, TakeCell};
 use kernel::{ErrorCode, ProcessId};
 
 /// Syscall driver number.
-use crate::driver;
+use crate::capsules_core::driver;
 pub const DRIVER_NUM: usize = driver::NUM::I2cMaster as usize;
 
 /// Ids for read-write allow buffers

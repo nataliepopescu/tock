@@ -52,7 +52,7 @@
 //! have had interrupts enabled.
 
 /// Syscall driver number.
-use crate::driver;
+use crate::capsules_core::driver;
 pub const DRIVER_NUM: usize = driver::NUM::Gpio as usize;
 
 use kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};

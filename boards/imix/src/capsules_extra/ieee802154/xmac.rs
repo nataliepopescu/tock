@@ -82,8 +82,8 @@
 // Date: Nov 21 2017
 //
 
-use crate::ieee802154::mac::Mac;
-use crate::net::ieee802154::{FrameType, FrameVersion, Header, MacAddress, PanID};
+use crate::capsules_extra::ieee802154::mac::Mac;
+use crate::capsules_extra::net::ieee802154::{FrameType, FrameVersion, Header, MacAddress, PanID};
 use core::cell::Cell;
 use kernel::ErrorCode;
 use kernel::hil::radio;

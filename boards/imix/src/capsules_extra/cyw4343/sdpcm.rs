@@ -10,7 +10,7 @@
 //! +---------------------------------------------------------------------------------------------+
 
 use super::macros::parse;
-use crate::wifi;
+use crate::capsules_extra::wifi;
 use core::ffi::CStr;
 use enum_primitive::cast::FromPrimitive;
 use enum_primitive::enum_from_primitive;
@@ -391,7 +391,7 @@ pub static IOVARS: [&CStr; 20] = [
 
 #[cfg(test)]
 mod tests {
-    use crate::cyw4343::macros::parse;
+    use crate::capsules_extra::cyw4343::macros::parse;
 
     #[test]
     fn test_u8() {

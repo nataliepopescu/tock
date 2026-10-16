@@ -29,7 +29,7 @@ use kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
 pub const BUFFER_LENGTH: usize = 256;
 
 /// Syscall driver number.
-use crate::driver;
+use crate::capsules_core::driver;
 pub const DRIVER_NUM: usize = driver::NUM::I2cMasterSlave as usize;
 
 /// Ids for read-only allow buffers

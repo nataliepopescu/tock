@@ -32,8 +32,8 @@
 //! mux_mac.add_user(virtual_mac);
 //! ```
 
-use crate::ieee802154::{device, framer};
-use crate::net::ieee802154::{Header, KeyId, MacAddress, PanID, SecurityLevel};
+use crate::capsules_extra::ieee802154::{device, framer};
+use crate::capsules_extra::net::ieee802154::{Header, KeyId, MacAddress, PanID, SecurityLevel};
 
 use kernel::ErrorCode;
 use kernel::collections::list::{List, ListLink, ListNode};

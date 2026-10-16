@@ -19,7 +19,7 @@ use kernel::utilities::leasable_buffer::SubSliceMut;
 use kernel::{ErrorCode, ProcessId};
 
 /// Syscall driver number.
-use crate::driver;
+use crate::capsules_core::driver;
 pub const DRIVER_NUM: usize = driver::NUM::Spi as usize;
 
 /// Ids for read-only allow buffers

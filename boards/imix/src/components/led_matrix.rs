@@ -137,7 +137,7 @@ macro_rules! led_matrix_leds {
         let leds = static_init!(
             [&LedMatrixLed<'static, $Pin, $A>; NUM_LEDS],
             [$(
-                $crate::led_matrix_led! ($Pin, $A, $led_matrix, $col, $row)
+                $crate::components::led_matrix_led! ($Pin, $A, $led_matrix, $col, $row)
             ),+]
         );
         leds

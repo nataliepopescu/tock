@@ -4,7 +4,7 @@
 
 //! Interface for RSA Public/Private key encryption math operations
 
-use crate::ErrorCode;
+use crate::kernel::ErrorCode;
 
 /// Upcall from the `RsaCryptoBase` trait.
 pub trait Client<'a> {

@@ -28,9 +28,9 @@ use core::cell::Cell;
 use core::marker::PhantomData;
 use core::ops::{Deref, Index, Range, RangeFrom, RangeTo};
 
-use crate::ErrorCode;
-use crate::capabilities;
-use crate::process::{self, ProcessId};
+use crate::kernel::ErrorCode;
+use crate::kernel::capabilities;
+use crate::kernel::process::{self, ProcessId};
 
 /// Convert a process buffer's internal pointer+length representation to a
 /// [`ReadableProcessSlice`].
@@ -360,7 +360,7 @@ impl ReadOnlyProcessBuffer {
     /// Publicly accessible constructor, which requires the
     /// [`capabilities::ExternalProcessCapability`] capability. This
     /// is provided to allow implementations of the
-    /// [`Process`](crate::process::Process) trait outside of the
+    /// [`Process`](crate::kernel::process::Process) trait outside of the
     /// `kernel` crate.
     ///
     /// # Safety
@@ -553,7 +553,7 @@ impl ReadWriteProcessBuffer {
     /// Publicly accessible constructor, which requires the
     /// [`capabilities::ExternalProcessCapability`] capability. This
     /// is provided to allow implementations of the
-    /// [`Process`](crate::process::Process) trait outside of the
+    /// [`Process`](crate::kernel::process::Process) trait outside of the
     /// `kernel` crate.
     ///
     /// # Safety

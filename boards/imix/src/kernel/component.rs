@@ -33,7 +33,7 @@
 pub trait Component {
     /// An optional type to specify the chip or board specific static memory
     /// that a component needs to setup the output object(s). This is the memory
-    /// that [`crate::static_buf!()`] would normally setup, but generic
+    /// that [`crate::kernel::static_buf!()`] would normally setup, but generic
     /// components cannot setup static buffers for types which are
     /// chip-dependent, so those buffers have to be passed in manually, and the
     /// [`Component::StaticInput`] type makes this possible.
@@ -57,7 +57,7 @@ pub trait Component {
     /// - All statically allocated memory MUST be passed to
     ///   [`Component::finalize()`] via the `static_memory` argument. The
     ///   [`Component::finalize()`] method **MUST NOT** use
-    ///   [`crate::static_init!()`] or [`crate::static_buf!()`] directly. This
+    ///   [`crate::kernel::static_init!()`] or [`crate::kernel::static_buf!()`] directly. This
     ///   restriction ensures that memory is not aliased if the component is
     ///   used multiple times.
     fn finalize(self, static_memory: Self::StaticInput) -> Self::Output;

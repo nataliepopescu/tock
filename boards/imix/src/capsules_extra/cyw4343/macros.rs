@@ -137,7 +137,7 @@ macro_rules! parse {
 
 macro_rules! backplane_window_bits {
     ($addr:expr) => {
-        ($addr & !$crate::cyw4343::constants::BACKPLANE_ADDRESS_MASK) >> 8
+        ($addr & !$crate::capsules_extra::cyw4343::constants::BACKPLANE_ADDRESS_MASK) >> 8
     };
 }
 

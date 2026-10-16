@@ -15,31 +15,31 @@ use core::num::NonZeroU32;
 use core::ptr::NonNull;
 use core::{mem, ptr, slice, str};
 
-use crate::collections::queue::Queue;
-use crate::collections::ring_buffer::RingBuffer;
-use crate::config;
-use crate::debug;
-use crate::errorcode::ErrorCode;
-use crate::init_uninit_struct;
-use crate::kernel::Kernel;
-use crate::platform::chip::Chip;
-use crate::platform::mpu::{self, MPU};
-use crate::process::ProcessBinary;
-use crate::process::{BinaryVersion, ReturnArguments};
-use crate::process::{Error, FunctionCall, FunctionCallSource, Process, Task};
-use crate::process::{FaultAction, ProcessCustomGrantIdentifier, ProcessId};
-use crate::process::{ProcessAddresses, ProcessSizes, ShortId};
-use crate::process::{State, StoppedState};
-use crate::process_checker::AcceptedCredential;
-use crate::process_loading::ProcessLoadError;
-use crate::process_policies::ProcessFaultPolicy;
-use crate::process_policies::ProcessStandardStoragePermissionsPolicy;
-use crate::processbuffer::{ReadOnlyProcessBuffer, ReadWriteProcessBuffer};
-use crate::storage_permissions::StoragePermissions;
-use crate::syscall::{self, Syscall, SyscallReturn, UserspaceKernelBoundary};
-use crate::upcall::UpcallId;
-use crate::utilities::capability_ptr::{CapabilityPtr, CapabilityPtrPermissions};
-use crate::utilities::cells::{MapCell, NumericCellExt, OptionalCell};
+use crate::kernel::collections::queue::Queue;
+use crate::kernel::collections::ring_buffer::RingBuffer;
+use crate::kernel::config;
+use crate::kernel::debug;
+use crate::kernel::errorcode::ErrorCode;
+use crate::kernel::init_uninit_struct;
+use crate::kernel::kernel::Kernel;
+use crate::kernel::platform::chip::Chip;
+use crate::kernel::platform::mpu::{self, MPU};
+use crate::kernel::process::ProcessBinary;
+use crate::kernel::process::{BinaryVersion, ReturnArguments};
+use crate::kernel::process::{Error, FunctionCall, FunctionCallSource, Process, Task};
+use crate::kernel::process::{FaultAction, ProcessCustomGrantIdentifier, ProcessId};
+use crate::kernel::process::{ProcessAddresses, ProcessSizes, ShortId};
+use crate::kernel::process::{State, StoppedState};
+use crate::kernel::process_checker::AcceptedCredential;
+use crate::kernel::process_loading::ProcessLoadError;
+use crate::kernel::process_policies::ProcessFaultPolicy;
+use crate::kernel::process_policies::ProcessStandardStoragePermissionsPolicy;
+use crate::kernel::processbuffer::{ReadOnlyProcessBuffer, ReadWriteProcessBuffer};
+use crate::kernel::storage_permissions::StoragePermissions;
+use crate::kernel::syscall::{self, Syscall, SyscallReturn, UserspaceKernelBoundary};
+use crate::kernel::upcall::UpcallId;
+use crate::kernel::utilities::capability_ptr::{CapabilityPtr, CapabilityPtrPermissions};
+use crate::kernel::utilities::cells::{MapCell, NumericCellExt, OptionalCell};
 
 use tock_tbf::types::CommandPermissions;
 
@@ -774,7 +774,7 @@ impl<C: Chip, D: 'static + ProcessStandardDebug> Process for ProcessStandard<'_,
         }
     }
 
-    fn start(&self, _cap: &dyn crate::capabilities::ProcessStartCapability) {
+    fn start(&self, _cap: &dyn crate::kernel::capabilities::ProcessStartCapability) {
         // `start()` can only be called on a terminated process.
         if self.get_state() != State::Terminated {
             return;

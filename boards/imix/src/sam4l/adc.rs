@@ -20,9 +20,9 @@
 //! - Author: Philip Levis <pal@cs.stanford.edu>, Branden Ghena <brghena@umich.edu>
 //! - Updated: May 1, 2017
 
-use crate::dma;
-use crate::pm::{self, Clock, PBAClock};
-use crate::scif;
+use crate::sam4l::dma;
+use crate::sam4l::pm::{self, Clock, PBAClock};
+use crate::sam4l::scif;
 use core::cell::Cell;
 use core::{cmp, mem, slice};
 use kernel::ErrorCode;

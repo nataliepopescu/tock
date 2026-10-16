@@ -4,7 +4,7 @@
 
 //! Interface for USB HID (Human Interface Device) class
 
-use crate::ErrorCode;
+use crate::kernel::ErrorCode;
 
 /// The 'types' of USB HID, this should define the size of send/received packets
 pub trait UsbHidType: Copy + Clone + Sized {}

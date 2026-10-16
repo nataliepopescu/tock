@@ -24,7 +24,7 @@
 //! - Author:  Kevin Baichoo <kbaichoo@cs.stanford.edu>
 //! - Date: July 27, 2016
 
-use crate::pm;
+use crate::sam4l::pm;
 use core::cell::Cell;
 use core::ops::{Index, IndexMut};
 use kernel::ErrorCode;

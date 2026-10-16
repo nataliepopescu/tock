@@ -7,8 +7,8 @@
 //! These permissions are intended for userspace applications so the kernel can
 //! restrict which stored elements the apps have access to.
 
-use crate::capabilities::ApplicationStorageCapability;
-use crate::capabilities::KerneluserStorageCapability;
+use crate::kernel::capabilities::ApplicationStorageCapability;
+use crate::kernel::capabilities::KerneluserStorageCapability;
 
 /// Permissions for accessing persistent storage.
 ///

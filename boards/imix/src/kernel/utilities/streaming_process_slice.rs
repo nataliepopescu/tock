@@ -8,9 +8,9 @@
 
 use core::ops::{Range, RangeFrom};
 
-use crate::ErrorCode;
-use crate::processbuffer::WriteableProcessSlice;
-use crate::utilities::registers::{LocalRegisterCopy, register_bitfields};
+use crate::kernel::ErrorCode;
+use crate::kernel::processbuffer::WriteableProcessSlice;
+use crate::kernel::utilities::registers::{LocalRegisterCopy, register_bitfields};
 
 /// A wrapper around a [`WriteableProcessSlice`] for streaming data from the
 /// kernel to a userspace process.
@@ -72,7 +72,7 @@ use crate::utilities::registers::{LocalRegisterCopy, register_bitfields};
 ///    buffer.
 ///
 /// As the kernel cannot track if an `allow`ed buffer for a particular
-/// [`SyscallDriver`](crate::syscall_driver::SyscallDriver) implementation is intended to be a
+/// [`SyscallDriver`](crate::kernel::syscall_driver::SyscallDriver) implementation is intended to be a
 /// [`StreamingProcessSlice`], the kernel must use the header in the buffer as
 /// provided by the process. The implementation of [`StreamingProcessSlice`]
 /// ensures that an incorrect header will not cause a panic, but incoming
@@ -418,8 +418,8 @@ impl<'a> StreamingProcessSlice<'a> {
 #[cfg(test)]
 mod tests {
     use super::StreamingProcessSlice;
-    use crate::ErrorCode;
-    use crate::processbuffer::WriteableProcessSlice;
+    use crate::kernel::ErrorCode;
+    use crate::kernel::processbuffer::WriteableProcessSlice;
 
     #[test]
     fn test_empty_process_slice() {

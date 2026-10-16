@@ -133,17 +133,17 @@ use core::ops::{Deref, DerefMut};
 use core::ptr::{NonNull, write};
 use core::slice;
 
-use crate::ErrorCode;
-use crate::config;
-use crate::debug;
-use crate::kernel::Kernel;
-use crate::process::ProcessSlot;
-use crate::process::{Error, Process, ProcessCustomGrantIdentifier, ProcessId};
-use crate::processbuffer::{ReadOnlyProcessBuffer, ReadWriteProcessBuffer};
-use crate::processbuffer::{ReadOnlyProcessBufferRef, ReadWriteProcessBufferRef};
-use crate::upcall::{Upcall, UpcallError, UpcallId};
-use crate::utilities::capability_ptr::CapabilityPtr;
-use crate::utilities::machine_register::MachineRegister;
+use crate::kernel::ErrorCode;
+use crate::kernel::config;
+use crate::kernel::debug;
+use crate::kernel::kernel::Kernel;
+use crate::kernel::process::ProcessSlot;
+use crate::kernel::process::{Error, Process, ProcessCustomGrantIdentifier, ProcessId};
+use crate::kernel::processbuffer::{ReadOnlyProcessBuffer, ReadWriteProcessBuffer};
+use crate::kernel::processbuffer::{ReadOnlyProcessBufferRef, ReadWriteProcessBufferRef};
+use crate::kernel::upcall::{Upcall, UpcallError, UpcallId};
+use crate::kernel::utilities::capability_ptr::CapabilityPtr;
+use crate::kernel::utilities::machine_register::MachineRegister;
 
 /// Tracks how many upcalls a grant instance supports automatically.
 pub trait UpcallSize {
@@ -647,9 +647,9 @@ impl<'a> GrantKernelData<'a> {
     /// Search the work queue for the first pending operation with the given
     /// `subscribe_num` and if one exists remove it from the task queue.
     ///
-    /// Returns the associated [`Task`](crate::process::Task) if one was found, otherwise returns
+    /// Returns the associated [`Task`](crate::kernel::process::Task) if one was found, otherwise returns
     /// [`None`].
-    pub fn remove_upcall(&self, subscribe_num: usize) -> Option<crate::process::Task> {
+    pub fn remove_upcall(&self, subscribe_num: usize) -> Option<crate::kernel::process::Task> {
         self.process.remove_upcall(UpcallId {
             subscribe_num,
             driver_num: self.driver_num,
@@ -679,16 +679,16 @@ impl<'a> GrantKernelData<'a> {
     /// is valid, i.e. the lifetime of the app enter closure.
     ///
     /// If the specified allow number is invalid, then a
-    /// [`crate::process::Error::AddressOutOfBounds`] will be returned. This
-    /// returns a [`crate::process::Error`] to allow for easy chaining of this
+    /// [`crate::kernel::process::Error::AddressOutOfBounds`] will be returned. This
+    /// returns a [`crate::kernel::process::Error`] to allow for easy chaining of this
     /// function with the `ReadOnlyProcessBuffer::enter()` function with
     /// `and_then`.
     pub fn get_readonly_processbuffer(
         &self,
         allow_ro_num: usize,
-    ) -> Result<ReadOnlyProcessBufferRef<'_>, crate::process::Error> {
+    ) -> Result<ReadOnlyProcessBufferRef<'_>, crate::kernel::process::Error> {
         self.allow_ro.get(allow_ro_num).map_or(
-            Err(crate::process::Error::AddressOutOfBounds),
+            Err(crate::kernel::process::Error::AddressOutOfBounds),
             |saved_ro| {
                 // SAFETY: This is the saved process buffer data has been validated to
                 // be wholly contained within this process before it was stored.
@@ -718,16 +718,16 @@ impl<'a> GrantKernelData<'a> {
     /// is valid, i.e. the lifetime of the app enter closure.
     ///
     /// If the specified allow number is invalid, then a
-    /// [`crate::process::Error::AddressOutOfBounds`] will be returned. This
-    /// returns a [`crate::process::Error`] to allow for easy chaining of this
+    /// [`crate::kernel::process::Error::AddressOutOfBounds`] will be returned. This
+    /// returns a [`crate::kernel::process::Error`] to allow for easy chaining of this
     /// function with the `ReadWriteProcessBuffer::enter()` function with
     /// `and_then`.
     pub fn get_readwrite_processbuffer(
         &self,
         allow_rw_num: usize,
-    ) -> Result<ReadWriteProcessBufferRef<'_>, crate::process::Error> {
+    ) -> Result<ReadWriteProcessBufferRef<'_>, crate::kernel::process::Error> {
         self.allow_rw.get(allow_rw_num).map_or(
-            Err(crate::process::Error::AddressOutOfBounds),
+            Err(crate::kernel::process::Error::AddressOutOfBounds),
             |saved_rw| {
                 // SAFETY: This is the saved process buffer data has been validated to
                 // be wholly contained within this process before it was stored.

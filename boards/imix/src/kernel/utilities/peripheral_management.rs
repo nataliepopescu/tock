@@ -147,7 +147,7 @@
 //! }
 //! ```
 
-use crate::platform::chip::ClockInterface;
+use crate::kernel::platform::chip::ClockInterface;
 
 /// A structure encapsulating a peripheral should implement this trait.
 pub trait PeripheralManagement<C>

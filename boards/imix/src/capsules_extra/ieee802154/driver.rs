@@ -53,9 +53,9 @@
 //! userproceess can mitigate this issue by increasing the size of the ring buffer
 //! provided to the capsule.
 
-use crate::ieee802154::{device, framer};
-use crate::net::ieee802154::{Header, KeyId, MacAddress, SecurityLevel};
-use crate::net::stream::{SResult, decode_bytes, decode_u8, encode_bytes, encode_u8};
+use crate::capsules_extra::ieee802154::{device, framer};
+use crate::capsules_extra::net::ieee802154::{Header, KeyId, MacAddress, SecurityLevel};
+use crate::capsules_extra::net::stream::{SResult, decode_bytes, decode_u8, encode_bytes, encode_u8};
 
 use core::cell::Cell;
 

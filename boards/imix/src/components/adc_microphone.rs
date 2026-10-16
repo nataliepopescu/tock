@@ -87,7 +87,7 @@ impl<A: 'static + adc::Adc<'static>, P: 'static + gpio::Pin, const BUF_LEN: usiz
 
     fn finalize(self, s: Self::StaticInput) -> Self::Output {
         let adc_device =
-            crate::adc::AdcComponent::new(self.adc_mux, self.adc_channel).finalize(s.0);
+            crate::components::adc::AdcComponent::new(self.adc_mux, self.adc_channel).finalize(s.0);
 
         let buffer = s.1.write([0; BUF_LEN]);
 

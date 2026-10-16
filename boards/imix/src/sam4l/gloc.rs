@@ -7,8 +7,8 @@
 //! GLOC input and output pins must be selected appropriately from table 3-1 in
 //! the SAM4l manual.
 
-use crate::pm::{self, Clock, PBAClock};
-use crate::scif::{self, ClockSource, GenericClock};
+use crate::sam4l::pm::{self, Clock, PBAClock};
+use crate::sam4l::scif::{self, ClockSource, GenericClock};
 use kernel::utilities::StaticRef;
 use kernel::utilities::registers::interfaces::{ReadWriteable, Readable, Writeable};
 use kernel::utilities::registers::{ReadWrite, register_bitfields};

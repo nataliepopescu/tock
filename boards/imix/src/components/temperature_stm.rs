@@ -61,7 +61,7 @@ impl<A: 'static + adc::Adc<'static>> Component for TemperatureSTMComponent<A> {
 
     fn finalize(self, s: Self::StaticInput) -> Self::Output {
         let adc_device =
-            crate::adc::AdcComponent::new(self.adc_mux, self.adc_channel).finalize(s.0);
+            crate::components::adc::AdcComponent::new(self.adc_mux, self.adc_channel).finalize(s.0);
 
         let temperature_stm =
             s.1.write(TemperatureSTM::new(adc_device, self.slope, self.v_25));

@@ -4,14 +4,14 @@
 
 //! Interfaces for implementing boards in Tock.
 
-use crate::errorcode;
-use crate::platform::chip::Chip;
-use crate::platform::scheduler_timer;
-use crate::platform::watchdog;
-use crate::process;
-use crate::scheduler::Scheduler;
-use crate::syscall;
-use crate::syscall_driver::SyscallDriver;
+use crate::kernel::errorcode;
+use crate::kernel::platform::chip::Chip;
+use crate::kernel::platform::scheduler_timer;
+use crate::kernel::platform::watchdog;
+use crate::kernel::process;
+use crate::kernel::scheduler::Scheduler;
+use crate::kernel::syscall;
+use crate::kernel::syscall_driver::SyscallDriver;
 
 /// Combination trait that boards provide to the kernel that includes all of
 /// the extensible operations the kernel supports.

@@ -2,9 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 // Copyright Tock Contributors 2023.
 
-use crate::net::stream::{SResult, encode_bytes};
-use crate::net::thread::tlv::{LinkMode, MulticastResponder, Tlv, unwrap_tlv_offset};
-use crate::net::{ieee802154::MacAddress, ipv6::ip_utils::IPAddr};
+use crate::capsules_extra::net::stream::{SResult, encode_bytes};
+use crate::capsules_extra::net::thread::tlv::{LinkMode, MulticastResponder, Tlv, unwrap_tlv_offset};
+use crate::capsules_extra::net::{ieee802154::MacAddress, ipv6::ip_utils::IPAddr};
 pub const THREAD_PORT_NUMBER: u16 = 19788;
 
 use kernel::ErrorCode;

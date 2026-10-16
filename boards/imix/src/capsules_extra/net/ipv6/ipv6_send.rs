@@ -21,13 +21,13 @@
 // over 6LoWPAN, and should be separated from the generic IPv6 sending
 // interface.
 
-use crate::ieee802154::device::{MacDevice, TxClient};
-use crate::net::ieee802154::MacAddress;
-use crate::net::ipv6::ip_utils::IPAddr;
-use crate::net::ipv6::{IP6Header, IP6Packet, TransportHeader};
-use crate::net::network_capabilities::{IpVisibilityCapability, NetworkCapability};
-use crate::net::sixlowpan::sixlowpan_state::TxState;
-use crate::net::thread::thread_utils::{MULTICAST_IPV6, mac_from_ipv6};
+use crate::capsules_extra::ieee802154::device::{MacDevice, TxClient};
+use crate::capsules_extra::net::ieee802154::MacAddress;
+use crate::capsules_extra::net::ipv6::ip_utils::IPAddr;
+use crate::capsules_extra::net::ipv6::{IP6Header, IP6Packet, TransportHeader};
+use crate::capsules_extra::net::network_capabilities::{IpVisibilityCapability, NetworkCapability};
+use crate::capsules_extra::net::sixlowpan::sixlowpan_state::TxState;
+use crate::capsules_extra::net::thread::thread_utils::{MULTICAST_IPV6, mac_from_ipv6};
 
 use core::cell::Cell;
 

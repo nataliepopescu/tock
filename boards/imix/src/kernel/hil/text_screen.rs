@@ -4,7 +4,7 @@
 
 //! Interface for text screen and displays.
 
-use crate::ErrorCode;
+use crate::kernel::ErrorCode;
 
 pub trait TextScreen<'a> {
     fn set_client(&self, client: Option<&'a dyn TextScreenClient>);

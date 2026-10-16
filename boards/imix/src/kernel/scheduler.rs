@@ -4,10 +4,10 @@
 
 //! Interface for Tock kernel schedulers.
 
-use crate::deferred_call::DeferredCall;
-use crate::platform::chip::Chip;
-use crate::process::ProcessId;
-use crate::process::StoppedExecutingReason;
+use crate::kernel::deferred_call::DeferredCall;
+use crate::kernel::platform::chip::Chip;
+use crate::kernel::process::ProcessId;
+use crate::kernel::process::StoppedExecutingReason;
 
 use core::num::NonZeroU32;
 

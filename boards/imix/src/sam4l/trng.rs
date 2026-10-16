@@ -5,7 +5,7 @@
 //! Implementation of the SAM4L TRNG. It provides an implementation of
 //! the Entropy32 trait.
 
-use crate::pm;
+use crate::sam4l::pm;
 use kernel::ErrorCode;
 use kernel::hil::entropy::{self, Continue};
 use kernel::utilities::StaticRef;

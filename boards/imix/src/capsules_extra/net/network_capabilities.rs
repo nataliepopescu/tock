@@ -22,7 +22,7 @@
 //! bind has a capability to send from that port. Therefore, we check the
 //! network capability of the caller. In order to check the UDP-specific aspect
 //! of the network capability, the port table must posses a UdpVisibilityCapability reference.
-use crate::net::ipv6::ip_utils::IPAddr;
+use crate::capsules_extra::net::ipv6::ip_utils::IPAddr;
 
 const MAX_ADDR_SET_SIZE: usize = 8;
 const MAX_PORT_SET_SIZE: usize = 8;

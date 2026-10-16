@@ -6,8 +6,8 @@
 
 use core::cell::Cell;
 
-use crate::ErrorCode;
-use crate::utilities::cells::OptionalCell;
+use crate::kernel::ErrorCode;
+use crate::kernel::utilities::cells::OptionalCell;
 
 /// Enum for configuring any pull-up or pull-down resistors on the GPIO pin.
 #[derive(Clone, Copy, Debug)]

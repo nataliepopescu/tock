@@ -4,8 +4,8 @@
 
 //! Tools for displaying process state.
 
-use crate::process::Process;
-use crate::utilities::binary_write::BinaryWrite;
+use crate::kernel::process::Process;
+use crate::kernel::utilities::binary_write::BinaryWrite;
 
 /// A context token that the caller must pass back to us. This allows us to
 /// track where we are in the print operation.

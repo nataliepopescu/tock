@@ -81,9 +81,9 @@
 //! some_capsule.register();
 //! ```
 
-use crate::platform::chip::ThreadIdProvider;
-use crate::utilities::cells::OptionalCell;
-use crate::utilities::single_thread_value::SingleThreadValue;
+use crate::kernel::platform::chip::ThreadIdProvider;
+use crate::kernel::utilities::cells::OptionalCell;
+use crate::kernel::utilities::single_thread_value::SingleThreadValue;
 use core::cell::Cell;
 use core::marker::Copy;
 use core::marker::PhantomData;

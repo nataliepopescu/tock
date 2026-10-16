@@ -2,12 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 // Copyright Tock Contributors 2022.
 
-use crate::net::ieee802154::MacAddress;
-use crate::net::ipv6::ip_utils::{IPAddr, compute_udp_checksum, ip6_nh};
-use crate::net::ipv6::{IP6Header, IP6Packet, TransportHeader};
-use crate::net::udp::UDPHeader;
-use crate::net::util;
-use crate::net::util::{network_slice_to_u16, u16_to_network_slice};
+use crate::capsules_extra::net::ieee802154::MacAddress;
+use crate::capsules_extra::net::ipv6::ip_utils::{IPAddr, compute_udp_checksum, ip6_nh};
+use crate::capsules_extra::net::ipv6::{IP6Header, IP6Packet, TransportHeader};
+use crate::capsules_extra::net::udp::UDPHeader;
+use crate::capsules_extra::net::util;
+use crate::capsules_extra::net::util::{network_slice_to_u16, u16_to_network_slice};
 /// Implements the 6LoWPAN specification for sending IPv6 datagrams over
 /// 802.15.4 packets efficiently, as detailed in RFC 6282.
 use core::mem;

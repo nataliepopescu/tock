@@ -96,7 +96,7 @@
 //! }
 //! ```
 
-use crate::ErrorCode;
+use crate::kernel::ErrorCode;
 
 /// Denotes whether the [Client](trait.Client.html) wants to be notified when
 /// `More` randomness is available or if they are `Done`

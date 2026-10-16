@@ -4,7 +4,7 @@
 
 //! Interface for digital to analog converters.
 
-use crate::ErrorCode;
+use crate::kernel::ErrorCode;
 
 /// Simple interface for using the DAC.
 pub trait DacChannel {

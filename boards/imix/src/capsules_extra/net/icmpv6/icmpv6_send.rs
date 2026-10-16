@@ -12,11 +12,11 @@
 //! callback once transmission has completed.
 // - Author: Conor McAvity <cmcavity@stanford.edu>
 
-use crate::net::icmpv6::ICMP6Header;
-use crate::net::ipv6::TransportHeader;
-use crate::net::ipv6::ip_utils::IPAddr;
-use crate::net::ipv6::ipv6_send::{IP6SendClient, IP6Sender};
-use crate::net::network_capabilities::NetworkCapability;
+use crate::capsules_extra::net::icmpv6::ICMP6Header;
+use crate::capsules_extra::net::ipv6::TransportHeader;
+use crate::capsules_extra::net::ipv6::ip_utils::IPAddr;
+use crate::capsules_extra::net::ipv6::ipv6_send::{IP6SendClient, IP6Sender};
+use crate::capsules_extra::net::network_capabilities::NetworkCapability;
 
 use kernel::ErrorCode;
 use kernel::utilities::cells::OptionalCell;

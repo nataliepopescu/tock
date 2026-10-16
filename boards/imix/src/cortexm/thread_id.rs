@@ -22,6 +22,6 @@ pub enum CortexMThreadIdProvider {}
 // this implementation checks for.
 unsafe impl ThreadIdProvider for CortexMThreadIdProvider {
     fn running_thread_id() -> usize {
-        crate::support::is_interrupt_context() as usize
+        crate::cortexm::support::is_interrupt_context() as usize
     }
 }

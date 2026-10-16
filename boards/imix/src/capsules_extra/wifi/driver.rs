@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 // Copyright OxidOS Automotive 2025.
 
-use crate::wifi::{Client, Device, Passphrase, Security, Ssid, len};
+use crate::capsules_extra::wifi::{Client, Device, Passphrase, Security, Ssid, len};
 use enum_primitive::cast::FromPrimitive;
 use kernel::errorcode::into_statuscode;
 use kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};

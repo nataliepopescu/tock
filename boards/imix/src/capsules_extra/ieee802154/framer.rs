@@ -76,13 +76,13 @@
 // TODO: Channel scanning
 //
 
-use crate::ieee802154::device::{MacDevice, RxClient, TxClient};
-use crate::ieee802154::mac::Mac;
-use crate::net::ieee802154::{
+use crate::capsules_extra::ieee802154::device::{MacDevice, RxClient, TxClient};
+use crate::capsules_extra::ieee802154::mac::Mac;
+use crate::capsules_extra::net::ieee802154::{
     FrameType, FrameVersion, Header, KeyId, MacAddress, PanID, Security, SecurityLevel,
 };
-use crate::net::stream::SResult;
-use crate::net::stream::{encode_bytes, encode_u8, encode_u32};
+use crate::capsules_extra::net::stream::SResult;
+use crate::capsules_extra::net::stream::{encode_bytes, encode_u8, encode_u32};
 
 use core::cell::Cell;
 
@@ -319,7 +319,7 @@ enum RxState {
 }
 
 /// Wraps an IEEE 802.15.4 [kernel::hil::radio::Radio]
-/// and exposes [`capsules_extra::ieee802154::mac::Mac`](crate::ieee802154::mac::Mac) functionality.
+/// and exposes [`capsules_extra::ieee802154::mac::Mac`](crate::capsules_extra::ieee802154::mac::Mac) functionality.
 ///
 /// It hides header preparation, transmission and processing logic
 /// from the user by essentially maintaining multiple state machines

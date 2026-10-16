@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 // Copyright Tock Contributors 2022.
 
-use crate::net::ipv6::IP6Header;
-use crate::net::sixlowpan::sixlowpan_state::SixlowpanRxClient;
+use crate::capsules_extra::net::ipv6::IP6Header;
+use crate::capsules_extra::net::sixlowpan::sixlowpan_state::SixlowpanRxClient;
 
 use kernel::ErrorCode;
 use kernel::debug;

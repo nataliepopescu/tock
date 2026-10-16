@@ -9,7 +9,7 @@ use core::mem::MaybeUninit;
 use core::sync::atomic::AtomicUsize;
 use core::sync::atomic::Ordering;
 
-use crate::platform::chip::ThreadIdProvider;
+use crate::kernel::platform::chip::ThreadIdProvider;
 
 /// Stages of binding a [`SingleThreadValue`] to a given thread.
 ///

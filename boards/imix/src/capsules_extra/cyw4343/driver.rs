@@ -13,7 +13,7 @@
 
 use super::macros::reset_and_restore_bufs;
 use super::{bus, constants, sdpcm};
-use crate::wifi;
+use crate::capsules_extra::wifi;
 use core::cell::Cell;
 use core::iter::{Enumerate, Peekable};
 use core::slice::Chunks;
@@ -809,7 +809,7 @@ impl<'a, P: hil::gpio::Pin, A: hil::time::Alarm<'a>, B: bus::CYW4343xBus<'a>> bu
 /// This module defines lists of IOCTL operations needed
 /// for each functionality required by the WiFi device interface.
 mod ioctl {
-    use crate::cyw4343::sdpcm::{self, IoctlCommand};
+    use crate::capsules_extra::cyw4343::sdpcm::{self, IoctlCommand};
     use core::cell::Cell;
     use kernel::utilities::cells::OptionalCell;
 
@@ -1066,7 +1066,7 @@ mod ioctl {
     pub mod join_wpa {
         use super::sdpcm::Iovar;
         use super::{IoctlCommand as Cmd, IoctlData as Data, Op};
-        use crate::cyw4343::constants;
+        use crate::capsules_extra::cyw4343::constants;
 
         mod wpa1 {
             pub(super) const MFP: u32 = 0;
@@ -1136,7 +1136,7 @@ mod ioctl {
     pub mod start_scan {
         use super::sdpcm::Iovar;
         use super::{IoctlData as Data, Op};
-        use crate::cyw4343::{constants, sdpcm};
+        use crate::capsules_extra::cyw4343::{constants, sdpcm};
 
         pub const SCAN_PARAMS: [u8; sdpcm::ScanParams::SIZE] = sdpcm::ScanParams {
             version: 1,
@@ -1163,7 +1163,7 @@ mod ioctl {
     pub mod stop_scan {
         use super::sdpcm::Iovar;
         use super::{IoctlData as Data, Op};
-        use crate::cyw4343::{constants, sdpcm};
+        use crate::capsules_extra::cyw4343::{constants, sdpcm};
 
         pub const SCAN_PARAMS: [u8; sdpcm::ScanParams::SIZE] = sdpcm::ScanParams {
             version: 1,

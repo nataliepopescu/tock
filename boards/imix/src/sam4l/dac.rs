@@ -9,7 +9,7 @@
 //! - Author: Justin Hsieh <hsiehju@umich.edu>
 //! - Date: May 26th, 2017
 
-use crate::pm::{self, Clock, PBAClock};
+use crate::sam4l::pm::{self, Clock, PBAClock};
 use core::cell::Cell;
 use kernel::ErrorCode;
 use kernel::hil;

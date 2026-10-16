@@ -12,8 +12,8 @@
 //!
 //! Converted to new register abstraction by Philip Levis <pal@cs.stanford.edu>
 
-use crate::pm;
-use crate::scif;
+use crate::sam4l::pm;
+use crate::sam4l::scif;
 use core::cell::Cell;
 use kernel::ErrorCode;
 use kernel::debug;

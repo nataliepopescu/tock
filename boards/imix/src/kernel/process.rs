@@ -10,32 +10,32 @@ use core::num::NonZeroU32;
 use core::ptr::NonNull;
 use core::str;
 
-use crate::capabilities;
-use crate::errorcode::ErrorCode;
-use crate::ipc;
-use crate::kernel::Kernel;
-use crate::platform::mpu::{self};
-use crate::processbuffer::{ReadOnlyProcessBuffer, ReadWriteProcessBuffer};
-use crate::storage_permissions;
-use crate::syscall::{self, Syscall, SyscallReturn};
-use crate::upcall::UpcallId;
-use crate::utilities::capability_ptr::CapabilityPtr;
-use crate::utilities::machine_register::MachineRegister;
+use crate::kernel::capabilities;
+use crate::kernel::errorcode::ErrorCode;
+use crate::kernel::ipc;
+use crate::kernel::kernel::Kernel;
+use crate::kernel::platform::mpu::{self};
+use crate::kernel::processbuffer::{ReadOnlyProcessBuffer, ReadWriteProcessBuffer};
+use crate::kernel::storage_permissions;
+use crate::kernel::syscall::{self, Syscall, SyscallReturn};
+use crate::kernel::upcall::UpcallId;
+use crate::kernel::utilities::capability_ptr::CapabilityPtr;
+use crate::kernel::utilities::machine_register::MachineRegister;
 use tock_tbf::types::CommandPermissions;
 
 // Export all process related types via `kernel::process::`.
-pub use crate::process_array::{ProcessArray, ProcessSlot};
-pub use crate::process_binary::ProcessBinary;
-pub use crate::process_checker::AcceptedCredential;
-pub use crate::process_checker::{ProcessCheckerMachine, ProcessCheckerMachineClient};
-pub use crate::process_loading::ProcessLoadError;
-pub use crate::process_loading::SequentialProcessLoaderMachine;
-pub use crate::process_loading::load_processes;
-pub use crate::process_loading::{ProcessLoadingAsync, ProcessLoadingAsyncClient};
-pub use crate::process_policies::{ProcessFaultPolicy, ProcessStandardStoragePermissionsPolicy};
-pub use crate::process_printer::{ProcessPrinter, ProcessPrinterContext};
-pub use crate::process_standard::ProcessStandard;
-pub use crate::process_standard::{ProcessStandardDebug, ProcessStandardDebugFull};
+pub use crate::kernel::process_array::{ProcessArray, ProcessSlot};
+pub use crate::kernel::process_binary::ProcessBinary;
+pub use crate::kernel::process_checker::AcceptedCredential;
+pub use crate::kernel::process_checker::{ProcessCheckerMachine, ProcessCheckerMachineClient};
+pub use crate::kernel::process_loading::ProcessLoadError;
+pub use crate::kernel::process_loading::SequentialProcessLoaderMachine;
+pub use crate::kernel::process_loading::load_processes;
+pub use crate::kernel::process_loading::{ProcessLoadingAsync, ProcessLoadingAsyncClient};
+pub use crate::kernel::process_policies::{ProcessFaultPolicy, ProcessStandardStoragePermissionsPolicy};
+pub use crate::kernel::process_printer::{ProcessPrinter, ProcessPrinterContext};
+pub use crate::kernel::process_standard::ProcessStandard;
+pub use crate::kernel::process_standard::{ProcessStandardDebug, ProcessStandardDebugFull};
 
 /// Userspace process identifier.
 ///
@@ -462,7 +462,7 @@ pub trait Process {
     /// The caller MUST verify this process is unique before calling this
     /// function. This requires a capability to call to ensure that the caller
     /// have verified that this process is unique before trying to start it.
-    fn start(&self, cap: &dyn crate::capabilities::ProcessStartCapability);
+    fn start(&self, cap: &dyn crate::kernel::capabilities::ProcessStartCapability);
 
     /// Terminates and attempts to restart the process. The process and current
     /// application always terminate. The kernel may, based on its own policy,

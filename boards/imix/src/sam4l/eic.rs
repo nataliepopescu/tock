@@ -18,7 +18,7 @@
 // Author: Josh Zhang <jiashuoz@cs.princeton.edu>
 // Last modified July 22, 2019
 
-use crate::pm::{self, Clock, PBDClock};
+use crate::sam4l::pm::{self, Clock, PBDClock};
 use kernel::hil;
 use kernel::platform::chip::ClockInterface;
 use kernel::utilities::StaticRef;

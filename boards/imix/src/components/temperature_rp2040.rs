@@ -61,7 +61,7 @@ impl<A: 'static + adc::Adc<'static>> Component for TemperatureRp2040Component<A>
 
     fn finalize(self, s: Self::StaticInput) -> Self::Output {
         let adc_device =
-            crate::adc::AdcComponent::new(self.adc_mux, self.adc_channel).finalize(s.0);
+            crate::components::adc::AdcComponent::new(self.adc_mux, self.adc_channel).finalize(s.0);
 
         let temperature_rp2040 =
             s.1.write(TemperatureRp2040::new(adc_device, self.slope, self.v_27));

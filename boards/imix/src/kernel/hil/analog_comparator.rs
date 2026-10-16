@@ -4,7 +4,7 @@
 
 //! Interface for direct control of the analog comparators.
 
-use crate::ErrorCode;
+use crate::kernel::ErrorCode;
 
 // Author: Danilo Verhaert <verhaert@cs.stanford.edu>
 // Last modified August 9th, 2018

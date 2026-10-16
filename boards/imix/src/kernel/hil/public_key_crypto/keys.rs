@@ -4,8 +4,8 @@
 
 //! Key interface for Public/Private key encryption
 
-use crate::ErrorCode;
-use crate::hil::entropy;
+use crate::kernel::ErrorCode;
+use crate::kernel::hil::entropy;
 
 /// Upcall from the `PubPrivKeyGenerate` trait.
 pub trait PubPrivKeyGenerateClient<'a> {
@@ -297,7 +297,7 @@ pub trait SelectKeyClient {
     /// - `index`: The index of the key that was selected.
     /// - `metadata`: An opaque usize of metadata associated with the key. This
     ///   can be used with
-    ///   [`CheckResultAcceptMetadata`](crate::process_checker::CheckResultAcceptMetadata)
+    ///   [`CheckResultAcceptMetadata`](crate::kernel::process_checker::CheckResultAcceptMetadata)
     ///   to assign metadata with the accepted credential.
     ///
     /// ### `error`:

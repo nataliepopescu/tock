@@ -4,7 +4,7 @@
 
 //! Interface to USB controller hardware
 
-use crate::utilities::registers::InMemoryRegister;
+use crate::kernel::utilities::registers::InMemoryRegister;
 
 /// USB controller interface
 pub trait UsbController<'a> {

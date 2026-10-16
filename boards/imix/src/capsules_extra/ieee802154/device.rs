@@ -15,8 +15,8 @@
 //! example, a radio chip might be able to completely inline the frame security
 //! procedure in hardware, as opposed to requiring a software implementation.
 
-use crate::ieee802154::framer::Frame;
-use crate::net::ieee802154::{Header, KeyId, MacAddress, PanID, SecurityLevel};
+use crate::capsules_extra::ieee802154::framer::Frame;
+use crate::capsules_extra::net::ieee802154::{Header, KeyId, MacAddress, PanID, SecurityLevel};
 use kernel::ErrorCode;
 
 pub trait MacDevice<'a> {

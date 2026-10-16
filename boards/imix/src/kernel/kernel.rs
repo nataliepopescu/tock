@@ -11,30 +11,30 @@
 use core::cell::Cell;
 use core::num::NonZeroU32;
 
-use crate::capabilities;
-use crate::config;
-use crate::debug;
-use crate::deferred_call::DeferredCall;
-use crate::errorcode::ErrorCode;
-use crate::grant::{AllowRoSize, AllowRwSize, Grant, UpcallSize};
-use crate::ipc;
-use crate::memop;
-use crate::platform::chip::Chip;
-use crate::platform::mpu::MPU;
-use crate::platform::platform::ContextSwitchCallback;
-use crate::platform::platform::KernelResources;
-use crate::platform::platform::{ProcessFault, SyscallDriverLookup, SyscallFilter};
-use crate::platform::scheduler_timer::SchedulerTimer;
-use crate::platform::watchdog::WatchDog;
-use crate::process::ProcessSlot;
-use crate::process::{self, ProcessId, Task};
-use crate::scheduler::{Scheduler, SchedulingDecision};
-use crate::syscall::SyscallDriver;
-use crate::syscall::{ContextSwitchReason, SyscallReturn};
-use crate::syscall::{Syscall, YieldVariant};
-use crate::syscall_driver::CommandReturn;
-use crate::upcall::{Upcall, UpcallId};
-use crate::utilities::cells::NumericCellExt;
+use crate::kernel::capabilities;
+use crate::kernel::config;
+use crate::kernel::debug;
+use crate::kernel::deferred_call::DeferredCall;
+use crate::kernel::errorcode::ErrorCode;
+use crate::kernel::grant::{AllowRoSize, AllowRwSize, Grant, UpcallSize};
+use crate::kernel::ipc;
+use crate::kernel::memop;
+use crate::kernel::platform::chip::Chip;
+use crate::kernel::platform::mpu::MPU;
+use crate::kernel::platform::platform::ContextSwitchCallback;
+use crate::kernel::platform::platform::KernelResources;
+use crate::kernel::platform::platform::{ProcessFault, SyscallDriverLookup, SyscallFilter};
+use crate::kernel::platform::scheduler_timer::SchedulerTimer;
+use crate::kernel::platform::watchdog::WatchDog;
+use crate::kernel::process::ProcessSlot;
+use crate::kernel::process::{self, ProcessId, Task};
+use crate::kernel::scheduler::{Scheduler, SchedulingDecision};
+use crate::kernel::syscall::SyscallDriver;
+use crate::kernel::syscall::{ContextSwitchReason, SyscallReturn};
+use crate::kernel::syscall::{Syscall, YieldVariant};
+use crate::kernel::syscall_driver::CommandReturn;
+use crate::kernel::upcall::{Upcall, UpcallId};
+use crate::kernel::utilities::cells::NumericCellExt;
 
 /// Threshold in microseconds to consider a process's timeslice to be exhausted.
 /// That is, Tock will skip re-scheduling a process if its remaining timeslice
@@ -486,7 +486,7 @@ impl Kernel {
         resources: &KR,
         chip: &C,
         process: &dyn process::Process,
-        ipc: Option<&crate::ipc::IPC<NUM_PROCS>>,
+        ipc: Option<&crate::kernel::ipc::IPC<NUM_PROCS>>,
         timeslice_us: Option<NonZeroU32>,
     ) -> (process::StoppedExecutingReason, Option<u32>) {
         // We must use a dummy scheduler timer if the process should be executed
@@ -961,7 +961,7 @@ impl Kernel {
                                         // initially allocated. If it turns out
                                         // it isn't we ask the capsule to
                                         // allocate the grant.
-                                        match crate::grant::subscribe(process, upcall) {
+                                        match crate::kernel::grant::subscribe(process, upcall) {
                                             Ok(upcall) => upcall.into_subscribe_success(),
                                             Err((upcall, err @ ErrorCode::NOMEM)) => {
                                                 // If we get a memory error, we
@@ -979,7 +979,7 @@ impl Kernel {
                                                         // this will fail again
                                                         // and we return an
                                                         // error to userspace.
-                                                        match crate::grant::subscribe(
+                                                        match crate::kernel::grant::subscribe(
                                                             process, upcall,
                                                         ) {
                                                             // An Ok() returns
@@ -1098,7 +1098,7 @@ impl Kernel {
                                         // Creating the
                                         // [`ReadWriteProcessBuffer`] worked,
                                         // try to set in grant.
-                                        match crate::grant::allow_rw(
+                                        match crate::kernel::grant::allow_rw(
                                             process,
                                             driver_number,
                                             subdriver_number,
@@ -1120,7 +1120,7 @@ impl Kernel {
                                                         // allocated a new
                                                         // grant, try again and
                                                         // honor the result.
-                                                        match crate::grant::allow_rw(
+                                                        match crate::kernel::grant::allow_rw(
                                                             process,
                                                             driver_number,
                                                             subdriver_number,
@@ -1303,7 +1303,7 @@ impl Kernel {
                                         // Creating the
                                         // [`ReadOnlyProcessBuffer`] worked, try
                                         // to set in grant.
-                                        match crate::grant::allow_ro(
+                                        match crate::kernel::grant::allow_ro(
                                             process,
                                             driver_number,
                                             subdriver_number,
@@ -1325,7 +1325,7 @@ impl Kernel {
                                                         // allocated a new
                                                         // grant, try again and
                                                         // honor the result.
-                                                        match crate::grant::allow_ro(
+                                                        match crate::kernel::grant::allow_ro(
                                                             process,
                                                             driver_number,
                                                             subdriver_number,

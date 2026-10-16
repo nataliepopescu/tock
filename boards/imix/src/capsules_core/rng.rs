@@ -40,7 +40,7 @@ use kernel::utilities::cells::OptionalCell;
 use kernel::{ErrorCode, ProcessId};
 
 /// Syscall driver number.
-use crate::driver;
+use crate::capsules_core::driver;
 pub const DRIVER_NUM: usize = driver::NUM::Rng as usize;
 
 /// Ids for read-write allow buffers

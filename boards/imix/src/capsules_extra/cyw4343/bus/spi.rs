@@ -5,8 +5,8 @@
 use super::State as BusState;
 use super::common;
 use super::{CYW4343xBus, CYW4343xBusClient, Function, RegLen, Type};
-use crate::cyw4343::constants;
-use crate::cyw4343::macros::{backplane_window_bits, reset_and_restore_bufs};
+use crate::capsules_extra::cyw4343::constants;
+use crate::capsules_extra::cyw4343::macros::{backplane_window_bits, reset_and_restore_bufs};
 use core::cell::Cell;
 use kernel::hil::spi::{SpiMasterClient, SpiMasterDevice};
 use kernel::hil::time::ConvertTicks;
@@ -642,7 +642,7 @@ impl<'a, S: SpiMasterDevice<'a>, A: kernel::hil::time::Alarm<'a>> gpio::Client
 }
 
 mod init {
-    use crate::cyw4343::{bus, constants};
+    use crate::capsules_extra::cyw4343::{bus, constants};
     use bus::RegLen::Word;
     use bus::common;
     use bus::spi::{bus_init, wakeup};
@@ -721,7 +721,7 @@ mod init {
 
 mod bus_init {
     use super::task::GspiTask;
-    use crate::cyw4343::{bus, constants};
+    use crate::capsules_extra::cyw4343::{bus, constants};
     use bus::Function::{Backplane as Bp, Bus};
     use bus::RegLen::{Byte, Word};
     use bus::common::{eq, mask};
@@ -783,7 +783,7 @@ mod bus_init {
 
 mod wakeup {
     use super::task::GspiTask;
-    use crate::cyw4343::{bus, constants};
+    use crate::capsules_extra::cyw4343::{bus, constants};
     use bus::Function::{Backplane as Bp, Bus};
     use bus::RegLen::{Byte, HalfWord, Word};
     use bus::common::mask;
@@ -833,7 +833,7 @@ mod wakeup {
 
 mod task {
     use super::{cmd16, cmd32};
-    use crate::cyw4343::{bus, constants};
+    use crate::capsules_extra::cyw4343::{bus, constants};
     use bus::{Function, RegLen, Type, common};
 
     type Cmd = u32;

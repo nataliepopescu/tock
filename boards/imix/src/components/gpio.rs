@@ -58,7 +58,7 @@ use kernel::hil::gpio::InterruptWithValue;
 #[macro_export]
 macro_rules! gpio_component_helper_max_pin {
     () => { 0usize };
-    ($a:expr, $b:expr, $($tail:expr),* $(,)?) => { $crate::gpio_component_helper_max_pin! (max ($a, $b), $($tail,)*) };
+    ($a:expr, $b:expr, $($tail:expr),* $(,)?) => { $crate::components::gpio_component_helper_max_pin! (max ($a, $b), $($tail,)*) };
     ($a:expr $(,)?) => { $a };
 }
 
@@ -68,7 +68,7 @@ macro_rules! gpio_component_helper_owned {
         $Pin:ty,
         $($nr:literal => $pin:expr),* $(,)?
     ) => {
-        $crate::gpio_component_helper!(
+        $crate::components::gpio_component_helper!(
             $Pin,
             $(
                 $nr => static_init!($Pin, $pin),
@@ -96,7 +96,7 @@ macro_rules! gpio_component_helper {
             [a, b][(a < b) as usize]
         }
 
-        const NUM_PINS: usize = $crate::gpio_component_helper_max_pin! ($($nr,)*) + 1;
+        const NUM_PINS: usize = $crate::components::gpio_component_helper_max_pin! ($($nr,)*) + 1;
 
         let mut pins = static_init!(
             [Option<&'static InterruptValueWrapper<'static, $Pin>>; NUM_PINS],

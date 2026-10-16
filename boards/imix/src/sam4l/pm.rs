@@ -4,11 +4,11 @@
 
 //! Implementation of the power manager (PM) peripheral.
 
-use crate::bpm;
-use crate::bscif;
-use crate::flashcalw;
-use crate::gpio;
-use crate::scif;
+use crate::sam4l::bpm;
+use crate::sam4l::bscif;
+use crate::sam4l::flashcalw;
+use crate::sam4l::gpio;
+use crate::sam4l::scif;
 use core::cell::Cell;
 use core::sync::atomic::Ordering;
 use kernel::platform::chip::ClockInterface;

@@ -7,7 +7,7 @@
 //! DigestData::add_date and DigestVerify::verify through the
 //! Digest trait.
 
-use crate::sip_hash::SipHasher24;
+use crate::capsules_extra::sip_hash::SipHasher24;
 use capsules_core::test::capsule_test::{CapsuleTest, CapsuleTestClient, CapsuleTestError};
 use kernel::ErrorCode;
 use kernel::hil::hasher::{Client, Hasher};

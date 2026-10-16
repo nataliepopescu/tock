@@ -4,7 +4,7 @@
 
 //! Implementation of the PDCA DMA peripheral.
 
-use crate::pm;
+use crate::sam4l::pm;
 use core::cell::Cell;
 use core::cmp;
 use core::sync::atomic;

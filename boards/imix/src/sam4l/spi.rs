@@ -10,10 +10,10 @@
 //!
 //! - Authors: Sam Crow <samcrow@uw.edu>, Philip Levis <pal@cs.stanford.edu>
 
-use crate::dma::DMAChannel;
-use crate::dma::DMAClient;
-use crate::dma::DMAPeripheral;
-use crate::pm;
+use crate::sam4l::dma::DMAChannel;
+use crate::sam4l::dma::DMAClient;
+use crate::sam4l::dma::DMAPeripheral;
+use crate::sam4l::pm;
 use core::cell::Cell;
 use core::cmp;
 use kernel::ErrorCode;

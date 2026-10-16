@@ -4,7 +4,7 @@
 
 //! Components for creating a virtual scheduler timer.
 
-use crate::virtual_scheduler_timer::hil::time;
+use crate::components::virtual_scheduler_timer::hil::time;
 use capsules_core::virtualizers::virtual_alarm::{MuxAlarm, VirtualMuxAlarm};
 use capsules_system::virtual_scheduler_timer::VirtualSchedulerTimer;
 use core::mem::MaybeUninit;

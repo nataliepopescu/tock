@@ -7,14 +7,14 @@
 //! This is a special syscall driver that allows userspace applications to
 //! share memory.
 
-use crate::ErrorCode;
-use crate::capabilities::MemoryAllocationCapability;
-use crate::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
-use crate::kernel::Kernel;
-use crate::process;
-use crate::process::ProcessId;
-use crate::processbuffer::ReadableProcessBuffer;
-use crate::syscall_driver::{CommandReturn, SyscallDriver};
+use crate::kernel::ErrorCode;
+use crate::kernel::capabilities::MemoryAllocationCapability;
+use crate::kernel::grant::{AllowRoCount, AllowRwCount, Grant, UpcallCount};
+use crate::kernel::kernel::Kernel;
+use crate::kernel::process;
+use crate::kernel::process::ProcessId;
+use crate::kernel::processbuffer::ReadableProcessBuffer;
+use crate::kernel::syscall_driver::{CommandReturn, SyscallDriver};
 
 /// Syscall number
 pub const DRIVER_NUM: usize = 0x10000;
@@ -261,7 +261,7 @@ impl<const NUM_PROCS: u8> SyscallDriver for IPC<NUM_PROCS> {
         }
     }
 
-    fn allocate_grant(&self, processid: ProcessId) -> Result<(), crate::process::Error> {
+    fn allocate_grant(&self, processid: ProcessId) -> Result<(), crate::kernel::process::Error> {
         self.data.enter(processid, |_, _| {})
     }
 }

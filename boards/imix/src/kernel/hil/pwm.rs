@@ -4,7 +4,7 @@
 
 //! Interfaces for Pulse Width Modulation output.
 
-use crate::ErrorCode;
+use crate::kernel::ErrorCode;
 
 /// PWM control for a single pin.
 pub trait Pwm {

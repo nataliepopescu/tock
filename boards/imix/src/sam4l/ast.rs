@@ -8,7 +8,7 @@
 //! - Author: Philip Levis <pal@cs.stanford.edu>
 //! - Date: September 17, 2020
 
-use crate::pm::{self, PBDClock};
+use crate::sam4l::pm::{self, PBDClock};
 use kernel::ErrorCode;
 use kernel::hil::Controller;
 use kernel::hil::time::{self, Ticks};

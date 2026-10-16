@@ -4,7 +4,7 @@
 
 //! Interface for I2C master and slave peripherals.
 
-use crate::ErrorCode;
+use crate::kernel::ErrorCode;
 
 use core::fmt;
 use core::fmt::{Display, Formatter};

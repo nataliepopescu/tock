@@ -7,7 +7,7 @@
 //!
 //! see boards/imix/src/aes_test.rs for example usage
 
-use crate::ErrorCode;
+use crate::kernel::ErrorCode;
 
 /// Implement this trait and use `set_client()` in order to receive callbacks from an `AES`
 /// instance.

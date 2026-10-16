@@ -15,21 +15,21 @@
 use core::cell::Cell;
 use core::fmt;
 
-use crate::capabilities::ProcessManagementCapability;
-use crate::config;
-use crate::debug;
-use crate::deferred_call::{DeferredCall, DeferredCallClient};
-use crate::kernel::Kernel;
-use crate::platform::chip::Chip;
-use crate::process::{Process, ShortId};
-use crate::process_binary::{ProcessBinary, ProcessBinaryError};
-use crate::process_checker::AcceptedCredential;
-use crate::process_checker::{AppIdPolicy, ProcessCheckError, ProcessCheckerMachine};
-use crate::process_policies::ProcessFaultPolicy;
-use crate::process_policies::ProcessStandardStoragePermissionsPolicy;
-use crate::process_standard::ProcessStandard;
-use crate::process_standard::{ProcessStandardDebug, ProcessStandardDebugFull};
-use crate::utilities::cells::{MapCell, OptionalCell};
+use crate::kernel::capabilities::ProcessManagementCapability;
+use crate::kernel::config;
+use crate::kernel::debug;
+use crate::kernel::deferred_call::{DeferredCall, DeferredCallClient};
+use crate::kernel::kernel::Kernel;
+use crate::kernel::platform::chip::Chip;
+use crate::kernel::process::{Process, ShortId};
+use crate::kernel::process_binary::{ProcessBinary, ProcessBinaryError};
+use crate::kernel::process_checker::AcceptedCredential;
+use crate::kernel::process_checker::{AppIdPolicy, ProcessCheckError, ProcessCheckerMachine};
+use crate::kernel::process_policies::ProcessFaultPolicy;
+use crate::kernel::process_policies::ProcessStandardStoragePermissionsPolicy;
+use crate::kernel::process_standard::ProcessStandard;
+use crate::kernel::process_standard::{ProcessStandardDebug, ProcessStandardDebugFull};
+use crate::kernel::utilities::cells::{MapCell, OptionalCell};
 
 /// Errors that can occur when trying to load and create processes.
 pub enum ProcessLoadError {
@@ -1289,13 +1289,13 @@ impl<C: Chip, D: ProcessStandardDebug> DeferredCallClient
     }
 }
 
-impl<C: Chip, D: ProcessStandardDebug> crate::process_checker::ProcessCheckerMachineClient
+impl<C: Chip, D: ProcessStandardDebug> crate::kernel::process_checker::ProcessCheckerMachineClient
     for SequentialProcessLoaderMachine<'_, C, D>
 {
     fn done(
         &self,
         process_binary: ProcessBinary,
-        result: Result<Option<AcceptedCredential>, crate::process_checker::ProcessCheckError>,
+        result: Result<Option<AcceptedCredential>, crate::kernel::process_checker::ProcessCheckError>,
     ) {
         // Check if this process was approved by the checker.
         match result {

@@ -15,7 +15,7 @@
 //! - `u64`
 //! - `usize`
 
-use crate::ErrorCode;
+use crate::kernel::ErrorCode;
 use core::ptr;
 
 /// Interface for copying buffers that cannot panic.

@@ -8,10 +8,10 @@
 //! [IPAddr](struct.IPAddr.html) struct and associated helper
 //! functions.
 
-use crate::net::icmpv6::{ICMP6Header, ICMP6HeaderOptions};
-use crate::net::ieee802154::MacAddress;
-use crate::net::ipv6::IP6Header;
-use crate::net::udp::UDPHeader;
+use crate::capsules_extra::net::icmpv6::{ICMP6Header, ICMP6HeaderOptions};
+use crate::capsules_extra::net::ieee802154::MacAddress;
+use crate::capsules_extra::net::ipv6::IP6Header;
+use crate::capsules_extra::net::udp::UDPHeader;
 
 #[derive(Copy, Clone, PartialEq)]
 pub enum MacAddr {

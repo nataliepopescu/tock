@@ -4,7 +4,7 @@
 
 //! Interface for UART communication.
 
-use crate::ErrorCode;
+use crate::kernel::ErrorCode;
 
 /// Number of stop bits to send after each word.
 #[derive(Copy, Clone, Debug, PartialEq)]

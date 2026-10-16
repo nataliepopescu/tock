@@ -94,7 +94,7 @@ use kernel::syscall::{CommandReturn, SyscallDriver};
 use kernel::utilities::cells::{OptionalCell, TakeCell};
 use kernel::{ErrorCode, ProcessId};
 
-use crate::lsm303xx::{
+use crate::capsules_extra::lsm303xx::{
     AccelerometerRegisters, CTRL_REG1, CTRL_REG4, Lsm303AccelDataRate, Lsm303MagnetoDataRate,
     Lsm303Range, Lsm303Scale, RANGE_FACTOR_X_Y, RANGE_FACTOR_Z, SCALE_FACTOR,
 };

@@ -230,14 +230,14 @@
 //     reassembled.
 //
 
-use crate::ieee802154::device::{MacDevice, RxClient};
-use crate::ieee802154::framer::Frame;
-use crate::net::frag_utils::Bitmap;
-use crate::net::ieee802154::{Header, KeyId, MacAddress, PanID, SecurityLevel};
-use crate::net::ipv6::IP6Packet;
-use crate::net::sixlowpan::sixlowpan_compression;
-use crate::net::sixlowpan::sixlowpan_compression::{ContextStore, is_lowpan};
-use crate::net::util::{network_slice_to_u16, u16_to_network_slice};
+use crate::capsules_extra::ieee802154::device::{MacDevice, RxClient};
+use crate::capsules_extra::ieee802154::framer::Frame;
+use crate::capsules_extra::net::frag_utils::Bitmap;
+use crate::capsules_extra::net::ieee802154::{Header, KeyId, MacAddress, PanID, SecurityLevel};
+use crate::capsules_extra::net::ipv6::IP6Packet;
+use crate::capsules_extra::net::sixlowpan::sixlowpan_compression;
+use crate::capsules_extra::net::sixlowpan::sixlowpan_compression::{ContextStore, is_lowpan};
+use crate::capsules_extra::net::util::{network_slice_to_u16, u16_to_network_slice};
 
 use core::cell::Cell;
 use core::cmp::min;

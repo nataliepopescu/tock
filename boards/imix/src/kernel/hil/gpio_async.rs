@@ -4,8 +4,8 @@
 
 //! Interface for GPIO pins that require split-phase operation to control.
 
-use crate::ErrorCode;
-use crate::hil;
+use crate::kernel::ErrorCode;
+use crate::kernel::hil;
 
 /// Interface for banks of asynchronous GPIO pins.
 ///

@@ -65,5 +65,5 @@ impl cortexm::CortexMVariant for CortexM4 {
 }
 
 pub mod syscall {
-    pub type SysCall = cortexm::syscall::SysCall<crate::CortexM4>;
+    pub type SysCall = cortexm::syscall::SysCall<crate::cortexm4::CortexM4>;
 }

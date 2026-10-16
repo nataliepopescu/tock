@@ -51,7 +51,7 @@
 //!
 //! ```
 
-use crate::ErrorCode;
+use crate::kernel::ErrorCode;
 
 pub trait BleAdvertisementDriver<'a> {
     fn transmit_advertisement(&self, buf: &'static mut [u8], len: usize, channel: RadioChannel);

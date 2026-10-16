@@ -23,25 +23,25 @@
 #[macro_export]
 macro_rules! static_init {
     ($T:ty, $e:expr $(,)?) => {{
-        let mut buf = $crate::static_buf!($T);
+        let mut buf = $crate::kernel::static_buf!($T);
         buf.write($e)
     }};
 }
 
-/// Internal helper function for [`static_buf!()`](crate::static_buf).
+/// Internal helper function for [`static_buf!()`](crate::kernel::static_buf).
 ///
 /// This must be public to work within the macro but should never be used
 /// directly.
 ///
 /// This is a `#[inline(never)]` function that panics internally if the passed
 /// reference is `true`. This function is intended for use within the
-/// [`static_buf!()`](crate::static_buf) macro to detect multiple uses of the
+/// [`static_buf!()`](crate::kernel::static_buf) macro to detect multiple uses of the
 /// macro on the same buffer.
 ///
 /// This function is implemented separately without inlining to removes the size
 /// bloat of track_caller saving the location of every single call to
-/// [`static_buf!()`](crate::static_buf) or
-/// [`static_init!()`](crate::static_init).
+/// [`static_buf!()`](crate::kernel::static_buf) or
+/// [`static_init!()`](crate::kernel::static_init).
 ///
 /// If Tock panics with this message:
 ///
@@ -52,11 +52,11 @@ macro_rules! static_init {
 /// then you have tried to initialize the same static memory twice. This is
 /// prohibited because you would have multiple mutable references to the same
 /// memory. This is likely due to either calling
-/// [`static_buf!()`](crate::static_buf) in a loop or calling a function
+/// [`static_buf!()`](crate::kernel::static_buf) in a loop or calling a function
 /// multiple times which internally contains a call to
-/// [`static_buf!()`](crate::static_buf). Typically, calls to
-/// [`static_buf!()`](crate::static_buf) are hidden within calls to
-/// [`static_init!()`](crate::static_init) or component helper macros, so start
+/// [`static_buf!()`](crate::kernel::static_buf). Typically, calls to
+/// [`static_buf!()`](crate::kernel::static_buf) are hidden within calls to
+/// [`static_init!()`](crate::kernel::static_init) or component helper macros, so start
 /// your search there.
 #[inline(never)]
 pub fn static_buf_check_used(used: &mut bool) {
@@ -113,7 +113,7 @@ macro_rules! static_buf {
         // used is contained within the static_buf_check_used function,
         // which panics if the passed boolean has been used and sets the
         // boolean to true otherwise.
-        $crate::utilities::static_init::static_buf_check_used(&mut BUF.1);
+        $crate::kernel::utilities::static_init::static_buf_check_used(&mut BUF.1);
 
         // If we get to this point we can wrap our buffer to be eventually
         // initialized.
@@ -167,7 +167,7 @@ macro_rules! static_named_buf {
         // used is contained within the static_buf_check_used function,
         // which panics if the passed boolean has been used and sets the
         // boolean to true otherwise.
-        $crate::utilities::static_init::static_buf_check_used(&mut BUF.1);
+        $crate::kernel::utilities::static_init::static_buf_check_used(&mut BUF.1);
 
         // If we get to this point we can wrap our buffer to be eventually
         // initialized.

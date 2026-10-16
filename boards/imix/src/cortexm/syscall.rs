@@ -15,7 +15,7 @@ use core::ops::Range;
 use core::ptr;
 use kernel::errorcode::ErrorCode;
 
-use crate::CortexMVariant;
+use crate::cortexm::CortexMVariant;
 
 /// This is used in the syscall handler. When set to 1 this means the
 /// svc_handler was called. Marked `pub` because it is used in the cortex-m*

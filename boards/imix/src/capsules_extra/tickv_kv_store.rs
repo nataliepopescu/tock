@@ -27,7 +27,7 @@
 //!    hil::flash
 //! ```
 
-use crate::tickv::{KVSystem, KVSystemClient, KeyType};
+use crate::capsules_extra::tickv::{KVSystem, KVSystemClient, KeyType};
 use kernel::ErrorCode;
 use kernel::hil::kv;
 use kernel::utilities::cells::{MapCell, OptionalCell, TakeCell};

@@ -16,7 +16,7 @@
 //! sufficient to bridge Ethernet MACs / adapters into userspace, where another
 //! network stack can be used.
 
-use crate::ErrorCode;
+use crate::kernel::ErrorCode;
 
 /// Ethernet adapter datapath client HIL
 pub trait EthernetAdapterDatapathClient {

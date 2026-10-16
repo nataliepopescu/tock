@@ -4,7 +4,7 @@
 
 //! Interface for touch input devices
 
-use crate::ErrorCode;
+use crate::kernel::ErrorCode;
 
 /// Touch Event Status
 #[derive(Debug, Copy, Clone)]

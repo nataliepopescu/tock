@@ -68,12 +68,12 @@
 
 use core::fmt::Write;
 
-use crate::errorcode::ErrorCode;
-use crate::process;
-use crate::utilities::capability_ptr::CapabilityPtr;
-use crate::utilities::machine_register::MachineRegister;
+use crate::kernel::errorcode::ErrorCode;
+use crate::kernel::process;
+use crate::kernel::utilities::capability_ptr::CapabilityPtr;
+use crate::kernel::utilities::machine_register::MachineRegister;
 
-pub use crate::syscall_driver::{CommandReturn, SyscallDriver};
+pub use crate::kernel::syscall_driver::{CommandReturn, SyscallDriver};
 
 // ---------- SYSTEMCALL ARGUMENT DECODING ----------
 
@@ -320,11 +320,11 @@ impl Syscall {
 /// and pointers. It is constructed by the scheduler and passed down to the
 /// architecture to be encoded into registers. Architectures may use the various
 /// helper functions defined in
-/// [`utilities::arch_helpers`](crate::utilities::arch_helpers).
+/// [`utilities::arch_helpers`](crate::kernel::utilities::arch_helpers).
 ///
 /// Capsules do not use this struct. Capsules use higher level Rust types (e.g.
-/// [`ReadWriteProcessBuffer`](crate::processbuffer::ReadWriteProcessBuffer) and
-/// [`GrantKernelData`](crate::grant::GrantKernelData)) or wrappers around this
+/// [`ReadWriteProcessBuffer`](crate::kernel::processbuffer::ReadWriteProcessBuffer) and
+/// [`GrantKernelData`](crate::kernel::grant::GrantKernelData)) or wrappers around this
 /// struct ([`CommandReturn`]) which limit the available constructors to safely
 /// constructable variants.
 #[derive(Copy, Clone, Debug)]
@@ -464,7 +464,7 @@ pub enum ContextSwitchReason {
     /// Process triggered the hardfault handler. The implementation should still
     /// save registers in the event that the platform can handle the fault and
     /// allow the app to continue running. For more details on this see
-    /// [`ProcessFault`](crate::platform::ProcessFault).
+    /// [`ProcessFault`](crate::kernel::platform::ProcessFault).
     Fault,
     /// Process was interrupted (e.g. by a hardware event).
     Interrupted,

@@ -4,7 +4,7 @@
 
 //! The 8080 Bus Interface (used for LCD)
 
-use crate::ErrorCode;
+use crate::kernel::ErrorCode;
 
 /// Bus width used for address width and data width
 pub enum BusWidth {

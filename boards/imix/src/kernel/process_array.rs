@@ -13,7 +13,7 @@
 //! references to each PCB. The actual PCB is allocated in the process's
 //! allocated memory.
 
-use crate::{capabilities, process};
+use crate::kernel::{capabilities, process};
 use core::cell::Cell;
 
 /// Represents a slot for a process in a [`ProcessArray`].

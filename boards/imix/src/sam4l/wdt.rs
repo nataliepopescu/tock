@@ -6,7 +6,7 @@
 
 use core::cell::Cell;
 
-use crate::pm::{self, Clock, PBDClock};
+use crate::sam4l::pm::{self, Clock, PBDClock};
 
 use cortexm4::support;
 

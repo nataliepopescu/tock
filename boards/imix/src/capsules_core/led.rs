@@ -63,7 +63,7 @@ use kernel::syscall::{CommandReturn, SyscallDriver};
 use kernel::{ErrorCode, ProcessId};
 
 /// Syscall driver number.
-use crate::driver;
+use crate::capsules_core::driver;
 pub const DRIVER_NUM: usize = driver::NUM::Led as usize;
 
 /// Holds the array of LEDs and implements a `Driver` interface to

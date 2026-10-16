@@ -6,7 +6,7 @@
 
 use core::fmt::Write;
 
-use crate::write_to_binary::WriteToBinaryOffsetWrapper;
+use crate::capsules_system::write_to_binary::WriteToBinaryOffsetWrapper;
 use kernel::process::Process;
 use kernel::process::{ProcessPrinter, ProcessPrinterContext};
 use kernel::utilities::binary_write::BinaryWrite;

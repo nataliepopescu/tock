@@ -34,7 +34,7 @@
 //! );
 //! ```
 
-use crate::bus::{self, Bus, BusAddr8, DataWidth};
+use crate::capsules_extra::bus::{self, Bus, BusAddr8, DataWidth};
 use core::cell::Cell;
 use kernel::ErrorCode;
 use kernel::hil::gpio::Pin;
@@ -988,7 +988,7 @@ const GMCTRN1: Command = Command {
     delay: 0,
 };
 
-const ST7735_INIT_SEQUENCE: [SendCommand; 20] = crate::default_parameters_sequence!(
+const ST7735_INIT_SEQUENCE: [SendCommand; 20] = crate::capsules_extra::default_parameters_sequence!(
     &SW_RESET, &SLEEP_OUT, &FRMCTR1, &FRMCTR2, &FRMCTR3, &INVCTR, &PWCTR1, &PWCTR2, &PWCTR3,
     &PWCTR4, &PWCTR5, &VMCTR1, &INVOFF, &MADCTL, &COLMOD, &CASET, &RASET, &GMCTRP1, &GMCTRN1,
     &NORON
@@ -1066,7 +1066,7 @@ const TEARING_EFFECT: Command = Command {
     delay: 0,
 };
 
-const ST7789H2_INIT_SEQUENCE: [SendCommand; 22] = crate::default_parameters_sequence!(
+const ST7789H2_INIT_SEQUENCE: [SendCommand; 22] = crate::capsules_extra::default_parameters_sequence!(
     &SLEEP_IN,
     &SW_RESET,
     &SLEEP_OUT,

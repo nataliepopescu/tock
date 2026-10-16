@@ -72,7 +72,7 @@ macro_rules! process_console_component_static {
         )
     }};
     ($A: ty, $C: ty $(,)?) => {{
-        $crate::process_console_component_static!($A, $C, { capsules_core::process_console::DEFAULT_COMMAND_HISTORY_LEN })
+        $crate::components::process_console_component_static!($A, $C, { capsules_core::process_console::DEFAULT_COMMAND_HISTORY_LEN })
     }};
 }
 

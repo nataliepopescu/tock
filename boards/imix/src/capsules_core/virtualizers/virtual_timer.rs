@@ -12,7 +12,7 @@ use kernel::collections::list::{List, ListLink, ListNode};
 use kernel::hil::time::{self, Alarm, Ticks, Time, Timer};
 use kernel::utilities::cells::{NumericCellExt, OptionalCell};
 
-use crate::virtualizers::virtual_alarm::VirtualMuxAlarm;
+use crate::capsules_core::virtualizers::virtual_alarm::VirtualMuxAlarm;
 
 #[derive(Copy, Clone, Debug, PartialEq)]
 enum Mode {

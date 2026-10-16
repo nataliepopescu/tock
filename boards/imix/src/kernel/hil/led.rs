@@ -8,7 +8,7 @@
 //!  Date: July 31, 2015
 //!
 
-use crate::hil::gpio;
+use crate::kernel::hil::gpio;
 
 /// Simple on/off interface for LED pins.
 ///

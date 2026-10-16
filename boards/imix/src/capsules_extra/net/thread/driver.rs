@@ -32,23 +32,23 @@
 //     current interface is unusable for sending data. It can only be used to
 //     join a network.
 
-use crate::ieee802154::framer::{self, get_ccm_nonce};
-use crate::net::ieee802154::{KeyId, MacAddress, Security, SecurityLevel};
-use crate::net::ipv6::ip_utils::IPAddr;
-use crate::net::network_capabilities::NetworkCapability;
+use crate::capsules_extra::ieee802154::framer::{self, get_ccm_nonce};
+use crate::capsules_extra::net::ieee802154::{KeyId, MacAddress, Security, SecurityLevel};
+use crate::capsules_extra::net::ipv6::ip_utils::IPAddr;
+use crate::capsules_extra::net::network_capabilities::NetworkCapability;
 
-use crate::net::ieee802154;
-use crate::net::thread::thread_utils::MULTICAST_IPV6;
-use crate::net::thread::thread_utils::THREAD_PORT_NUMBER;
-use crate::net::thread::thread_utils::ThreadState;
-use crate::net::thread::thread_utils::generate_src_ipv6;
-use crate::net::thread::thread_utils::{
+use crate::capsules_extra::net::ieee802154;
+use crate::capsules_extra::net::thread::thread_utils::MULTICAST_IPV6;
+use crate::capsules_extra::net::thread::thread_utils::THREAD_PORT_NUMBER;
+use crate::capsules_extra::net::thread::thread_utils::ThreadState;
+use crate::capsules_extra::net::thread::thread_utils::generate_src_ipv6;
+use crate::capsules_extra::net::thread::thread_utils::{
     AUTH_DATA_LEN, AUX_SEC_HEADER_LENGTH, IPV6_LEN, MleCommand, NetworkKey, SECURITY_SUITE_LEN,
     encode_cryp_data, form_child_id_req, form_parent_req, mac_from_ipv6,
 };
-use crate::net::udp::udp_port_table::UdpPortManager;
-use crate::net::udp::udp_recv::UDPRecvClient;
-use crate::net::udp::udp_send::{UDPSendClient, UDPSender};
+use crate::capsules_extra::net::udp::udp_port_table::UdpPortManager;
+use crate::capsules_extra::net::udp::udp_recv::UDPRecvClient;
+use crate::capsules_extra::net::udp::udp_send::{UDPSendClient, UDPSender};
 use capsules_core::driver;
 
 use core::cell::Cell;

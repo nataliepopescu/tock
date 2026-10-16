@@ -9,10 +9,10 @@
 
 use core::fmt;
 
-use crate::config;
-use crate::debug;
-use crate::process_checker::AcceptedCredential;
-use crate::utilities::cells::OptionalCell;
+use crate::kernel::config;
+use crate::kernel::debug;
+use crate::kernel::process_checker::AcceptedCredential;
+use crate::kernel::utilities::cells::OptionalCell;
 
 /// Errors resulting from trying to load a process binary structure from flash.
 pub enum ProcessBinaryError {
@@ -93,8 +93,8 @@ impl fmt::Debug for ProcessBinaryError {
                 Some((major, minor)) => write!(
                     f,
                     "Process is incompatible with the kernel. Running: {}.{}, Requested: {}.{}",
-                    crate::KERNEL_MAJOR_VERSION,
-                    crate::KERNEL_MINOR_VERSION,
+                    crate::kernel::KERNEL_MAJOR_VERSION,
+                    crate::kernel::KERNEL_MINOR_VERSION,
                     major,
                     minor
                 ),
@@ -178,7 +178,7 @@ impl ProcessBinary {
         if let Some((major, minor)) = tbf_header.get_kernel_version() {
             // If the `KernelVersion` header is present, we read the requested
             // kernel version and compare it to the running kernel version.
-            if crate::KERNEL_MAJOR_VERSION != major || crate::KERNEL_MINOR_VERSION < minor {
+            if crate::kernel::KERNEL_MAJOR_VERSION != major || crate::kernel::KERNEL_MINOR_VERSION < minor {
                 // If the kernel major version is different, we prevent the
                 // process from being loaded.
                 //
@@ -194,8 +194,8 @@ impl ProcessBinary {
                         major,
                         minor,
                         (major + 1),
-                        crate::KERNEL_MAJOR_VERSION,
-                        crate::KERNEL_MINOR_VERSION
+                        crate::kernel::KERNEL_MAJOR_VERSION,
+                        crate::kernel::KERNEL_MINOR_VERSION
                     );
                 }
                 return Err(ProcessBinaryError::IncompatibleKernelVersion {

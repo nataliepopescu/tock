@@ -4,7 +4,7 @@
 
 //! Helper functions for the Cortex-M architecture.
 
-use crate::scb;
+use crate::cortexm::scb;
 
 /// NOP instruction
 #[cfg(all(target_arch = "arm", target_os = "none"))]

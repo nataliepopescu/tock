@@ -193,7 +193,7 @@ mod process_standard;
 mod syscall_driver;
 
 // Core resources exposed as `kernel::Type`.
-pub use crate::errorcode::ErrorCode;
-pub use crate::kernel::Kernel;
-pub use crate::process::ProcessId;
-pub use crate::scheduler::Scheduler;
+pub use crate::kernel::errorcode::ErrorCode;
+pub use crate::kernel::kernel::Kernel;
+pub use crate::kernel::process::ProcessId;
+pub use crate::kernel::scheduler::Scheduler;

@@ -15,7 +15,7 @@
 //! peripherals can represent the actual hardware units an translate
 //! into these more general ones.
 
-use crate::ErrorCode;
+use crate::kernel::ErrorCode;
 use core::cmp::Ordering;
 use core::fmt;
 

@@ -13,8 +13,8 @@
 //! The point is that until this changes, and this notice is taken away: IF YOU
 //! CHANGE THIS DRIVER, TEST RIGOROUSLY!!!
 
-use crate::dma::{DMAChannel, DMAClient, DMAPeripheral};
-use crate::pm;
+use crate::sam4l::dma::{DMAChannel, DMAClient, DMAPeripheral};
+use crate::sam4l::pm;
 use core::cell::Cell;
 use kernel::hil;
 use kernel::platform::chip::ClockInterface;

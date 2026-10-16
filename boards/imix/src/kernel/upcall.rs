@@ -4,14 +4,14 @@
 
 //! Data structure for storing an upcall from the kernel to a process.
 
-use crate::ErrorCode;
-use crate::config;
-use crate::debug;
-use crate::process;
-use crate::process::ProcessId;
-use crate::syscall::SyscallReturn;
-use crate::utilities::capability_ptr::CapabilityPtr;
-use crate::utilities::machine_register::MachineRegister;
+use crate::kernel::ErrorCode;
+use crate::kernel::config;
+use crate::kernel::debug;
+use crate::kernel::process;
+use crate::kernel::process::ProcessId;
+use crate::kernel::syscall::SyscallReturn;
+use crate::kernel::utilities::capability_ptr::CapabilityPtr;
+use crate::kernel::utilities::machine_register::MachineRegister;
 use core::fmt::Debug;
 
 /// Type to uniquely identify an upcall subscription across all drivers.
@@ -19,12 +19,12 @@ use core::fmt::Debug;
 /// This contains the driver number and the subscribe number within the driver.
 #[derive(Copy, Clone, Eq, PartialEq)]
 pub struct UpcallId {
-    /// The [`SyscallDriver`](crate::syscall_driver::SyscallDriver)
+    /// The [`SyscallDriver`](crate::kernel::syscall_driver::SyscallDriver)
     /// implementation this upcall corresponds to.
     pub driver_num: usize,
     /// The subscription index the upcall corresponds to. Subscribe numbers
     /// start at 0 and increment for each upcall defined for a particular
-    /// [`SyscallDriver`](crate::syscall_driver::SyscallDriver).
+    /// [`SyscallDriver`](crate::kernel::syscall_driver::SyscallDriver).
     pub subscribe_num: usize,
 }
 
@@ -49,13 +49,13 @@ pub enum UpcallError {
     /// The passed `subscribe_num` exceeds the number of Upcalls available for
     /// this process.
     ///
-    /// For a [`Grant`](crate::grant::Grant) with `n` upcalls, this error is
+    /// For a [`Grant`](crate::kernel::grant::Grant) with `n` upcalls, this error is
     /// returned when
-    /// [`GrantKernelData::schedule_upcall`](crate::grant::GrantKernelData::schedule_upcall)
+    /// [`GrantKernelData::schedule_upcall`](crate::kernel::grant::GrantKernelData::schedule_upcall)
     /// is invoked with `subscribe_num >= n`.
     ///
     /// No Upcall has been scheduled, the call to
-    /// [`GrantKernelData::schedule_upcall`](crate::grant::GrantKernelData::schedule_upcall)
+    /// [`GrantKernelData::schedule_upcall`](crate::kernel::grant::GrantKernelData::schedule_upcall)
     /// had no observable effects.
     ///
     InvalidSubscribeNum,
@@ -66,14 +66,14 @@ pub enum UpcallError {
     /// chance to resume execution.
     ///
     /// No Upcall has been scheduled, the call to
-    /// [`GrantKernelData::schedule_upcall`](crate::grant::GrantKernelData::schedule_upcall)
+    /// [`GrantKernelData::schedule_upcall`](crate::kernel::grant::GrantKernelData::schedule_upcall)
     /// had no observable effects.
     QueueFull,
     /// A kernel-internal invariant has been violated.
     ///
     /// This error should never happen. It can be returned if the process is
     /// inactive (which should be caught by
-    /// [`Grant::enter`](crate::grant::Grant::enter)) or `process.tasks` was
+    /// [`Grant::enter`](crate::kernel::grant::Grant::enter)) or `process.tasks` was
     /// taken.
     ///
     /// These cases cannot be reasonably handled.

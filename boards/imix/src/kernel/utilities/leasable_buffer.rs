@@ -614,8 +614,8 @@ where
 #[cfg(test)]
 mod test {
 
-    use crate::utilities::leasable_buffer::SubSliceMut;
-    use crate::utilities::leasable_buffer::SubSliceMutImmut;
+    use crate::kernel::utilities::leasable_buffer::SubSliceMut;
+    use crate::kernel::utilities::leasable_buffer::SubSliceMutImmut;
 
     #[test]
     fn subslicemut_create() {

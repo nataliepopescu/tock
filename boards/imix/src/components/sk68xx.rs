@@ -22,7 +22,7 @@ macro_rules! sk68xx_component_static {
 #[macro_export]
 macro_rules! sk68xx_component_static_esp32c3_160mhz {
     ($P:ty $(,)?) => {
-        $crate::sk68xx_component_static!($P, { $crate::sk68xx::ESP32C3_160MHZ_T0H })
+        $crate::components::sk68xx_component_static!($P, { $crate::components::sk68xx::ESP32C3_160MHZ_T0H })
     };
 }
 
@@ -60,7 +60,7 @@ macro_rules! sk68xx_led_component_static {
 #[macro_export]
 macro_rules! sk68xx_led_component_static_esp32c3_160mhz {
     ($P:ty $(,)?) => {
-        $crate::sk68xx_led_component_static!($P, { $crate::sk68xx::ESP32C3_160MHZ_T0H })
+        $crate::components::sk68xx_led_component_static!($P, { $crate::components::sk68xx::ESP32C3_160MHZ_T0H })
     };
 }
 

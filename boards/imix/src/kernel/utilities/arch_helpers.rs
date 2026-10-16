@@ -9,13 +9,13 @@
 //! `arch` crates. While these could also live in a dedicated crate, we use the
 //! `kernel` crate as all `arch` crates already depend on it.
 
-use crate::ErrorCode;
-use crate::process::FunctionCall;
-use crate::syscall::SyscallReturn;
-use crate::syscall::YieldVariant;
-use crate::syscall::{Syscall, SyscallClass};
-use crate::utilities::capability_ptr::CapabilityPtr;
-use crate::utilities::machine_register::MachineRegister;
+use crate::kernel::ErrorCode;
+use crate::kernel::process::FunctionCall;
+use crate::kernel::syscall::SyscallReturn;
+use crate::kernel::syscall::YieldVariant;
+use crate::kernel::syscall::{Syscall, SyscallClass};
+use crate::kernel::utilities::capability_ptr::CapabilityPtr;
+use crate::kernel::utilities::machine_register::MachineRegister;
 
 /// Helper function to split a [`u64`] into a higher and lower [`u32`].
 ///

@@ -4,7 +4,7 @@
 
 //! Interface for buzzer use.
 
-use crate::ErrorCode;
+use crate::kernel::ErrorCode;
 
 pub trait BuzzerClient {
     /// Called when the current sound played by the buzzer has finished

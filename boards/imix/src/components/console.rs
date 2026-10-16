@@ -60,10 +60,10 @@ macro_rules! uart_mux_component_static {
         (uart_mux, rx_buf)
     }};
     () => {
-        $crate::uart_mux_component_static!(capsules_core::virtualizers::virtual_uart::RX_BUF_LEN)
+        $crate::components::uart_mux_component_static!(capsules_core::virtualizers::virtual_uart::RX_BUF_LEN)
     };
     ($rx_buffer_len: literal) => {
-        $crate::uart_mux_component_static!($rx_buffer_len)
+        $crate::components::uart_mux_component_static!($rx_buffer_len)
     };
 }
 
@@ -116,10 +116,10 @@ macro_rules! console_component_static {
         (write_buf, read_buf, console_uart, console)
     }};
     () => {
-        $crate::console_component_static!(DEFAULT_BUF_SIZE, DEFAULT_BUF_SIZE)
+        $crate::components::console_component_static!(DEFAULT_BUF_SIZE, DEFAULT_BUF_SIZE)
     };
     ($rx_buffer_len: literal, $tx_buffer_len: literal) => {
-        $crate::console_component_static!($rx_buffer_len, $tx_buffer_len)
+        $crate::components::console_component_static!($rx_buffer_len, $tx_buffer_len)
     };
 }
 
