@@ -283,25 +283,26 @@ impl<T> MapCell<T> {
         F: FnOnce(&mut T) -> R,
     {
         debug_assert_not_borrowed!(self);
-        (self.occupied.get() == MapCellState::Init).then(move || {
-            self.occupied.set(MapCellState::Borrowed);
-            // `occupied` is reset to initialized at the end of scope,
-            // even if a panic occurs in `closure`.
-            struct ResetToInit<'a>(&'a Cell<MapCellState>);
-            impl Drop for ResetToInit<'_> {
-                #[inline(always)]
-                fn drop(&mut self) {
-                    self.0.set(MapCellState::Init);
-                }
+        if self.is_none() {
+            return None;
+        }
+        self.occupied.set(MapCellState::Borrowed);
+        // `occupied` is reset to initialized at the end of scope,
+        // even if a panic occurs in `closure`.
+        struct ResetToInit<'a>(&'a Cell<MapCellState>);
+        impl Drop for ResetToInit<'_> {
+            #[inline(always)]
+            fn drop(&mut self) {
+                self.0.set(MapCellState::Init);
             }
-            let _reset_to_init = ResetToInit(&self.occupied);
-            let val_ptr_mut: *mut T = self.val.get().cast::<T>();
-            // SAFETY: The pointer points to memory for a `T`. Creating the
-            // reference is only sound if the value is initialized, which we
-            // ensured by checking that the state is `MapCell::Init`.
-            let val_ref_mut = unsafe { &mut *val_ptr_mut };
-            closure(val_ref_mut)
-        })
+        }
+        let _reset_to_init = ResetToInit(&self.occupied);
+        let val_ptr_mut: *mut T = self.val.get().cast::<T>();
+        // SAFETY: The pointer points to memory for a `T`. Creating the
+        // reference is only sound if the value is initialized, which we
+        // ensured by checking that the state is `MapCell::Init`.
+        let val_ref_mut = unsafe { &mut *val_ptr_mut };
+        Some(closure(val_ref_mut))
     }
 
     /// Behaves like `map`, but returns `default` if there is no value present.
